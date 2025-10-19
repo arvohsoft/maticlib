@@ -455,7 +455,7 @@ Maticlib is developed and maintained by **Arvoh Software**.
 **Organization:** [Arvoh Software](https://github.com/arvohsoft)  
 **Email:** arvohsoft@gmail.com
 
-Made with ❤️ for developers building intelligent AI agents
+Made for developers building intelligent AI agents
 
 ### Contributors
 
