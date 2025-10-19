@@ -1,7 +1,7 @@
 from __future__ import annotations
 import httpx
 
-class BaseClientModel:
+class BaseClientModelURL:
     def __init__(
         self,
         inference_url="",

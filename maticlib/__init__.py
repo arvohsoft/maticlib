@@ -1,5 +1,5 @@
-from .client import BaseClientModel
+from .client import BaseClientModelURL
 from .exceptions import ClientError
 
 __version__ = "0.1.0"
-__all__ = ["BaseClientModel", "ClientError"]
+__all__ = ["BaseClientModelURL", "ClientError"]
