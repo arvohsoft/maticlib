@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2025-10-24
+
+### Added
+- **Parallel execution support in MaticGraph**
+  - `parallel_group()` method for explicit fan-out/fan-in patterns
+  - Execute multiple independent nodes concurrently using ThreadPoolExecutor
+  - Conditional parallelization with optional condition functions
+  - Join node support to aggregate parallel results
+  - Configurable `max_workers` parameter for controlling concurrency
+  - Automatic state merging across parallel node executions
+- System instruction support for GoogleGenAIClient
+  - Accept `system_instruct` parameter as string or SystemMessage object
+  - Proper system instruction formatting in API requests
+  - Persistent system context across conversation turns
+
+### Changed
+- **GoogleGenAIClient improvements**
+  - Fixed critical payload construction bug where system instructions were lost
+  - Improved API key handling with proper environment variable fallback
+  - Enhanced async client resource management with context managers
+  - Added timeout parameter to async requests (30 seconds)
+  - Better error handling in `get_text_response()` with graceful fallbacks
+- **MaticGraph visualization enhancements**
+  - Graph visualization now displays parallel execution groups
+  - Added visual markers (🔀) for parallel node groups
+  - Shows join nodes and conditional parallelization information
+  - Improved readability of complex workflow structures
+
+### Fixed
+- Fixed missing `await` on `client.aclose()` in async methods preventing resource leaks
+
 ## [0.1.3] - 2025-10-23
 
 ### Added

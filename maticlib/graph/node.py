@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, Any, Optional, List
 
 @dataclass
 class Node:
@@ -10,3 +10,8 @@ class Node:
     condition_func: Optional[Callable] = None
     condition_map: Optional[Dict[str, str]] = None
     readable_names: Optional[Dict[str, str]] = None
+    
+    # Parallel execution support
+    parallel_group: Optional[List[str]] = None
+    parallel_join: Optional[str] = None
+    parallel_condition: Optional[Callable] = None

@@ -1,6 +1,7 @@
-from typing import Callable, Dict, Any, Optional, List, Union
+from typing import Callable, Dict, Any, Optional, List, Union, Set
 from .node import Node
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 try:
     from pydantic import BaseModel
@@ -18,19 +19,23 @@ class MaticGraph:
     Args:
         stateful: If True, maintains and merges state across nodes.
         state_schema: Optional Pydantic BaseModel, dataclass, or TypedDict class
+        max_workers: Maximum number of parallel workers (default: 4)
     """
     
     def __init__(
         self,
         stateful: bool = True,
-        state_schema: Optional[type] = None
+        state_schema: Optional[type] = None,
+        max_workers: int = 4
     ):
         self.stateful = stateful
         self.state_schema = state_schema
+        self.max_workers = max_workers
         self.nodes: Dict[str, Node] = {}
         self.entry_node: Optional[str] = None
         self.exit_nodes: List[str] = []
         self._execution_log: List[Dict[str, Any]] = []
+        self._parallel_groups: Dict[str, List[str]] = {}  # Maps trigger node to parallel nodes
         
         # Detect if state_schema is a Pydantic model
         self._is_pydantic = False
@@ -56,6 +61,64 @@ class MaticGraph:
             raise ValueError(f"Destination node '{to_node}' not found")
         
         self.nodes[from_node].next_nodes.append(to_node)
+        return self
+    
+    def parallel_group(
+        self,
+        from_node: str,
+        parallel_nodes: List[str],
+        join_node: Optional[str] = None,
+        condition: Optional[Callable[[Any], bool]] = None
+    ) -> 'MaticGraph':
+        """
+        Execute multiple nodes in parallel after a specific node.
+        
+        Args:
+            from_node: Node that triggers parallel execution
+            parallel_nodes: List of nodes to execute in parallel
+            join_node: Optional node to execute after all parallel nodes complete
+            condition: Optional function to decide whether to parallelize
+                      If returns False, executes first parallel_node only
+        
+        Example:
+            # Always parallel
+            graph.parallel_group(
+                "analyze",
+                ["sentiment", "entities", "summary"],
+                join_node="combine_results"
+            )
+            
+            # Conditional parallel
+            graph.parallel_group(
+                "check_size",
+                ["process_large_a", "process_large_b"],
+                join_node="merge",
+                condition=lambda state: state.get("size") > 1000
+            )
+        """
+        # Validate nodes exist
+        if from_node not in self.nodes:
+            raise ValueError(f"Trigger node '{from_node}' not found")
+        
+        for node in parallel_nodes:
+            if node not in self.nodes:
+                raise ValueError(f"Parallel node '{node}' not found")
+        
+        if join_node and join_node not in self.nodes:
+            raise ValueError(f"Join node '{join_node}' not found")
+        
+        # Store parallel group configuration
+        self._parallel_groups[from_node] = {
+            "nodes": parallel_nodes,
+            "join_node": join_node,
+            "condition": condition
+        }
+        
+        # Mark the trigger node as having parallel execution
+        self.nodes[from_node].parallel_group = parallel_nodes
+        self.nodes[from_node].parallel_join = join_node
+        self.nodes[from_node].parallel_condition = condition
+        
         return self
     
     def add_conditional_edge(
@@ -136,31 +199,25 @@ class MaticGraph:
         # Handle Pydantic models
         if self._is_pydantic:
             if isinstance(current, BaseModel):
-                # For Pydantic, create updated model with field updates
                 if isinstance(update, dict):
-                    # Update from dict
                     update_data = current.model_dump()
                     update_data.update(update)
                     return self.state_schema(**update_data)
                 elif isinstance(update, BaseModel):
-                    # Update from another Pydantic model
                     update_data = current.model_dump()
                     update_data.update(update.model_dump(exclude_unset=True))
                     return self.state_schema(**update_data)
             else:
-                # Initialize from dict or Pydantic model
                 if isinstance(update, dict):
                     return self.state_schema(**update)
                 return update
         
-        # Handle dict-based state (TypedDict or plain dict)
+        # Handle dict-based state
         if isinstance(current, dict):
             for key, value in (update.items() if isinstance(update, dict) else vars(update).items()):
                 if key in current:
-                    # Merge lists
                     if isinstance(current[key], list) and isinstance(value, list):
                         current[key].extend(value)
-                    # Merge dicts
                     elif isinstance(current[key], dict) and isinstance(value, dict):
                         current[key].update(value)
                     else:
@@ -191,15 +248,13 @@ class MaticGraph:
             if result is None:
                 result = {}
             
-            # Merge state
-            if self.stateful:
-                updated_state = self._merge_state(state, result)
-            else:
-                updated_state = result
+            # Don't merge state here if we're in a parallel group
+            # The parallel executor will handle merging
+            updated_state = result if not self.stateful else self._merge_state(state, result)
             
             execution_time = time.time() - start_time
             
-            # Log execution with state info
+            # Log execution
             if self._is_pydantic and isinstance(updated_state, BaseModel):
                 state_keys = list(updated_state.model_fields.keys())
             elif isinstance(updated_state, dict):
@@ -226,13 +281,70 @@ class MaticGraph:
             })
             raise RuntimeError(f"Error in node '{node_name}': {str(e)}") from e
     
-    def _get_next_node(self, current_node: str, state: Any) -> Optional[str]:
-        """Determine the next node based on edges and conditions."""
+    def _execute_parallel_group(
+        self,
+        parallel_nodes: List[str],
+        state: Any,
+        verbose: bool = False
+    ) -> Any:
+        """
+        Execute a group of nodes in parallel and merge their results.
+        """
+        if verbose:
+            print(f"\n  🔀 Executing {len(parallel_nodes)} nodes in parallel: {parallel_nodes}")
+        
+        with ThreadPoolExecutor(max_workers=min(self.max_workers, len(parallel_nodes))) as executor:
+            # Submit all parallel nodes
+            future_to_node = {
+                executor.submit(self._execute_node, node_name, state): node_name
+                for node_name in parallel_nodes
+            }
+            
+            # Collect results
+            results = {}
+            for future in as_completed(future_to_node):
+                node_name = future_to_node[future]
+                try:
+                    node_result = future.result()
+                    results[node_name] = node_result
+                    if verbose:
+                        print(f"    ✓ {node_name} completed")
+                except Exception as e:
+                    raise RuntimeError(f"Parallel node '{node_name}' failed: {e}") from e
+            
+            # Merge all results into state
+            merged_state = state
+            for node_name in parallel_nodes:
+                if self.stateful:
+                    merged_state = self._merge_state(merged_state, results[node_name])
+                else:
+                    merged_state = results[node_name]  # Last result wins in stateless
+            
+            return merged_state
+    
+    def _get_next_node(self, current_node: str, state: Any) -> Optional[Union[str, List[str]]]:
+        """
+        Determine the next node(s) based on edges and conditions.
+        Returns either a single node name or a list for parallel execution.
+        """
         node = self.nodes[current_node]
         
         if current_node in self.exit_nodes:
             return None
         
+        # Check for parallel group execution
+        if hasattr(node, 'parallel_group') and node.parallel_group:
+            # Check condition if exists
+            if hasattr(node, 'parallel_condition') and node.parallel_condition:
+                should_parallelize = node.parallel_condition(state)
+                if not should_parallelize:
+                    # Execute first node only (sequential fallback)
+                    return node.parallel_group[0]
+            
+            # Return special marker for parallel execution
+            return ("PARALLEL", node.parallel_group, node.parallel_join)
+        
+        # Check conditional routing
         if node.condition_func:
             try:
                 route_key = node.condition_func(state)
@@ -259,6 +371,7 @@ class MaticGraph:
                     f"Condition function failed in node '{current_node}': {str(e)}"
                 ) from e
         
+        # Regular edge
         if node.next_nodes:
             next_node = node.next_nodes[0]
             return None if next_node == "END" else next_node
@@ -272,7 +385,7 @@ class MaticGraph:
         verbose: bool = False
     ) -> Union[Dict[str, Any], BaseModel]:
         """
-        Execute the graph workflow.
+        Execute the graph workflow with support for parallel node groups.
         
         Args:
             initial_state: Starting state (dict, Pydantic model, or dataclass)
@@ -314,19 +427,38 @@ class MaticGraph:
             if verbose:
                 print(f"[{iteration}] Executing node: {current_node}")
             
+            # Execute current node
             state = self._execute_node(current_node, state)
             
             if verbose:
                 print(f"    State after: {state}")
             
+            # Get next node(s)
             next_node = self._get_next_node(current_node, state)
             
-            if verbose and next_node:
-                print(f"    Next: {next_node}\n")
-            elif verbose:
-                print(f"    Workflow complete\n")
-            
-            current_node = next_node
+            # Check if next is a parallel group
+            if isinstance(next_node, tuple) and next_node[0] == "PARALLEL":
+                _, parallel_nodes, join_node = next_node
+                
+                # Execute parallel nodes
+                state = self._execute_parallel_group(parallel_nodes, state, verbose)
+                
+                # Continue to join node if specified
+                if join_node:
+                    current_node = join_node
+                    if verbose:
+                        print(f"  ⚡ Parallel execution complete, continuing to: {join_node}\n")
+                else:
+                    # No join node, end execution
+                    current_node = None
+            else:
+                # Regular sequential execution
+                if verbose and next_node:
+                    print(f"    Next: {next_node}\n")
+                elif verbose:
+                    print(f"    Workflow complete\n")
+                
+                current_node = next_node
         
         if iteration >= max_iterations:
             raise RuntimeError(
@@ -348,19 +480,37 @@ class MaticGraph:
             schema_name = getattr(self.state_schema, '__name__', str(self.state_schema))
             state_type = "Pydantic Model" if self._is_pydantic else "Schema"
             lines.append(f"State {state_type}: {schema_name}")
-            lines.append("")
+        
+        lines.append(f"Max Workers: {self.max_workers}")
+        lines.append("")
         
         for node_name, node in self.nodes.items():
             marker = "►" if node_name == self.entry_node else "•"
             exit_marker = " [EXIT]" if node_name in self.exit_nodes else ""
-            lines.append(f"{marker} {node_name}{exit_marker}")
             
+            # Check if node has parallel group
+            parallel_marker = ""
+            if hasattr(node, 'parallel_group') and node.parallel_group:
+                parallel_marker = f" 🔀 [PARALLEL→{len(node.parallel_group)} nodes]"
+            
+            lines.append(f"{marker} {node_name}{exit_marker}{parallel_marker}")
+            
+            # Show parallel group details
+            if hasattr(node, 'parallel_group') and node.parallel_group:
+                lines.append(f"  ├─ Parallel nodes:")
+                for pnode in node.parallel_group:
+                    lines.append(f"  │  └─ {pnode}")
+                if hasattr(node, 'parallel_join') and node.parallel_join:
+                    lines.append(f"  └─ Join at: {node.parallel_join}")
+            
+            # Show conditional routing
             if node.condition_func:
                 lines.append(f"  └─ Conditional routing:")
                 for route_key, target in node.condition_map.items():
                     readable = node.readable_names.get(route_key, route_key)
                     lines.append(f"     [{route_key}] → {target} ({readable})")
-            else:
+            # Show regular edges
+            elif not hasattr(node, 'parallel_group'):
                 for next_node in node.next_nodes:
                     lines.append(f"  └─→ {next_node}")
         

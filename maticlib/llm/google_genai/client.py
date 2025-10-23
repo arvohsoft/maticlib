@@ -10,6 +10,7 @@ class GoogleGenAIClient(BaseLLMClient):
     def __init__(
         self,
         model: str = "gemini-2.5-flash",
+        system_instruct: str|SystemMessage|None = None,
         api_key: str = os.getenv("GOOGLE_API_KEY", "GEMINI_API_KEY"),
         thinking_budget: int = 0,
         verbose: bool = True,
@@ -17,6 +18,7 @@ class GoogleGenAIClient(BaseLLMClient):
     ):
         self.api_key = api_key
         self.model = model
+        self.system_instruct = system_instruct
         self.base_url = "https://generativelanguage.googleapis.com/v1beta"
         self.verbose = verbose
         self.headers = {
@@ -84,6 +86,14 @@ class GoogleGenAIClient(BaseLLMClient):
         else:
             raise TypeError(f"Input must be str or list, got {type(input)}")
     
+    def _format__system_instruction(self):
+        system_instruct = self.system_instruct
+        if isinstance(system_instruct, str):
+            return system_instruct
+        elif isinstance(system_instruct, SystemMessage):
+            return system_instruct.content
+        return None
+    
     def _parse_response(self, response: httpx.Response) -> Union[GeminiResponse, Dict[str, Any]]:
         """
         Parse the HTTP response into a Pydantic model or raw dict
@@ -128,9 +138,20 @@ class GoogleGenAIClient(BaseLLMClient):
             # Format messages
             formatted_messages = self._format_messages(input)
             
-            payload = {
-                "contents": formatted_messages
-            }
+            payload = {}
+            
+            if self.system_instruct:
+                self.system_instruct = self._format__system_instruction()
+
+                payload["system_instruction"] = {
+                    "parts": [
+                        {
+                        "text": self.system_instruct
+                        }
+                    ]
+                }
+                
+            payload["contents"] = formatted_messages
             
             # Add thinking budget if configured
             if self.thinking_budget > 0:
@@ -143,9 +164,8 @@ class GoogleGenAIClient(BaseLLMClient):
             response.raise_for_status()
             
             if self.verbose:
-                print(f"Status: {response.status_code}")
-            
-            # Parse and return response
+                print(f"Status: {response.status_code}")  
+                              
             return self._parse_response(response)
             
         except httpx.HTTPStatusError as e:
@@ -158,8 +178,8 @@ class GoogleGenAIClient(BaseLLMClient):
                 import traceback
                 traceback.print_exc()
             raise
-    
-    def complete(self, input: str) -> Dict[str, Any]:
+            
+    async def async_complete(self, input: str) -> Union[GeminiResponse, Dict[str, Any]]:
         """
         Basic content generation - converts first curl example
         
@@ -172,44 +192,21 @@ class GoogleGenAIClient(BaseLLMClient):
         url = f"{self.base_url}/models/{self.model}:generateContent"
         
         formatted_messages = self._format_messages(input=input)
-        payload = {
-            "contents": formatted_messages
-        }
         
-        if self.thinking_budget > 0:
-            payload["generationConfig"] = {
-                "thinkingBudget": self.thinking_budget
+        payload = {}
+            
+        if self.system_instruct:
+            self.system_instruct = self._format__system_instruction()
+
+            payload["system_instruction"] = {
+                "parts": [
+                    {
+                    "text": self.system_instruct
+                    }
+                ]
             }
         
-        try:
-            response = httpx.post(url, headers=self.headers, json=payload)
-            response.raise_for_status()
-            
-            if self.verbose:
-                print(f"Status: {response.status_code}")
-                
-            return self._parse_response(response=response)
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            raise
-            
-    async def async_complete(self, input: str) -> Dict[str, Any]:
-        """
-        Basic content generation - converts first curl example
-        
-        Args:
-            input: The text input to send to the model
-            
-        Returns:
-            Dictionary containing the API response
-        """
-        url = f"{self.base_url}/models/{self.model}:generateContent"
-        
-        formatted_messages = self._format_messages(input=input)
-        payload = {
-            "contents": formatted_messages
-        }
+        payload["contents"] = formatted_messages
         
         if self.thinking_budget > 0:
             payload["generationConfig"] = {
@@ -220,7 +217,6 @@ class GoogleGenAIClient(BaseLLMClient):
             client = httpx.AsyncClient()
             response = await client.post(url, headers=self.headers, json=payload)
             response.raise_for_status()
-            
             if self.verbose:
                 print(f"Status: {response.status_code}")
                 
@@ -229,6 +225,8 @@ class GoogleGenAIClient(BaseLLMClient):
             import traceback
             traceback.print_exc()
             raise
+        finally:
+            await client.aclose()
     
     def get_text_response(self, response: Union[GeminiResponse, Dict[str, Any]]) -> str:
         """

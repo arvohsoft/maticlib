@@ -350,7 +350,7 @@ For support, email arvohsoft@gmail.com or open an issue on GitHub.
 
 ### Orchestration & Workflow
 - [x] Graph-based workflow engine for complex agent interactions
-- [ ] Visual workflow builder and debugger
+- [x] Visual workflow builder and debugger
 - [x] Conditional branching
 - [x] parallel execution
 - [x] State management across workflow steps

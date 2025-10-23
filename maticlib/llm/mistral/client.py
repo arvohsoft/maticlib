@@ -10,12 +10,14 @@ class MistralClient(BaseLLMClient):
     def __init__(
         self,
         model: str = "mistral-medium-latest",
+        system_instruct: str|SystemMessage|None = None,
         api_key: str = os.getenv("MISTRAL_API_KEY", ""),
         verbose: bool = True,
         return_raw: bool = False
     ):
         self.api_key = api_key
         self.model = model
+        self.system_instruct = system_instruct
         self.base_url = "https://api.mistral.ai/v1"
         self.verbose = verbose
         self.headers = {
@@ -93,6 +95,13 @@ class MistralClient(BaseLLMClient):
         
         else:
             raise TypeError(f"Input must be str or list, got {type(input)}")
+    
+    def __format__system_instruction(self):
+        system_instruct = self.system_instruct
+        if isinstance(system_instruct, str):
+            return system_instruct
+        elif isinstance(system_instruct, SystemMessage):
+            return system_instruct.content
     
     def _parse_response(self, response: httpx.Response) -> Union[MistralResponse, Dict[str, Any]]:
         """
