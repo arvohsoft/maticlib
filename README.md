@@ -340,11 +340,13 @@ For support, email arvohsoft@gmail.com or open an issue on GitHub.
 - [ ] Provider-agnostic result objects
 
 ### Orchestration & Workflow
-- [ ] Graph-based workflow engine for complex agent interactions
+- [x] Graph-based workflow engine for complex agent interactions
 - [ ] Visual workflow builder and debugger
-- [ ] Conditional branching and parallel execution
-- [ ] State management across workflow steps
-- [ ] Loop detection and prevention
+- [x] Conditional branching
+- [x] parallel execution
+- [x] State management across workflow steps
+- [ ] Loop detection
+- [x] Loop prevention
 - [ ] Workflow templates for common patterns
 - [ ] Event-driven execution model
 
