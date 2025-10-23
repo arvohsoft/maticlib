@@ -9,48 +9,8 @@ from typing import Optional, List, Dict, Any, Union, Literal
 from pydantic import BaseModel, Field, computed_field
 from enum import Enum
 
-# ============================================================================
-# ENUMS AND TYPE DEFINITIONS
-# ============================================================================
-
-class ModalityType(str, Enum):
-    """Supported modality types"""
-    TEXT = "text"
-    IMAGE = "image"
-    AUDIO = "audio"
-    VIDEO = "video"
-    UNKNOWN = "unknown"
-
-
-class RoleType(str, Enum):
-    """Role types in conversation"""
-    USER = "user"
-    ASSISTANT = "assistant"
-    MODEL = "model"
-    SYSTEM = "system"
-
-
-# ============================================================================
-# COMMON CONTENT CLASSES
-# ============================================================================
-
-class ContentPart(BaseModel):
-    """Generic content part that can represent any modality"""
-    type: ModalityType = Field(default=ModalityType.TEXT, description="Type of content")
-    text: Optional[str] = Field(None, description="Text content")
-    image_url: Optional[str] = Field(None, description="Image URL or data URI")
-    video_url: Optional[str] = Field(None, description="Video URL or data URI")
-    audio_url: Optional[str] = Field(None, description="Audio URL or data URI")
-    inline_data: Optional[Dict[str, Any]] = Field(None, description="Inline binary data with mime type")
-    metadata: Optional[Dict[str, Any]] = Field(None, description="Additional metadata")
-    
-    class Config:
-        extra = "allow"
-
-
-# ============================================================================
-# BASE CLASS - Common fields across both APIs
-# ============================================================================
+from maticlib.client.classes.enums.modality_type import ModalityType
+from maticlib.client.classes.model_classes.content_part import ContentPart
 
 class LLMResponseBase(BaseModel):
     """

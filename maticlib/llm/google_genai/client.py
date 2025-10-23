@@ -1,8 +1,8 @@
 from typing import Any, Dict, List, Union
 
+from maticlib.client.classes.base_client import BaseLLMClient
 from maticlib.llm.google_genai.gemini_classes import GeminiResponse
-from ..classes.base_client import BaseLLMClient
-from ...core.messages import SystemMessage, HumanMessage, AIMessage
+from maticlib.messages import SystemMessage, HumanMessage, AIMessage
 import httpx
 import os
 

@@ -1,12 +1,10 @@
-# ============================================================================
-# GEMINI SPECIFIC CLASSES
-# ============================================================================
-
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from maticlib.llm.classes.client_output_model import ContentPart, LLMResponseBase, ModalityType
+from maticlib.client.classes.client_output_model import LLMResponseBase
+from maticlib.client.classes.enums.modality_type import ModalityType
+from maticlib.client.classes.model_classes.content_part import ContentPart
 
 class GeminiPart(BaseModel):
     """Gemini content part - supports multimodal content"""

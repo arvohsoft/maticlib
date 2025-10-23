@@ -3,11 +3,10 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, computed_field
 
-from maticlib.llm.classes.client_output import ContentPart, LLMResponseBase, ModalityType
+from maticlib.client.classes.client_output_model import LLMResponseBase
+from maticlib.client.classes.enums.modality_type import ModalityType
+from maticlib.client.classes.model_classes.content_part import ContentPart
 
-# ============================================================================
-# MISTRAL SPECIFIC CLASSES
-# ============================================================================
 
 class MistralUsage(BaseModel):
     """Mistral-specific usage information"""
