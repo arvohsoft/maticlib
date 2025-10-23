@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2025-10-23
+
+### Added
+- **MaticGraph**: Pure-Python graph workflow engine for building agentic AI systems
+  - Stateful and stateless execution modes
+  - Support for dict, TypedDict, dataclass, and Pydantic BaseModel state schemas
+  - Conditional branching with `add_conditional_edge()` and simplified `when()` methods
+  - Node-based workflow execution with automatic state merging
+  - Execution logging and text-based graph visualization
+  - Loop prevention with configurable max iterations
+  - Method chaining for fluent API design
+- Unified response models for all LLM clients
+  - `LLMResponseBase`: Common base class for standardized response handling
+  - `GeminiResponse`: Pydantic model for Google Gemini API responses
+  - `MistralResponse`: Pydantic model for Mistral AI API responses
+  - Multimodal content support (text, image, audio, video) in response models
+  - Token usage tracking with modality-specific breakdowns
+- `ContentPart` class for structured multimodal content handling
+- `ModalityType` enum for content type classification
+
+### Changed
+- Standardized LLM client structure across all providers
+  - Consistent `_format_messages()` method implementation
+  - Unified `_parse_response()` method for response handling
+  - Consistent error handling and verbose logging patterns
+- GoogleGenAIClient now returns `GeminiResponse` Pydantic model by default
+  - Added `return_raw` parameter to optionally return raw JSON
+  - Enhanced multimodal support with image, audio, and video tokens
+  - Improved thinking budget and cached content token tracking
+- MistralClient now returns `MistralResponse` Pydantic model by default
+  - Added `return_raw` parameter for raw JSON responses
+  - Enhanced Pixtral multimodal model support
+  - Improved async request handling with context managers
+- Enhanced `get_text_response()` helper method for both clients
+  - Handles both Pydantic models and raw dict responses
+  - Improved error handling for malformed responses
+
+### Fixed
+- Consistent async client cleanup in MistralClient using context managers
+- Improved type hints and type safety across all LLM clients
+- Enhanced error messages for invalid message formats
+
 ## [0.1.1] - 2025-10-20
 
 ### Added

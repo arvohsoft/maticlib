@@ -4,19 +4,47 @@
 [![Downloads](https://static.pepy.tech/badge/maticlib)](https://pepy.tech/project/maticlib)
 [![PyPI version](https://badge.fury.io/py/maticlib.svg)](https://badge.fury.io/py/maticlib)
 [![Dev Containers: Open](https://img.shields.io/badge/Dev%20Containers-Open-blue)](https://github.com/arvohsoft/maticlib)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=arvohsoft/maticlib)
 
 A Python automation library for creating intelligent agents with easy-to-use API clients for multiple LLM providers including Google Gemini and Mistral AI.
 
 ## Features
 
-- 🤖 Simple and intuitive API for building AI agents
-- 🔄 Synchronous and asynchronous request support
-- 🛠️ Multiple LLM provider support (Google Gemini, Mistral AI)
-- 📝 Built-in error handling and verbose logging
-- 🚀 Lightweight with minimal dependencies
-- 🔑 Environment variable support for API keys
-- 💬 Multi-turn conversation support
+### 🤖 Core Agent Framework
+- **MaticGraph**: Pure-Python graph workflow engine for building complex agentic AI systems
+- **Stateful & Stateless Execution**: Choose between automatic state management or manual control
+- **Conditional Routing**: Intuitive `when()` syntax and advanced `add_conditional_edge()` for complex decision trees
+- **Multi-State Support**: Works with dict, TypedDict, dataclass, and Pydantic BaseModel schemas
+- **Execution Logging**: Built-in tracking of node execution, routing decisions, and performance metrics
+
+### 🔄 LLM Integration
+- Simple and intuitive API for building AI agents
+- Synchronous and asynchronous request support
+- Multiple LLM provider support (Google Gemini, Mistral AI)
+- Unified response models with Pydantic validation
+- Multi-turn conversation support with automatic message history management
+- Multimodal support (text, image, audio, video) for compatible models
+
+### 🛠️ Developer Experience
+- Built-in error handling and verbose logging
+- Lightweight with minimal dependencies
+- Environment variable support for API keys (GOOGLE_API_KEY, MISTRAL_API_KEY)
+- Method chaining for fluent API design
+- Type-safe with comprehensive type hints
+- Loop detection and prevention in graph workflows
+
+### 📊 Response Handling
+- **Standardized Response Models**: Consistent interface across all LLM providers
+- **Token Usage Tracking**: Detailed breakdown including prompt, completion, and total tokens
+- **Modality-Specific Metrics**: Track image, audio, and video token usage separately
+- **Content Extraction**: Helper methods like `get_text_response()` for easy content access
+- **Raw Response Option**: Access underlying JSON when needed with `return_raw=True`
+
+### 🎯 Advanced Capabilities
+- **Conditional Branching**: Route workflows based on LLM outputs, sentiment, or custom logic
+- **Parallel Node Execution**: Future support for concurrent workflow processing
+- **Checkpoint System**: Save and restore workflow state for long-running processes
+- **Event-Driven Architecture**: Pause, resume, and respond to external events
+- **Workflow Templates**: Pre-built patterns for retry logic, fan-out/fan-in, and more
 
 ## Installation
 
@@ -55,7 +83,7 @@ client = GoogleGenAIClient()
 
 # Make a request
 response = client.complete("Hello! Tell me about Python")
-print(response.json())
+print(response.content)
 ```
 
 ### Mistral AI
@@ -71,24 +99,7 @@ client = MistralClient()
 
 # Make a request
 response = client.complete("What is the best French cheese?")
-print(response.json())
-```
-
-### Generic Client
-
-```
-from maticlib.core.client import BaseClientModelURL
-
-# For custom API endpoints
-client = BaseClientModelURL(
-    inference_url="https://api.example.com/v1/chat",
-    header={"Authorization": "Bearer YOUR_API_KEY"},
-    model="model-name",
-    payload={"messages": []},
-    verbose=True
-)
-
-response = client.complete("Your prompt here")
+print(response.content)
 ```
 
 ## Usage Examples
@@ -106,7 +117,7 @@ client = GoogleGenAIClient(
 )
 
 response = client.complete("Explain quantum computing")
-print(response.json())
+print(response.content)
 ```
 
 ### Mistral AI with Different Models
@@ -121,7 +132,7 @@ client = MistralClient(
 )
 
 response = client.complete("Write a short poem about coding")
-print(response.json())
+print(response.content)
 ```
 
 ### Multi-turn Conversations
@@ -139,7 +150,7 @@ messages = [
 ]
 
 response = client.complete(messages)
-print(response.json())
+print(response.content)
 ```
 
 ### Asynchronous Usage
@@ -151,7 +162,7 @@ from maticlib.llm.google_genai import GoogleGenAIClient
 async def main():
     client = GoogleGenAIClient(api_key="YOUR_API_KEY")
     response = await client.async_complete("Tell me a joke")
-    print(response.json())
+    print(response.content)
 
 asyncio.run(main())
 ```
@@ -234,14 +245,11 @@ mistral_client = MistralClient()      # Uses MISTRAL_API_KEY
 
 ```
 from maticlib.llm.mistral import MistralClient
-from maticlib.exceptions import ClientError
 
 try:
     client = MistralClient(api_key="YOUR_API_KEY")
     response = client.complete("Your prompt")
-    print(response.json())
-except ClientError as e:
-    print(f"Client error: {e}")
+    print(response.content)
 except Exception as e:
     print(f"Unexpected error: {e}")
 ```
@@ -287,6 +295,7 @@ mypy maticlib/
 
 - Python >= 3.8
 - httpx >= 0.24.0
+- pydantic
 
 ## Supported LLM Providers
 
