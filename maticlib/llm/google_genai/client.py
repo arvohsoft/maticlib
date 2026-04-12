@@ -7,6 +7,22 @@ import httpx
 import os
 
 class GoogleGenAIClient(BaseLLMClient):
+    """
+    Client for interacting with Google's Generative AI (Gemini) models.
+    
+    Inherits from BaseLLMClient and implements Gemini-specific message 
+    formatting and response parsing.
+    
+    Args:
+        model (str): The name of the Gemini model to use. 
+            Defaults to "gemini-2.5-flash".
+        system_instruct (str | SystemMessage, optional): Default instructions 
+            to prepend to all conversations.
+        api_key (str): Your Google AI API key.
+        thinking_budget (int): Optional token budget for model reasoning/thinking.
+        verbose (bool): If True, prints status messages to console.
+        return_raw (bool): If True, returns the raw dict response instead of a GeminiResponse model.
+    """
     def __init__(
         self,
         model: str = "gemini-2.5-flash",
@@ -29,6 +45,20 @@ class GoogleGenAIClient(BaseLLMClient):
         self.return_raw = return_raw  # Option to return raw JSON response or Pydantic model
         
     def _format_messages(self, input: Union[str, List[Union[Dict, HumanMessage, SystemMessage, AIMessage]]]):
+        """
+        Formats various input types into the standard Gemini API content format.
+        
+        Args:
+            input (str | list): A simple string, a list of message objects, 
+                or a list of dictionaries with 'role' and 'content'.
+                
+        Returns:
+            list: A list of dictionaries ready for the Gemini 'contents' payload.
+            
+        Raises:
+            ValueError: If a dictionary message is missing a 'role'.
+            TypeError: If input types are unsupported.
+        """
         if isinstance(input, str):
             # Return a list of messages, NOT wrapped in "contents"
             return [
@@ -96,13 +126,14 @@ class GoogleGenAIClient(BaseLLMClient):
     
     def _parse_response(self, response: httpx.Response) -> Union[GeminiResponse, Dict[str, Any]]:
         """
-        Parse the HTTP response into a Pydantic model or raw dict
+        Parses the JSON response from Gemini into a structured model.
         
         Args:
-            response: The httpx Response object
+            response (httpx.Response): The raw HTTP response.
             
         Returns:
-            Either a GeminiResponse Pydantic model or raw response dict
+            GeminiResponse | dict: The parsed response model, or a raw dictionary 
+            if `return_raw` is set to True.
         """
         response_data = response.json()
         
@@ -124,13 +155,13 @@ class GoogleGenAIClient(BaseLLMClient):
     
     def complete(self, input: Union[str, List]) -> Union[GeminiResponse, Dict[str, Any]]:
         """
-        Basic content generation with Pydantic response model
+        Sends a synchronous generation request to Gemini.
         
         Args:
-            input: The text input or list of messages to send to the model
+            input (str | list): The user prompt or conversation history.
             
         Returns:
-            GeminiResponse Pydantic model (or dict if return_raw=True)
+            GeminiResponse | dict: The model's response.
         """
         url = f"{self.base_url}/models/{self.model}:generateContent"
         
@@ -181,13 +212,13 @@ class GoogleGenAIClient(BaseLLMClient):
             
     async def async_complete(self, input: str) -> Union[GeminiResponse, Dict[str, Any]]:
         """
-        Basic content generation - converts first curl example
+        Sends an asynchronous generation request to Gemini.
         
         Args:
-            input: The text input to send to the model
+            input (str): The text input to send to the model.
             
         Returns:
-            Dictionary containing the API response
+            GeminiResponse | dict: The model's response.
         """
         url = f"{self.base_url}/models/{self.model}:generateContent"
         
@@ -230,13 +261,13 @@ class GoogleGenAIClient(BaseLLMClient):
     
     def get_text_response(self, response: Union[GeminiResponse, Dict[str, Any]]) -> str:
         """
-        Helper method to extract text from response
+        Extracts the primary text content from a Gemini response.
         
         Args:
-            response: GeminiResponse model or raw dict
+            response (GeminiResponse | dict): The response to extract from.
             
         Returns:
-            Extracted text content
+            str: The extracted text string.
         """
         if isinstance(response, GeminiResponse):
             return response.content or ""

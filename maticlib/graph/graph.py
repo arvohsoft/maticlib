@@ -28,9 +28,16 @@ class MaticGraph:
         state_schema: Optional[type] = None,
         max_workers: int = 4
     ):
-        self.stateful = stateful
-        self.state_schema = state_schema
-        self.max_workers = max_workers
+        """
+        Initializes the MaticGraph engine.
+        
+        Args:
+            stateful (bool): If True, state is preserved and merged between nodes.
+            state_schema (type, optional): A Pydantic model, dataclass, or 
+                TypedDict class to use as the state container.
+            max_workers (int): Maximum number of parallel threads for `parallel_group` 
+                execution. Default is 4.
+        """
         self.nodes: Dict[str, Node] = {}
         self.entry_node: Optional[str] = None
         self.exit_nodes: List[str] = []
@@ -46,7 +53,20 @@ class MaticGraph:
             )
     
     def add_node(self, name: str, function: Callable) -> 'MaticGraph':
-        """Add a processing node to the graph."""
+        """
+        Adds a processing node to the graph.
+        
+        Args:
+            name (str): Unique name for the node.
+            function (Callable): Function to execute. Should accept the current 
+                state and return a dict or model update.
+                
+        Returns:
+            MaticGraph: The graph instance (for chaining).
+            
+        Raises:
+            ValueError: If a node with the same name already exists.
+        """
         if name in self.nodes:
             raise ValueError(f"Node '{name}' already exists")
         
@@ -54,7 +74,19 @@ class MaticGraph:
         return self
     
     def add_edge(self, from_node: str, to_node: str) -> 'MaticGraph':
-        """Add a direct connection between two nodes."""
+        """
+        Adds a directed edge between two nodes.
+        
+        Args:
+            from_node (str): The name of the starting node.
+            to_node (str): The name of the target node, or 'END' to exit.
+            
+        Returns:
+            MaticGraph: The graph instance (for chaining).
+            
+        Raises:
+            ValueError: If either node name is not found in the graph.
+        """
         if from_node not in self.nodes:
             raise ValueError(f"Source node '{from_node}' not found")
         if to_node not in self.nodes and to_node != "END":
@@ -128,7 +160,23 @@ class MaticGraph:
         routes: Dict[str, str],
         readable_names: Optional[Dict[str, str]] = None
     ) -> 'MaticGraph':
-        """Add a conditional edge that routes based on condition output."""
+        """
+        Adds a conditional edge that routes execution based on a condition function.
+        
+        Args:
+            from_node (str): The node from which to route.
+            condition (Callable): A function that takes the current state and 
+                returns a string key matching one of the routes.
+            routes (Dict[str, str]): A mapping of condition keys to target node names.
+            readable_names (dict, optional): Mapping of keys to human-friendly 
+                names for documentation/visualization.
+                
+        Returns:
+            MaticGraph: The graph instance (for chaining).
+            
+        Raises:
+            ValueError: If from_node or route targets are not found.
+        """
         if from_node not in self.nodes:
             raise ValueError(f"Node '{from_node}' not found")
         
@@ -174,14 +222,36 @@ class MaticGraph:
         )
     
     def set_entry(self, node_name: str) -> 'MaticGraph':
-        """Set the starting node."""
+        """
+        Sets the starting node for the graph execution.
+        
+        Args:
+            node_name (str): The name of the entry node.
+            
+        Returns:
+            MaticGraph: The graph instance (for chaining).
+            
+        Raises:
+            ValueError: If the node_name does not exist in the graph.
+        """
         if node_name not in self.nodes:
             raise ValueError(f"Node '{node_name}' not found")
         self.entry_node = node_name
         return self
     
     def set_exit(self, node_name: str) -> 'MaticGraph':
-        """Mark a node as an exit point."""
+        """
+        Marks a node as an explicit exit point for the workflow.
+        
+        Args:
+            node_name (str): The name of the node.
+            
+        Returns:
+            MaticGraph: The graph instance (for chaining).
+            
+        Raises:
+            ValueError: If the node_name does not exist in the graph.
+        """
         if node_name not in self.nodes:
             raise ValueError(f"Node '{node_name}' not found")
         if node_name not in self.exit_nodes:
@@ -385,15 +455,20 @@ class MaticGraph:
         verbose: bool = False
     ) -> Union[Dict[str, Any], BaseModel]:
         """
-        Execute the graph workflow with support for parallel node groups.
+        Executes the graph workflow dynamically.
         
         Args:
-            initial_state: Starting state (dict, Pydantic model, or dataclass)
-            max_iterations: Maximum nodes to execute
-            verbose: Print execution details
-        
+            initial_state (dict | BaseModel, optional): Starting data for the workflow.
+            max_iterations (int): Safety limit on total node executions to prevent 
+                infinite loops. Default is 1000.
+            verbose (bool): If True, prints execution trace to stdout.
+            
         Returns:
-            Final state after execution
+            Any: The final accumulated state of the workflow.
+            
+        Raises:
+            RuntimeError: If no entry node is set, or if an execution error 
+                occurs in a node.
         """
         if self.entry_node is None:
             raise RuntimeError("No entry node set. Call set_entry() first.")

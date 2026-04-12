@@ -7,6 +7,21 @@ from maticlib.messages import SystemMessage, HumanMessage, AIMessage
 
 
 class MistralClient(BaseLLMClient):
+    """
+    Client for interacting with Mistral AI models.
+    
+    Inherits from BaseLLMClient and implements Mistral-specific message 
+    formatting and response parsing.
+    
+    Args:
+        model (str): The name of the Mistral model to use. 
+            Defaults to "mistral-medium-latest".
+        system_instruct (str | SystemMessage, optional): Default instructions 
+            to prepend to all conversations.
+        api_key (str): Your Mistral AI API key. Defaults to MISTRAL_API_KEY environment variable.
+        verbose (bool): If True, prints status messages to console.
+        return_raw (bool): If True, returns the raw dict response instead of a MistralResponse model.
+    """
     def __init__(
         self,
         model: str = "mistral-medium-latest",
@@ -29,9 +44,18 @@ class MistralClient(BaseLLMClient):
         
     def _format_messages(self, input: Union[str, List[Union[Dict, HumanMessage, SystemMessage, AIMessage]]]):
         """
-        Format messages to Mistral API format
+        Formats various input types into the standard Mistral API message format.
         
-        Mistral expects: [{"role": "user|assistant|system", "content": "text"}]
+        Args:
+            input (str | list): A simple string, a list of message objects, 
+                or a list of dictionaries with 'role' and 'content'.
+                
+        Returns:
+            list: A list of dictionaries ready for the Mistral API.
+            
+        Raises:
+            ValueError: If a dictionary message is missing a 'role'.
+            TypeError: If input types are unsupported.
         """
         if isinstance(input, str):
             # Return a list of messages for Mistral
@@ -105,13 +129,14 @@ class MistralClient(BaseLLMClient):
     
     def _parse_response(self, response: httpx.Response) -> Union[MistralResponse, Dict[str, Any]]:
         """
-        Parse the HTTP response into a Pydantic model or raw dict
+        Parses the JSON response from Mistral into a structured model.
         
         Args:
-            response: The httpx Response object
+            response (httpx.Response): The raw HTTP response.
             
         Returns:
-            Either a MistralResponse Pydantic model or raw response dict
+            MistralResponse | dict: The parsed response model, or a raw dictionary 
+            if `return_raw` is set to True.
         """
         response_data = response.json()
         
@@ -131,13 +156,13 @@ class MistralClient(BaseLLMClient):
     
     def complete(self, input: Union[str, List]) -> Union[MistralResponse, Dict[str, Any]]:
         """
-        Basic content generation with Pydantic response model
+        Sends a synchronous chat completion request to Mistral.
         
         Args:
-            input: The text input or list of messages to send to the model
+            input (str | list): The user prompt or conversation history.
             
         Returns:
-            MistralResponse Pydantic model (or dict if return_raw=True)
+            MistralResponse | dict: The model's response.
         """
         url = f"{self.base_url}/chat/completions"
         
@@ -173,13 +198,13 @@ class MistralClient(BaseLLMClient):
             
     async def async_complete(self, input: Union[str, List]) -> Union[MistralResponse, Dict[str, Any]]:
         """
-        Async content generation with Pydantic response model
+        Sends an asynchronous chat completion request to Mistral.
         
         Args:
-            input: The text input or list of messages to send to the model
+            input (str | list): The user prompt or conversation history.
             
         Returns:
-            MistralResponse Pydantic model (or dict if return_raw=True)
+            MistralResponse | dict: The model's response.
         """
         url = f"{self.base_url}/chat/completions"
         
@@ -216,13 +241,13 @@ class MistralClient(BaseLLMClient):
     
     def get_text_response(self, response: Union[MistralResponse, Dict[str, Any]]) -> str:
         """
-        Helper method to extract text from response
+        Extracts the primary text content from a Mistral response.
         
         Args:
-            response: MistralResponse model or raw dict
+            response (MistralResponse | dict): The response to extract from.
             
         Returns:
-            Extracted text content
+            str: The extracted text string.
         """
         if isinstance(response, MistralResponse):
             return response.content or ""
