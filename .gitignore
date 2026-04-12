@@ -16,3 +16,4 @@ htmlcov/
 .coverage
 .vscode/
 .pytest_cache/
+site/

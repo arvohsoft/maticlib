@@ -7,6 +7,7 @@ edit_uri: edit/main/docs/
 
 # The configuration file is now inside the docs folder
 docs_dir: .
+site_dir: ../site
 
 theme:
   name: material
