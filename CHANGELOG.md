@@ -5,7 +5,32 @@ All notable changes to maticlib will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.5] - 2026-04-12
+
+### Added
+- **OpenAI Integration**
+  - Implemented `OpenAIClient` using the modern Responses API (/v1/responses).
+  - Standardized response models with support for reasoning tokens (o-series) and cached tokens.
+  - Full sync and async support.
+- **Automated Documentation System**
+  - Integrated MkDocs with the Material theme for professional, searchable documentation.
+  - Automated API reference extraction from source code using `mkdocstrings`.
+  - Deployment automation via GitHub Actions.
+- **Example Gallery**
+  - Added a comprehensive suite of examples covering basic chat, sync/async workflows, and complex graph patterns.
+
+### Changed
+- **Branding & Presentation**
+  - Refined documentation aesthetics by replacing emojis with Material Design icons.
+  - Standardized project leadership and contribution guidelines.
+
+### Fixed
+- **MaticGraph Engine**
+  - Fixed a constructor bug where `state_schema` and `max_workers` were not properly assigned.
+  - Resolved Unicode encoding issues in literal graph visualization on Windows terminals.
+- **LLM Clients**
+  - Improved API key validation to provide clear error messages instead of protocol errors.
+  - Fixed logic bug in Gemini API key fallback mechanism.
 
 ## [0.1.4] - 2025-10-24
 

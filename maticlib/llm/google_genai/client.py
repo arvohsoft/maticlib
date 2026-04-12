@@ -25,13 +25,19 @@ class GoogleGenAIClient(BaseLLMClient):
     """
     def __init__(
         self,
-        model: str = "gemini-2.5-flash",
+        model: str = "gemini-1.5-flash",
         system_instruct: str|SystemMessage|None = None,
-        api_key: str = os.getenv("GOOGLE_API_KEY", "GEMINI_API_KEY"),
+        api_key: str = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY") or "",
         thinking_budget: int = 0,
         verbose: bool = True,
         return_raw: bool = False
     ):
+        api_key = (api_key or "").strip()
+        if not api_key:
+            raise ValueError(
+                "Google Gemini API key is missing. Please provide it via the 'api_key' "
+                "argument or set the GOOGLE_API_KEY environment variable."
+            )
         self.api_key = api_key
         self.model = model
         self.system_instruct = system_instruct

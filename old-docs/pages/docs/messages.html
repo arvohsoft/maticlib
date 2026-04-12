@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Maticlib Documentation</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <nav class="topbar">
+        <div class="topbar-container">
+            <a href="https://arvohsoft.github.io/arvohsoft/" class="logo-link" target="_blank">
+                <img src="../../assets/logo.svg" alt="Arvoh Software" class="logo">
+            </a>
+            
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search documentation... (Ctrl+K)" class="search-input">
+                <span class="search-shortcut">⌘K</span>
+            </div>
+            
+            <div class="topbar-actions">
+                <a href="https://github.com/arvohsoft/maticlib" target="_blank" class="github-link">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                    </svg>
+                    GitHub
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="doc-container">
+        <main class="doc-content">
+            <h1>Message Types</h1>
+            
+            <p>Maticlib provides convenient message classes for structured conversation management across all LLM clients. These classes help maintain clean and type-safe multi-turn conversations.</p>
+
+            <h2>Overview</h2>
+            
+            <p>The message system includes three main classes:</p>
+            <ul>
+                <li><code>SystemMessage</code> - System instructions and context</li>
+                <li><code>HumanMessage</code> - User/human input messages</li>
+                <li><code>AIMessage</code> - AI assistant responses</li>
+            </ul>
+
+            <h2>Quick Start</h2>
+
+            <pre><code>from maticlib.messages import SystemMessage, HumanMessage, AIMessage
+
+# Create messages
+system = SystemMessage("You are a helpful assistant")
+human = HumanMessage("Hello!")
+ai = AIMessage("Hi there! How can I help you?")</code></pre>
+
+            <h2>SystemMessage</h2>
+
+            <p>System messages provide instructions or context to the AI model. They set the behavior, tone, and constraints for the conversation.</p>
+
+            <h3>Constructor</h3>
+            <pre><code>SystemMessage(content: str)</code></pre>
+
+            <h3>Attributes</h3>
+            <ul>
+                <li><code>content</code> (str) - The system instruction text</li>
+                <li><code>message_type</code> (MessageType) - Enum value <code>MessageType.SYSTEM</code></li>
+            </ul>
+
+            <h3>Examples</h3>
+
+            <pre><code>from maticlib.messages import SystemMessage
+
+# Basic system message
+system_msg = SystemMessage("You are a helpful Python tutor")
+
+# Access properties
+print(system_msg.content)           # "You are a helpful Python tutor"
+print(system_msg.message_type)      # MessageType.SYSTEM
+print(system_msg.message_type.name) # "SYSTEM"
+print(system_msg.message_type.value)# "system"</code></pre>
+
+            <h3>Common Use Cases</h3>
+
+            <pre><code># Setting personality
+SystemMessage("You are a friendly and patient teacher")
+
+# Setting constraints
+SystemMessage("You must respond in JSON format only")
+
+# Setting context
+SystemMessage("You are an expert in machine learning and data science")
+
+# Setting tone
+SystemMessage("You are a professional business consultant. Be formal and concise")
+
+# Setting behavior
+SystemMessage("""
+You are a code reviewer. For each code submission:
+1. Check for bugs and errors
+2. Suggest improvements
+3. Provide examples of better practices
+""")</code></pre>
+
+            <h2>HumanMessage</h2>
+
+            <p>Human messages represent input from the user or human participant in the conversation.</p>
+
+            <h3>Constructor</h3>
+            <pre><code>HumanMessage(content: str)</code></pre>
+
+            <h3>Attributes</h3>
+            <ul>
+                <li><code>content</code> (str) - The user's message text</li>
+                <li><code>message_type</code> (MessageType) - Enum value <code>MessageType.HUMAN</code></li>
+            </ul>
+
+            <h3>Examples</h3>
+
+            <pre><code>from maticlib.messages import HumanMessage
+
+# Create human message
+human_msg = HumanMessage("What is Python?")
+
+# Access properties
+print(human_msg.content)           # "What is Python?"
+print(human_msg.message_type)      # MessageType.HUMAN
+print(human_msg.message_type.name) # "HUMAN"
+print(human_msg.message_type.value)# "user"</code></pre>
+
+            <h3>Common Patterns</h3>
+
+            <pre><code># Questions
+HumanMessage("How does recursion work?")
+
+# Commands
+HumanMessage("Generate a list of prime numbers")
+
+# Clarifications
+HumanMessage("Can you explain that in simpler terms?")
+
+# Follow-ups
+HumanMessage("What about edge cases?")
+
+# Multi-line input
+HumanMessage("""
+Please review this code:
+
+def factorial(n):
+    return n * factorial(n-1)
+""")</code></pre>
+
+            <h2>AIMessage</h2>
+
+            <p>AI messages represent responses from the AI assistant. These are typically used when building conversation history.</p>
+
+            <h3>Constructor</h3>
+            <pre><code>AIMessage(content: str)</code></pre>
+
+            <h3>Attributes</h3>
+            <ul>
+                <li><code>content</code> (str) - The AI's response text</li>
+                <li><code>message_type</code> (MessageType) - Enum value <code>MessageType.AI</code></li>
+            </ul>
+
+            <h3>Examples</h3>
+
+            <pre><code>from maticlib.messages import AIMessage
+
+# Create AI message
+ai_msg = AIMessage("Python is a high-level programming language...")
+
+# Access properties
+print(ai_msg.content)           # "Python is a high-level..."
+print(ai_msg.message_type)      # MessageType.AI
+print(ai_msg.message_type.name) # "AI"
+print(ai_msg.message_type.value)# "assistant"</code></pre>
+
+            <h2>Multi-turn Conversations</h2>
+
+            <p>The primary use case for message classes is building multi-turn conversations:</p>
+
+            <pre><code>from maticlib.messages import SystemMessage, HumanMessage, AIMessage
+from maticlib.llm.google_genai import GoogleGenAIClient
+
+client = GoogleGenAIClient(api_key="YOUR_KEY")
+
+# Build conversation history
+conversation = [
+    SystemMessage("You are a Python expert"),
+    HumanMessage("What are decorators?"),
+    AIMessage("Decorators are functions that modify other functions..."),
+    HumanMessage("Can you show me an example?"),
+    AIMessage("Sure! Here's a simple example: @timer"),
+    HumanMessage("What about class decorators?")
+]
+
+# Continue conversation
+response = client.complete(conversation)
+print(response.content)</code></pre>
+
+            <h2>Conversation Builder Pattern</h2>
+
+            <pre><code>from maticlib.messages import SystemMessage, HumanMessage, AIMessage
+
+class Conversation:
+    def __init__(self, system_instruction: str = None):
+        self.messages = []
+        if system_instruction:
+            self.messages.append(SystemMessage(system_instruction))
+    
+    def add_human(self, content: str):
+        self.messages.append(HumanMessage(content))
+        return self
+    
+    def add_ai(self, content: str):
+        self.messages.append(AIMessage(content))
+        return self
+    
+    def get_messages(self):
+        return self.messages
+
+# Usage
+convo = Conversation("You are a helpful assistant")
+convo.add_human("Hello!").add_ai("Hi there!")
+convo.add_human("How are you?")
+
+messages = convo.get_messages()</code></pre>
+
+            <h2>MessageType Enum</h2>
+
+            <p>All message classes use the <code>MessageType</code> enum for type identification:</p>
+
+            <pre><code>from maticlib.messages import MessageType
+
+# Enum values
+MessageType.SYSTEM    # name="SYSTEM", value="system"
+MessageType.HUMAN     # name="HUMAN", value="user"
+MessageType.AI        # name="AI", value="assistant"</code></pre>
+
+            <h3>Using MessageType for Routing</h3>
+
+            <pre><code>from maticlib.messages import MessageType, HumanMessage, AIMessage
+
+def process_message(msg):
+    if msg.message_type == MessageType.HUMAN:
+        print(f"User says: {msg.content}")
+    elif msg.message_type == MessageType.AI:
+        print(f"AI responds: {msg.content}")
+
+messages = [
+    HumanMessage("Hello"),
+    AIMessage("Hi there!")
+]
+
+for msg in messages:
+    process_message(msg)</code></pre>
+
+            <h2>Integration with LLM Clients</h2>
+
+            <h3>Google GenAI Client</h3>
+
+            <pre><code>from maticlib.llm.google_genai import GoogleGenAIClient
+from maticlib.messages import SystemMessage, HumanMessage, AIMessage
+
+client = GoogleGenAIClient(
+    system_instruct=SystemMessage("You are a helpful assistant"),
+    api_key="YOUR_KEY"
+)
+
+conversation = [
+    HumanMessage("Hello!"),
+    AIMessage("Hi! How can I help?"),
+    HumanMessage("Tell me about Python")
+]
+
+response = client.complete(conversation)
+print(response.content)</code></pre>
+
+            <h3>Mistral Client</h3>
+
+            <pre><code>from maticlib.llm.mistral import MistralClient
+from maticlib.messages import HumanMessage, AIMessage
+
+client = MistralClient(api_key="YOUR_KEY")
+
+conversation = [
+    HumanMessage("Bonjour!"),
+    AIMessage("Hello! How can I assist you?"),
+    HumanMessage("Tell me about France")
+]
+
+response = client.complete(conversation)
+print(response.content)</code></pre>
+
+            <h2>Best Practices</h2>
+
+            <ul>
+                <li>Use <code>SystemMessage</code> at the start of conversations to set context</li>
+                <li>Build conversation history using message objects for type safety</li>
+                <li>Use the <code>message_type</code> property for programmatic message handling</li>
+                <li>Keep system messages concise and clear</li>
+                <li>Maintain conversation history for context-aware responses</li>
+                <li>Consider memory limits when building long conversations</li>
+                <li>Use conversation builder patterns for complex interactions</li>
+            </ul>
+
+            <h2>Advanced: Custom Message Processing</h2>
+
+            <pre><code>from maticlib.messages import SystemMessage, HumanMessage, AIMessage
+from typing import List, Union
+
+MessageList = List[Union[SystemMessage, HumanMessage, AIMessage]]
+
+def filter_by_type(messages: MessageList, msg_type):
+    """Filter messages by type"""
+    return [msg for msg in messages if msg.message_type == msg_type]
+
+def count_tokens_estimate(messages: MessageList) -> int:
+    """Rough token count estimate"""
+    total = 0
+    for msg in messages:
+        total += len(msg.content.split())
+    return total
+
+def truncate_conversation(messages: MessageList, max_messages: int):
+    """Keep only recent messages"""
+    system_msgs = filter_by_type(messages, MessageType.SYSTEM)
+    other_msgs = [m for m in messages if m.message_type != MessageType.SYSTEM]
+    
+    # Keep system messages + recent conversation
+    return system_msgs + other_msgs[-max_messages:]
+
+# Usage
+conversation = [
+    SystemMessage("You are helpful"),
+    HumanMessage("Hi"),
+    AIMessage("Hello!"),
+    HumanMessage("How are you?"),
+    AIMessage("I'm great!"),
+    HumanMessage("Tell me more")
+]
+
+# Get only human messages
+human_msgs = filter_by_type(conversation, MessageType.HUMAN)
+
+# Estimate tokens
+tokens = count_tokens_estimate(conversation)
+
+# Keep only last 2 exchanges
+recent = truncate_conversation(conversation, max_messages=4)</code></pre>
+
+            <h2>Common Patterns</h2>
+
+            <h3>Chat Loop</h3>
+
+            <pre><code>from maticlib.messages import SystemMessage, HumanMessage, AIMessage
+from maticlib.llm.google_genai import GoogleGenAIClient
+
+client = GoogleGenAIClient(api_key="YOUR_KEY")
+
+conversation = [
+    SystemMessage("You are a helpful assistant")
+]
+
+while True:
+    user_input = input("You: ")
+    if user_input.lower() in ['exit', 'quit']:
+        break
+    
+    conversation.append(HumanMessage(user_input))
+    response = client.complete(conversation)
+    
+    print(f"AI: {response.content}")
+    conversation.append(AIMessage(response.content))</code></pre>
+
+            <h3>Context Management</h3>
+
+            <pre><code>class ConversationManager:
+    def __init__(self, client, system_instruction: str, max_history: int = 10):
+        self.client = client
+        self.messages = [SystemMessage(system_instruction)]
+        self.max_history = max_history
+    
+    def send(self, user_message: str) -> str:
+        # Add user message
+        self.messages.append(HumanMessage(user_message))
+        
+        # Get response
+        response = self.client.complete(self.messages)
+        
+        # Add AI response
+        self.messages.append(AIMessage(response.content))
+        
+        # Trim history (keep system message)
+        if len(self.messages) > self.max_history + 1:
+            self.messages = [self.messages[0]] + self.messages[-(self.max_history):]
+        
+        return response.content
+
+# Usage
+manager = ConversationManager(client, "You are a Python tutor")
+response = manager.send("What are decorators?")
+print(response)</code></pre>
+
+            <h2>See Also</h2>
+
+            <ul>
+                <li><a href="../getstarted/sample.html">Getting Started Guide</a></li>
+                <li><a href="llm/clients/google-genai.html">Google GenAI Client</a></li>
+                <li><a href="llm/clients/mistral.html">Mistral Client</a></li>
+                <li><a href="graph/maticgraph.html">MaticGraph</a></li>
+            </ul>
+        </main>
+
+        <aside class="toc-sidebar">
+            <div class="toc-title">On This Page</div>
+            <ul class="toc-list"></ul>
+        </aside>
+    </div>
+
+    <footer class="footer">
+        <p>Built with ❤️ by <a href="https://github.com/arvohsoft" target="_blank">Arvoh Software</a></p>
+        <p>Licensed under MIT</p>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/search.js"></script>
+</body>
+</html>
