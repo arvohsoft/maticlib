@@ -4,7 +4,7 @@ Check out these runnable examples to learn how to use Maticlib for different use
 
 ---
 
-## 💬 Basic Chat & Multi-Provider
+## :material-chat-outline: Basic Chat & Multi-Provider
 Demonstrates how to initialize and use LLM clients from different providers.
 
 - **[Basic Sync Chat](https://github.com/arvohsoft/maticlib/blob/main/examples/01_basic_chat.py)**: A simple script to get text responses from OpenAI, Mistral, and Gemini.
@@ -13,7 +13,7 @@ Demonstrates how to initialize and use LLM clients from different providers.
 
 ---
 
-## 🕸️ Graph Workflows
+## :material-sitemap-outline: Graph Workflows
 Learn how to build intelligent agents using the `MaticGraph` engine.
 
 - **[Sequential Graph](https://github.com/arvohsoft/maticlib/blob/main/examples/03_sequential_graph.py)**: A basic A → B → C pipeline.
@@ -22,7 +22,7 @@ Learn how to build intelligent agents using the `MaticGraph` engine.
 
 ---
 
-## 🛠️ Advanced State Management
+## :material-cog-outline: Advanced State Management
 - **[Typed Pydantic State](https://github.com/arvohsoft/maticlib/blob/main/examples/06_typed_state.py)**: Using Pydantic models to enforce strict state schemas throughout your graph workflows.
 
 ---
