@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maticlib - Python AI Agent Library</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="topbar">
+        <div class="topbar-container">
+            <a href="https://arvohsoft.github.io/arvohsoft/" class="logo-link" target="_blank">
+                <img src="assets/logo.svg" alt="Arvoh Software" class="logo">
+            </a>
+            
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Search documentation... (Ctrl+K)" 
+                    class="search-input"
+                >
+                <span class="search-shortcut">⌘K</span>
+            </div>
+            
+            <div class="topbar-actions">
+                <a href="https://github.com/arvohsoft/maticlib" target="_blank" class="github-link">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                    </svg>
+                    GitHub
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        ircle cx="12" cy="12"2" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="home-container">
+        <div class="hero-section">
+            <h1 class="hero-title">Maticlib</h1>
+            <p class="hero-subtitle">A Python automation library for creating intelligent AI agents</p>
+            
+            <div class="badge-container">
+                <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License">
+                <img src="https://static.pepy.tech/badge/maticlib" alt="Downloads">
+                <img src="https://badge.fury.io/py/maticlib.svg" alt="PyPI version">
+            </div>
+
+            <div class="cta-buttons">
+                <a href="pages/getstarted/sample.html" class="btn btn-primary">Get Started</a>
+                <a href="pages/getstarted/installation.html" class="btn btn-secondary">Installation</a>
+            </div>
+        </div>
+
+        <div class="features-section">
+            <h2>Features</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Core Agent Framework</h3>
+                    <p>MaticGraph workflow engine with stateful & stateless execution, conditional routing, and multi-state support</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>LLM Integration</h3>
+                    <p>Support for Google Gemini, Mistral AI with unified response models and multi-turn conversations</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🛠️</div>
+                    <h3>Developer Experience</h3>
+                    <p>Built-in error handling, type-safe design, and environment variable support for seamless integration</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Response Handling</h3>
+                    <p>Standardized response models with token usage tracking and modality-specific metrics</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Advanced Capabilities</h3>
+                    <p>Conditional branching, parallel node execution, checkpoint system, and workflow templates</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>High Performance</h3>
+                    <p>Async support, minimal dependencies, and optimized for production workloads</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-example">
+            <h2>Quick Example</h2>
+            <pre><code>from maticlib.llm.google_genai import GoogleGenAIClient
+
+# Initialize client
+client = GoogleGenAIClient(api_key="YOUR_API_KEY")
+
+# Make a request
+response = client.complete("Hello! Tell me about Python")
+print(response.content)</code></pre>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Built with ❤️ by <a href="https://github.com/arvohsoft" target="_blank">Arvoh Software</a></p>
+        <p>Licensed under MIT</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/search.js"></script>
+</body>
+</html>

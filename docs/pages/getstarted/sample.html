@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started - Maticlib Documentation</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="topbar">
+        <div class="topbar-container">
+            <a href="https://arvohsoft.github.io/arvohsoft/" class="logo-link" target="_blank">
+                <img src="../../assets/logo.svg" alt="Arvoh Software" class="logo">
+            </a>
+            
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search documentation... (Ctrl+K)" class="search-input">
+                <span class="search-shortcut">⌘K</span>
+            </div>
+            
+            <div class="topbar-actions">
+                <a href="https://github.com/arvohsoft/maticlib" target="_blank" class="github-link">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                    </svg>
+                    GitHub
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        ircle cx="12"2" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content with Sidebar -->
+    <div class="doc-container">
+        <main class="doc-content">
+            <h1>Getting Started with Maticlib</h1>
+            
+            <p>Welcome to Maticlib! This guide will help you get started with building intelligent AI agents using our simple and powerful library.</p>
+
+            <h2>Quick Start</h2>
+            
+            <p>Maticlib provides easy-to-use clients for multiple LLM providers. Let's start with a simple example.</p>
+
+            <h2>Google Gemini Client</h2>
+            
+            <h3>Basic Usage</h3>
+            <p>Here's how to make your first request with Google Gemini:</p>
+            
+            <pre><code>from maticlib.llm.google_genai import GoogleGenAIClient
+
+# Initialize with API key
+client = GoogleGenAIClient(api_key="YOUR_GOOGLE_API_KEY")
+
+# Or use environment variable GOOGLE_API_KEY
+client = GoogleGenAIClient()
+
+# Make a request
+response = client.complete("Hello! Tell me about Python")
+print(response.content)</code></pre>
+
+            <h3>With Custom Configuration</h3>
+            <p>You can customize the client with various options:</p>
+            
+            <pre><code>from maticlib.llm.google_genai import GoogleGenAIClient
+
+client = GoogleGenAIClient(
+    model="gemini-2.5-flash",      # Choose your model
+    api_key="YOUR_API_KEY",
+    thinking_budget=0,              # For extended reasoning
+    verbose=True,                   # Enable detailed logging
+    return_raw=False                # Get Pydantic model response
+)
+
+response = client.complete("Explain quantum computing")
+print(response.content)
+
+# Access response metadata
+print(f"Total tokens: {response.total_tokens}")
+print(f"Prompt tokens: {response.prompt_tokens}")
+print(f"Completion tokens: {response.completion_tokens}")</code></pre>
+
+            <h3>Multi-turn Conversations</h3>
+            <p>Maticlib makes it easy to maintain conversation context:</p>
+            
+            <pre><code>from maticlib.llm.google_genai import GoogleGenAIClient
+from maticlib.messages import HumanMessage, AIMessage, SystemMessage
+
+client = GoogleGenAIClient(api_key="YOUR_API_KEY")
+
+# Option 1: Using message objects
+conversation = [
+    SystemMessage("You are a helpful Python tutor"),
+    HumanMessage("What are list comprehensions?"),
+    AIMessage("List comprehensions are a concise way to create lists..."),
+    HumanMessage("Can you show me an example?")
+]
+
+response = client.complete(conversation)
+print(response.content)
+
+# Option 2: Using dictionaries
+messages = [
+    {"role": "system", "content": "You are a helpful assistant"},
+    {"role": "user", "content": "Hello!"},
+    {"role": "assistant", "content": "Hi! How can I help you?"},
+    {"role": "user", "content": "What's the weather like?"}
+]
+
+response = client.complete(messages)
+print(response.content)</code></pre>
+
+            <h3>Asynchronous Requests</h3>
+            <p>For better performance with multiple requests:</p>
+            
+            <pre><code>import asyncio
+from maticlib.llm.google_genai import GoogleGenAIClient
+
+async def main():
+    client = GoogleGenAIClient(api_key="YOUR_API_KEY")
+    
+    # Make multiple async requests
+    tasks = [
+        client.async_complete("Tell me a joke"),
+        client.async_complete("What is AI?"),
+        client.async_complete("Explain Python decorators")
+    ]
+    
+    responses = await asyncio.gather(*tasks)
+    
+    for i, response in enumerate(responses, 1):
+        print(f"\nResponse {i}:")
+        print(response.content)
+
+asyncio.run(main())</code></pre>
+
+            <h2>Mistral AI Client</h2>
+            
+            <h3>Basic Usage</h3>
+            <p>Using Mistral AI is just as simple:</p>
+            
+            <pre><code>from maticlib.llm.mistral import MistralClient
+
+# Initialize with API key
+client = MistralClient(api_key="YOUR_MISTRAL_API_KEY")
+
+# Or use environment variable MISTRAL_API_KEY
+client = MistralClient()
+
+# Make a request
+response = client.complete("What is the best French cheese?")
+print(response.content)</code></pre>
+
+            <h3>Different Models</h3>
+            <p>Mistral offers various models for different use cases:</p>
+            
+            <pre><code>from maticlib.llm.mistral import MistralClient
+
+# Use different Mistral models
+client = MistralClient(
+    model="mistral-large-latest",  # or "mistral-medium-latest", "mistral-small-latest"
+    api_key="YOUR_API_KEY",
+    verbose=True
+)
+
+response = client.complete("Write a short poem about coding")
+print(response.content)</code></pre>
+
+            <h3>Multi-turn with Mistral</h3>
+            <pre><code>from maticlib.llm.mistral import MistralClient
+
+client = MistralClient(api_key="YOUR_API_KEY")
+
+messages = [
+    {"role": "user", "content": "Hello!"},
+    {"role": "assistant", "content": "Bonjour! How can I assist you?"},
+    {"role": "user", "content": "Tell me about the Eiffel Tower"}
+]
+
+response = client.complete(messages)
+print(response.content)</code></pre>
+
+            <h2>Working with Messages</h2>
+            
+            <p>Maticlib provides convenient message classes:</p>
+            
+            <pre><code>from maticlib.messages import SystemMessage, HumanMessage, AIMessage
+
+# Create messages
+system_msg = SystemMessage("You are a helpful assistant")
+print(system_msg.content)           # Access content
+print(system_msg.message_type)      # MessageType enum
+print(system_msg.message_type.name) # "SYSTEM"
+
+human_msg = HumanMessage("Hello!")
+print(human_msg.message_type.value) # "user"
+
+ai_msg = AIMessage("Hi there!")
+print(ai_msg.message_type.name)     # "AI"</code></pre>
+
+            <h2>Error Handling</h2>
+            
+            <p>Always handle errors gracefully in production:</p>
+            
+            <pre><code>from maticlib.llm.google_genai import GoogleGenAIClient
+
+try:
+    client = GoogleGenAIClient(api_key="YOUR_API_KEY")
+    response = client.complete("Your prompt")
+    print(response.content)
+    
+except ValueError as e:
+    print(f"Configuration error: {e}")
+    
+except Exception as e:
+    print(f"Unexpected error: {e}")</code></pre>
+
+            <h2>Environment Setup</h2>
+            
+            <p>For better security, use environment variables for API keys:</p>
+            
+            <pre><code># Linux/Mac
+export GOOGLE_API_KEY="your-google-api-key"
+export MISTRAL_API_KEY="your-mistral-api-key"
+
+# Windows PowerShell
+$env:GOOGLE_API_KEY="your-google-api-key"
+$env:MISTRAL_API_KEY="your-mistral-api-key"
+
+# Windows CMD
+set GOOGLE_API_KEY=your-google-api-key
+set MISTRAL_API_KEY=your-mistral-api-key</code></pre>
+
+            <p>Then use clients without passing keys:</p>
+            
+            <pre><code>from maticlib.llm.google_genai import GoogleGenAIClient
+from maticlib.llm.mistral import MistralClient
+
+# API keys loaded from environment
+google_client = GoogleGenAIClient()
+mistral_client = MistralClient()
+
+response = google_client.complete("Hello!")
+print(response.content)</code></pre>
+
+            <div class="note">
+                <strong>💡 Tip:</strong> Store your API keys in a <code>.env</code> file and load them using <code>python-dotenv</code> for better security and convenience.
+            </div>
+
+            <h2>Next Steps</h2>
+            
+            <ul>
+                <li>Explore the <a href="../docs/llm/clients/google-genai.html">Google GenAI Client Documentation</a> for advanced features</li>
+                <li>Learn about <a href="../docs/llm/clients/mistral.html">Mistral Client</a> configuration options</li>
+                <li>Build complex workflows with <a href="../docs/graph/maticgraph.html">MaticGraph</a></li>
+                <li>Understand <a href="../docs/messages.html">Message Types</a> for better conversation handling</li>
+            </ul>
+
+            <h2>Common Patterns</h2>
+            
+            <h3>Retry Logic</h3>
+            <pre><code>import time
+from maticlib.llm.google_genai import GoogleGenAIClient
+
+client = GoogleGenAIClient(api_key="YOUR_API_KEY")
+
+def complete_with_retry(prompt, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            response = client.complete(prompt)
+            return response
+        except Exception as e:
+            if attempt == max_retries - 1:
+                raise
+            time.sleep(2 ** attempt)  # Exponential backoff
+
+response = complete_with_retry("Tell me a story")
+print(response.content)</code></pre>
+
+            <h3>Streaming Responses (Coming Soon)</h3>
+            <div class="note">
+                <strong>📌 Note:</strong> Streaming support is planned for future releases. Currently, all responses are returned once complete.
+            </div>
+
+            <h2>Best Practices</h2>
+            
+            <ul>
+                <li><strong>Use environment variables</strong> for API keys instead of hardcoding</li>
+                <li><strong>Enable verbose mode</strong> during development for debugging</li>
+                <li><strong>Handle errors gracefully</strong> with try-except blocks</li>
+                <li><strong>Use async methods</strong> for better performance with multiple requests</li>
+                <li><strong>Set appropriate timeouts</strong> for production environments</li>
+                <li><strong>Monitor token usage</strong> to control costs</li>
+                <li><strong>Implement retry logic</strong> for production reliability</li>
+            </ul>
+
+            <h2>Need Help?</h2>
+            
+            <p>If you encounter any issues or have questions:</p>
+            <ul>
+                <li>Check the <a href="https://github.com/arvohsoft/maticlib/issues" target="_blank">GitHub Issues</a></li>
+                <li>Read the full <a href="../docs/llm/clients/google-genai.html">API Documentation</a></li>
+                <li>Email us at <a href="mailto:arvohsoft@gmail.com">arvohsoft@gmail.com</a></li>
+            </ul>
+        </main>
+
+        <aside class="toc-sidebar">
+            <div class="toc-title">On This Page</div>
+            <ul class="toc-list"></ul>
+        </aside>
+    </div>
+
+    <footer class="footer">
+        <p>Built with ❤️ by <a href="https://github.com/arvohsoft" target="_blank">Arvoh Software</a></p>
+        <p>Licensed under MIT</p>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/search.js"></script>
+</body>
+</html>

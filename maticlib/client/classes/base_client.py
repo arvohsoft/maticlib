@@ -18,11 +18,13 @@ class BaseLLMClient:
 
     def complete(self, input: str|list):
         try:
+            payload = getattr(self, 'payload', {}).copy() if isinstance(getattr(self, 'payload', {}), dict) else {}
             payload["model"] = self.model
-            if type(input) == type("string"):
-            
-                payload = self.payload
+            if isinstance(input, str):
+                if "messages" not in payload or not payload["messages"]:
+                    payload["messages"] = [{"role": "user", "content": ""}]
                 payload["messages"][-1]["content"] = input
+            
             response = httpx.post(self.url, headers=self.headers, json=payload)
             if self.verbose:
                 print(response)
@@ -31,18 +33,20 @@ class BaseLLMClient:
             import traceback
             traceback.print_exc()
             
-    def async_complete(self, input: str|list):
+    async def async_complete(self, input: str|list):
         try:
+            payload = getattr(self, 'payload', {}).copy() if isinstance(getattr(self, 'payload', {}), dict) else {}
             payload["model"] = self.model
-            if type(input) == type("string"):
-            
-                payload = self.payload
+            if isinstance(input, str):
+                if "messages" not in payload or not payload["messages"]:
+                    payload["messages"] = [{"role": "user", "content": ""}]
                 payload["messages"][-1]["content"] = input
-                client = httpx.AsyncClient()
-            response = client.post(self.url, headers=self.headers, json=payload)
-            if self.verbose:
-                print(response)
-            return response
+            
+            async with httpx.AsyncClient() as client:
+                response = await client.post(self.url, headers=self.headers, json=payload)
+                if self.verbose:
+                    print(response)
+                return response
         except Exception as e:
             import traceback
             traceback.print_exc()

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mistral Client - Maticlib Documentation</title>
+    <link rel="stylesheet" href="../../../../css/style.css">
+</head>
+<body>
+    <nav class="topbar">
+        <div class="topbar-container">
+            <a href="https://arvohsoft.github.io/arvohsoft/" class="logo-link" target="_blank">
+                <img src="../../../../assets/logo.svg" alt="Arvoh Software" class="logo">
+            </a>
+            
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search documentation... (Ctrl+K)" class="search-input">
+                <span class="search-shortcut">⌘K</span>
+            </div>
+            
+            <div class="topbar-actions">
+                <a href="https://github.com/arvohsoft/maticlib" target="_blank" class="github-link">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                    </svg>
+                    GitHub
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="doc-container">
+        <main class="doc-content">
+            <h1>Mistral Client</h1>
+            
+            <p>The <code>MistralClient</code> provides a simple interface to interact with Mistral AI's language models. It supports both synchronous and asynchronous requests, multi-turn conversations, and multimodal capabilities with the Pixtral model.</p>
+
+            <h2>Quick Start</h2>
+            <pre><code>from maticlib.llm.mistral import MistralClient
+
+# Initialize client
+client = MistralClient(api_key="YOUR_MISTRAL_API_KEY")
+
+# Make a request
+response = client.complete("What is the best French cheese?")
+print(response.content)</code></pre>
+
+            <h2>Class: MistralClient</h2>
+            
+            <h3>Constructor Parameters</h3>
+            
+            <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+                <thead>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Parameter</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Type</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Default</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>model</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">str</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">"mistral-large-latest"</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">The Mistral model to use</td>
+                    </tr>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>api_key</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">str</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">None</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Mistral API key (or use MISTRAL_API_KEY env var)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>verbose</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">bool</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">True</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Enable detailed logging</td>
+                    </tr>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>return_raw</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">bool</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">False</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Return raw JSON instead of Pydantic model</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Available Models</h3>
+            <ul>
+                <li><code>mistral-large-latest</code> - Most capable model (recommended)</li>
+                <li><code>mistral-medium-latest</code> - Balanced performance and cost</li>
+                <li><code>mistral-small-latest</code> - Fast and economical</li>
+                <li><code>pixtral-12b-latest</code> - Multimodal model (text + images)</li>
+            </ul>
+
+            <h2>Methods</h2>
+
+            <h3>complete()</h3>
+            <p>Make a synchronous completion request.</p>
+
+            <pre><code>def complete(input: Union[str, List]) -> Union[MistralResponse, Dict[str, Any]]</code></pre>
+
+            <p><strong>Example:</strong></p>
+            <pre><code>response = client.complete("Write a poem about coding")
+print(response.content)
+print(f"Tokens used: {response.total_tokens}")</code></pre>
+
+            <h3>async_complete()</h3>
+            <p>Make an asynchronous completion request.</p>
+
+            <pre><code>async def async_complete(input: Union[str, List]) -> Union[MistralResponse, Dict[str, Any]]</code></pre>
+
+            <p><strong>Example:</strong></p>
+            <pre><code>import asyncio
+
+async def main():
+    response = await client.async_complete("Tell me about France")
+    print(response.content)
+
+asyncio.run(main())</code></pre>
+
+            <h3>get_text_response()</h3>
+            <p>Helper method to extract text content from response.</p>
+
+            <pre><code>def get_text_response(response: Union[MistralResponse, Dict]) -> str</code></pre>
+
+            <h2>Response Model</h2>
+
+            <h3>MistralResponse</h3>
+            <p>Pydantic model returned by default</p>
+
+            <p><strong>Attributes:</strong></p>
+            <ul>
+                <li><code>content</code> (str) - Extracted text response</li>
+                <li><code>content_parts</code> (List[ContentPart]) - Multimodal content parts</li>
+                <li><code>finish_reason</code> (str) - Completion status</li>
+                <li><code>prompt_tokens</code> (int) - Input token count</li>
+                <li><code>completion_tokens</code> (int) - Output token count</li>
+                <li><code>total_tokens</code> (int) - Total tokens used</li>
+                <li><code>response_id</code> (str) - Unique response identifier</li>
+                <li><code>model_version</code> (str) - Model used</li>
+                <li><code>raw_response</code> (dict) - Original API response</li>
+            </ul>
+
+            <h2>Usage Examples</h2>
+
+            <h3>Different Models</h3>
+            <pre><code>from maticlib.llm.mistral import MistralClient
+
+# Large model for complex tasks
+large_client = MistralClient(
+    model="mistral-large-latest",
+    api_key="YOUR_KEY"
+)
+
+# Small model for simple tasks
+small_client = MistralClient(
+    model="mistral-small-latest",
+    api_key="YOUR_KEY"
+)
+
+response = small_client.complete("Hello!")
+print(response.content)</code></pre>
+
+            <h3>Multi-turn Conversations</h3>
+            <pre><code>from maticlib.messages import HumanMessage, AIMessage
+
+conversation = [
+    HumanMessage("Bonjour!"),
+    AIMessage("Hello! How can I help you today?"),
+    HumanMessage("Tell me about Paris")
+]
+
+response = client.complete(conversation)
+print(response.content)</code></pre>
+
+            <h3>Using Dictionaries</h3>
+            <pre><code>messages = [
+    {"role": "user", "content": "What is Mistral AI?"},
+    {"role": "assistant", "content": "Mistral AI is..."},
+    {"role": "user", "content": "Tell me more"}
+]
+
+response = client.complete(messages)
+print(response.content)</code></pre>
+
+            <h3>Multimodal with Pixtral</h3>
+            <pre><code>client = MistralClient(
+    model="pixtral-12b-latest",
+    api_key="YOUR_KEY"
+)
+
+# Note: Image support requires base64 encoding
+# This is a placeholder example
+response = client.complete("Describe this image")
+print(response.content)</code></pre>
+
+            <h3>Async Concurrent Requests</h3>
+            <pre><code>import asyncio
+from maticlib.llm.mistral import MistralClient
+
+async def process_multiple():
+    client = MistralClient(api_key="YOUR_KEY")
+    
+    tasks = [
+        client.async_complete("Write a haiku about AI"),
+        client.async_complete("Explain machine learning"),
+        client.async_complete("What is neural network?")
+    ]
+    
+    responses = await asyncio.gather(*tasks)
+    
+    for i, response in enumerate(responses, 1):
+        print(f"\nResponse {i}:")
+        print(response.content)
+
+asyncio.run(process_multiple())</code></pre>
+
+            <h3>Error Handling</h3>
+            <pre><code>import httpx
+
+try:
+    client = MistralClient(api_key="YOUR_KEY")
+    response = client.complete("Your prompt")
+    print(response.content)
+    
+except ValueError as e:
+    print(f"Configuration error: {e}")
+    
+except httpx.HTTPStatusError as e:
+    print(f"API error: {e.response.status_code}")
+    
+except Exception as e:
+    print(f"Unexpected error: {e}")</code></pre>
+
+            <h2>Environment Variables</h2>
+
+            <pre><code># Set API key
+export MISTRAL_API_KEY="your-api-key"
+
+# Use client without passing key
+from maticlib.llm.mistral import MistralClient
+client = MistralClient()  # Automatically uses MISTRAL_API_KEY</code></pre>
+
+            <h2>Best Practices</h2>
+
+            <ul>
+                <li>Use environment variables for API keys</li>
+                <li>Choose appropriate model based on task complexity</li>
+                <li>Use <code>mistral-small-latest</code> for simple tasks to reduce costs</li>
+                <li>Enable verbose mode during development</li>
+                <li>Use async methods for concurrent requests</li>
+                <li>Implement retry logic with exponential backoff</li>
+                <li>Monitor token usage for cost optimization</li>
+                <li>Cache responses when appropriate</li>
+            </ul>
+
+            <h2>Model Comparison</h2>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+                <thead>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Model</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Best For</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Speed</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">mistral-large-latest</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Complex reasoning, analysis</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Medium</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Higher</td>
+                    </tr>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">mistral-medium-latest</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Balanced tasks</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Fast</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Medium</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">mistral-small-latest</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Simple tasks, high volume</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Very Fast</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Lower</td>
+                    </tr>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">pixtral-12b-latest</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Image understanding</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Fast</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Medium</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Rate Limits</h2>
+
+            <p>Mistral API has rate limits based on your subscription tier. Implement retry logic:</p>
+
+            <pre><code>import time
+
+def complete_with_retry(client, prompt, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            return client.complete(prompt)
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 429:
+                if attempt == max_retries - 1:
+                    raise
+                wait_time = 2 ** attempt
+                print(f"Rate limited. Waiting {wait_time}s...")
+                time.sleep(wait_time)
+            else:
+                raise</code></pre>
+
+            <h2>See Also</h2>
+
+            <ul>
+                <li><a href="../../../getstarted/sample.html">Getting Started Guide</a></li>
+                <li><a href="google-genai.html">Google GenAI Client Documentation</a></li>
+                <li><a href="../../messages.html">Message Types</a></li>
+                <li><a href="https://docs.mistral.ai/" target="_blank">Mistral AI Documentation</a></li>
+            </ul>
+        </main>
+
+        <aside class="toc-sidebar">
+            <div class="toc-title">On This Page</div>
+            <ul class="toc-list"></ul>
+        </aside>
+    </div>
+
+    <footer class="footer">
+        <p>Built with ❤️ by <a href="https://github.com/arvohsoft" target="_blank">Arvoh Software</a></p>
+        <p>Licensed under MIT</p>
+    </footer>
+
+    <script src="../../../../js/main.js"></script>
+    <script src="../../../../js/search.js"></script>
+</body>
+</html>

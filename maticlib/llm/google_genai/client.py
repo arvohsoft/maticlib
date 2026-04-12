@@ -160,7 +160,7 @@ class GoogleGenAIClient(BaseLLMClient):
                 }
             
             # Make request
-            response = httpx.post(url, headers=self.headers, json=payload, timeout=30.0)
+            response = httpx.post(url, headers=self.headers, json=payload, timeout=60.0)
             response.raise_for_status()
             
             if self.verbose:
@@ -214,9 +214,9 @@ class GoogleGenAIClient(BaseLLMClient):
             }
                    
         try:
-            client = httpx.AsyncClient()
-            response = await client.post(url, headers=self.headers, json=payload)
-            response.raise_for_status()
+            async with httpx.AsyncClient() as client:
+                response = await client.post(url, headers=self.headers, json=payload, timeout=60.0)
+                response.raise_for_status()
             if self.verbose:
                 print(f"Status: {response.status_code}")
                 

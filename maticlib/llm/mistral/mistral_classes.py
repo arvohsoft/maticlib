@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field, computed_field, ConfigDict
 
 from maticlib.client.classes.client_output_model import LLMResponseBase
 from maticlib.client.classes.enums.modality_type import ModalityType
@@ -25,8 +25,7 @@ class MistralContentPart(BaseModel):
     text: Optional[str] = None
     image_url: Optional[Union[str, Dict[str, str]]] = None
     
-    class Config:
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
 
 class MistralMessage(BaseModel):

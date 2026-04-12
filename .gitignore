@@ -10,3 +10,8 @@ myvenv/
 env/
 commands.txt
 examples/
+.env*
+coverage.xml
+htmlcov/
+.coverage
+.vscode/

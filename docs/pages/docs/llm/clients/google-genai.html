@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google GenAI Client - Maticlib Documentation</title>
+    <link rel="stylesheet" href="../../../../css/style.css">
+</head>
+<body>
+    <nav class="topbar">
+        <div class="topbar-container">
+            <a href="https://arvohsoft.github.io/arvohsoft/" class="logo-link" target="_blank">
+                <img src="../../../../assets/logo.svg" alt="Arvoh Software" class="logo">
+            </a>
+            
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search documentation... (Ctrl+K)" class="search-input">
+                <span class="search-shortcut">⌘K</span>
+            </div>
+            
+            <div class="topbar-actions">
+                <a href="https://github.com/arvohsoft/maticlib" target="_blank" class="github-link">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                    </svg>
+                    GitHub
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        ircle cx="12" cy="12"2" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="doc-container">
+        <main class="doc-content">
+            <h1>Google GenAI Client</h1>
+            
+            <p>The <code>GoogleGenAIClient</code> provides a simple interface to interact with Google's Gemini AI models. It supports both synchronous and asynchronous requests, multi-turn conversations, and advanced features like system instructions and thinking budget.</p>
+
+            <h2>Installation</h2>
+            <pre><code>pip install maticlib</code></pre>
+
+            <h2>Quick Start</h2>
+            <pre><code>from maticlib.llm.google_genai import GoogleGenAIClient
+
+# Initialize client
+client = GoogleGenAIClient(api_key="YOUR_GOOGLE_API_KEY")
+
+# Make a request
+response = client.complete("Hello! Tell me about Python")
+print(response.content)</code></pre>
+
+            <h2>Class: GoogleGenAIClient</h2>
+            
+            <h3>Constructor Parameters</h3>
+            
+            <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+                <thead>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Parameter</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Type</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Default</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>model</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">str</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">"gemini-2.5-flash"</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">The Gemini model to use</td>
+                    </tr>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>system_instruct</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">str | SystemMessage | None</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">None</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">System instruction for the model</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>api_key</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">str</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">None</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Google API key (or use GOOGLE_API_KEY env var)</td>
+                    </tr>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>thinking_budget</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">int</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">0</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Token budget for extended reasoning</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>verbose</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">bool</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">True</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Enable detailed logging</td>
+                    </tr>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>return_raw</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">bool</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">False</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Return raw JSON instead of Pydantic model</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Available Models</h3>
+            <ul>
+                <li><code>gemini-2.5-flash</code> - Latest fast model (recommended)</li>
+                <li><code>gemini-2.0-flash-exp</code> - Experimental flash model</li>
+                <li><code>gemini-pro</code> - Pro model for complex tasks</li>
+                <li><code>gemini-1.5-pro</code> - Previous generation pro model</li>
+            </ul>
+
+            <h2>Methods</h2>
+
+            <h3>complete()</h3>
+            <p>Make a synchronous completion request.</p>
+
+            <pre><code>def complete(input: Union[str, List]) -> Union[GeminiResponse, Dict[str, Any]]</code></pre>
+
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li>odede>input</code> (str | List) - Text prompt or list of messages</li>
+            </ul>
+
+            <p><strong>Returns:</strong> <code>GeminiResponse</code> Pydantic model or dict (if return_raw=True)</p>
+
+            <p><strong>Example:</strong></p>
+            <pre><code>response = client.complete("Explain quantum computing")
+print(response.content)
+print(f"Tokens used: {response.total_tokens}")</code></pre>
+
+            <h3>async_complete()</h3>
+            <p>Make an asynchronous completion request.</p>
+
+            <pre><code>async def async_complete(input: Union[str, List]) -> Union[GeminiResponse, Dict[str, Any]]</code></pre>
+
+            <p><strong>Example:</strong></p>
+            <pre><code>import asyncio
+
+async def main():
+    response = await client.async_complete("Tell me a joke")
+    print(response.content)
+
+asyncio.run(main())</code></pre>
+
+            <h3>get_text_response()</h3>
+            <p>Helper method to extract text content from response.</p>
+
+            <pre><code>def get_text_response(response: Union[GeminiResponse, Dict]) -> str</code></pre>
+
+            <p><strong>Example:</strong></p>
+            <pre><code>response = client.complete("Hello!")
+text = client.get_text_response(response)
+print(text)</code></pre>
+
+            <h2>Response Model</h2>
+
+            <h3>GeminiResponse</h3>
+            <p>Pydantic model returned by default (when return_raw=False)</p>
+
+            <p><strong>Attributes:</strong></p>
+            <ul>
+                <li><code>content</code> (str) - Extracted text response</li>
+                <li><code>content_parts</code> (List[ContentPart]) - Multimodal content parts</li>
+                <li><code>finish_reason</code> (str) - Completion status</li>
+                <li><code>prompt_tokens</code> (int) - Input token count</li>
+                <li><code>completion_tokens</code> (int) - Output token count</li>
+                <li><code>total_tokens</code> (int) - Total tokens used</li>
+                <li><code>image_tokens</code> (int) - Image tokens (if multimodal)</li>
+                <li><code>audio_tokens</code> (int) - Audio tokens (if multimodal)</li>
+                <li><code>video_tokens</code> (int) - Video tokens (if multimodal)</li>
+                <li><code>thinking_tokens</code> (int) - Tokens used for thinking</li>
+                <li><code>response_id</code> (str) - Unique response identifier</li>
+                <li><code>model_version</code> (str) - Model used for generation</li>
+                <li><code>raw_response</code> (dict) - Original API response</li>
+            </ul>
+
+            <h2>Usage Examples</h2>
+
+            <h3>System Instructions</h3>
+            <pre><code>from maticlib.llm.google_genai import GoogleGenAIClient
+from maticlib.messages import SystemMessage
+
+# Using string
+client = GoogleGenAIClient(
+    system_instruct="You are a helpful Python tutor",
+    api_key="YOUR_KEY"
+)
+
+# Using SystemMessage
+client = GoogleGenAIClient(
+    system_instruct=SystemMessage("You are a helpful Python tutor"),
+    api_key="YOUR_KEY"
+)
+
+response = client.complete("What are list comprehensions?")
+print(response.content)</code></pre>
+
+            <h3>Multi-turn Conversations</h3>
+            <pre><code>from maticlib.messages import HumanMessage, AIMessage
+
+conversation = [
+    HumanMessage("Hello! I'm learning Python."),
+    AIMessage("Great! What would you like to know?"),
+    HumanMessage("What are decorators?")
+]
+
+response = client.complete(conversation)
+print(response.content)</code></pre>
+
+            <h3>Using Dictionaries</h3>
+            <pre><code>messages = [
+    {"role": "user", "content": "What is AI?"},
+    {"role": "assistant", "content": "AI stands for..."},
+    {"role": "user", "content": "Tell me more"}
+]
+
+response = client.complete(messages)
+print(response.content)</code></pre>
+
+            <h3>Thinking Budget (Extended Reasoning)</h3>
+            <pre><code>client = GoogleGenAIClient(
+    model="gemini-2.0-flash-exp",
+    thinking_budget=1000,  # Allow up to 1000 thinking tokens
+    api_key="YOUR_KEY"
+)
+
+response = client.complete("Solve this complex math problem: ...")
+print(f"Thinking tokens used: {response.thinking_tokens}")</code></pre>
+
+            <h3>Raw Response Mode</h3>
+            <pre><code>client = GoogleGenAIClient(
+    return_raw=True,
+    api_key="YOUR_KEY"
+)
+
+response = client.complete("Hello!")
+print(type(response))  # <class 'dict'>
+print(response['candidates'][0]['content'])</code></pre>
+
+            <h3>Error Handling</h3>
+            <pre><code>try:
+    client = GoogleGenAIClient(api_key="YOUR_KEY")
+    response = client.complete("Your prompt")
+    print(response.content)
+    
+except ValueError as e:
+    print(f"Configuration error: {e}")
+    
+except httpx.HTTPStatusError as e:
+    print(f"API error: {e.response.status_code}")
+    print(f"Details: {e.response.text}")
+    
+except Exception as e:
+    print(f"Unexpected error: {e}")</code></pre>
+
+            <h2>Environment Variables</h2>
+
+            <pre><code># Set API key
+export GOOGLE_API_KEY="your-api-key"
+
+# Then use client without passing key
+from maticlib.llm.google_genai import GoogleGenAIClient
+client = GoogleGenAIClient()  # Automatically uses GOOGLE_API_KEY</code></pre>
+
+            <h2>Best Practices</h2>
+
+            <ul>
+                <li>Use environment variables for API keys in production</li>
+                <li>Enable verbose mode during development for debugging</li>
+                <li>Use async methods for concurrent requests</li>
+                <li>Monitor token usage to control costs</li>
+                <li>Implement retry logic for production systems</li>
+                <li>Use system instructions to set consistent behavior</li>
+                <li>Cache responses when appropriate to reduce API calls</li>
+            </ul>
+
+            <h2>Rate Limits</h2>
+
+            <p>Google Gemini API has rate limits that vary by model and tier. Implement exponential backoff and retry logic:</p>
+
+            <pre>odede>import time
+
+def complete_with_retry(client, prompt, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            return client.complete(prompt)
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 429:  # Rate limit
+                if attempt == max_retries - 1:
+                    raise
+                wait_time = 2 ** attempt
+                print(f"Rate limited. Waiting {wait_time}s...")
+                time.sleep(wait_time)
+            else:
+                raise</code></pre>
+
+            <h2>See Also</h2>
+
+            <ul>
+                <li><a href="../../../getstarted/sample.html">Getting Started Guide</a></li>
+                <li><a href="mistral.html">Mistral Client Documentation</a></li>
+                <li><a href="../../messages.html">Message Types</a></li>
+                <li><a href="https://ai.google.dev/docs" target="_blank">Google AI Studio Documentation</a></li>
+            </ul>
+        </main>
+
+        <aside class="toc-sidebar">
+            <div class="toc-title">On This Page</div>
+            <ul class="toc-list"></ul>
+        </aside>
+    </div>
+
+    <footer class="footer">
+        <p>Built with ❤️ by <a href="https://github.com/arvohsoft" target="_blank">Arvoh Software</a></p>
+        <p>Licensed under MIT</p>
+    </footer>
+
+    <script src="../../../../js/main.js"></script>
+    <script src="../../../../js/search.js"></script>
+</body>
+</html>

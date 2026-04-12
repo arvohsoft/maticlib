@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaticGraph - Maticlib Documentation</title>
+    <link rel="stylesheet" href="../../../css/style.css">
+</head>
+<body>
+    <nav class="topbar">
+        <div class="topbar-container">
+            <a href="https://arvohsoft.github.io/arvohsoft/" class="logo-link" target="_blank">
+                <img src="../../../assets/logo.svg" alt="Arvoh Software" class="logo">
+            </a>
+            
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search documentation... (Ctrl+K)" class="search-input">
+                <span class="search-shortcut">⌘K</span>
+            </div>
+            
+            <div class="topbar-actions">
+                <a href="https://github.com/arvohsoft/maticlib" target="_blank" class="github-link">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                    </svg>
+                    GitHub
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        ircle cx="12" cy="12"2" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="doc-container">
+        <main class="doc-content">
+            <h1>MaticGraph</h1>
+            
+            <p>MaticGraph is a pure-Python graph workflow engine for building complex agentic AI systems. It provides stateful and stateless execution modes, conditional routing, parallel execution, and comprehensive state management.</p>
+
+            <h2>Overview</h2>
+            
+            <p>MaticGraph allows you to build complex workflows as directed graphs where:</p>
+            <ul>
+                <li>Each <strong>node</strong> is a function that processes state</li>
+                <li><strong>Edges</strong> define the execution flow between nodes</li>
+                <li><strong>State</strong> can be automatically managed and merged</li>
+                <li><strong>Conditional routing</strong> allows dynamic decision-making</li>
+                <li><strong>Parallel execution</strong> enables concurrent node processing</li>
+            </ul>
+
+            <h2>Quick Start</h2>
+
+            <pre><code>from maticlib.graph import MaticGraph
+from pydantic import BaseModel
+
+class State(BaseModel):
+    message: str = ""
+    count: int = 0
+
+def node_a(state: State) -> dict:
+    return {"message": "Hello from A", "count": state.count + 1}
+
+def node_b(state: State) -> dict:
+    return {"message": f"{state.message}, then B", "count": state.count + 1}
+
+# Create graph
+graph = MaticGraph(stateful=True, state_schema=State)
+
+# Add nodes and edges
+graph.add_node("a", node_a)
+graph.add_node("b", node_b)
+graph.add_edge("a", "b")
+
+# Set entry and exit
+graph.set_entry("a")
+graph.set_exit("b")
+
+# Run
+result = graph.run()
+print(result.message)  # "Hello from A, then B"
+print(result.count)    # 2</code></pre>
+
+            <h2>Class: MaticGraph</h2>
+
+            <h3>Constructor Parameters</h3>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+                <thead>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Parameter</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Type</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Default</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>stateful</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">bool</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">True</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Enable automatic state merging</td>
+                    </tr>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>state_schema</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">type | None</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">None</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Pydantic BaseModel, dataclass, or TypedDict</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);"><code>max_workers</code></td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">int</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">4</td>
+                        <td style="padding: 12px; border: 1px solid var(--border-color);">Max parallel workers for concurrent execution</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Core Methods</h2>
+
+            <h3>add_node(name, function)</h3>
+            <p>Add a processing node to the graph.</p>
+            <pre><code>graph.add_node("process", process_function)</code></pre>
+
+            <h3>add_edge(from_node, to_node)</h3>
+            <p>Add a direct connection between two nodes.</p>
+            <pre><code>graph.add_edge("node_a", "node_b")</code></pre>
+
+            <h3>add_conditional_edge(from_node, condition, routes)</h3>
+            <p>Add conditional routing based on state.</p>
+            <pre>odede>def route_condition(state):
+    return "success" if state.success else "error"
+
+graph.add_conditional_edge(
+    "check",
+    route_condition,
+    {"success": "process", "error": "handle_error"}
+)</code></pre>
+
+            <h3>when(from_node, **routes)</h3>
+            <p>Simplified conditional routing using <code>state.next</code> or <code>state['next']</code>.</p>
+            <pre><code># Set state.next in your node function
+def decide(state):
+    return {"next": "path_a" if state.value > 10 else "path_b"}
+
+graph.add_node("decide", decide)
+graph.when("decide", path_a="node_a", path_b="node_b")</code></pre>
+
+            <h3>parallel_group(from_node, parallel_nodes, join_node, condition)</h3>
+            <p>Execute multiple nodes in parallel after a trigger node.</p>
+            <pre><code>graph.parallel_group(
+    from_node="analyze",
+    parallel_nodes=["sentiment", "entities", "summary"],
+    join_node="combine"
+)</code></pre>
+
+            <h3>set_entry(node_name)</h3>
+            <p>Set the starting node for execution.</p>
+            <pre><code>graph.set_entry("start")</code></pre>
+
+            <h3>set_exit(node_name)</h3>
+            <p>Mark a node as an exit point.</p>
+            <pre><code>graph.set_exit("end")</code></pre>
+
+            <h3>run(initial_state, max_iterations, verbose)</h3>
+            <p>Execute the graph workflow.</p>
+            <pre>odede>result = graph.run(
+    initial_state={"value": 0},
+    max_iterations=1000,
+    verbose=True
+)</code></pre>
+
+            <h3>visualize()</h3>
+            <p>Generate text-based visualization of the graph structure.</p>
+            <pre><code>print(graph.visualize())</code></pre>
+
+            <h3>get_execution_log()</h3>
+            <p>Get detailed execution log from last run.</p>
+            <pre><code>log = graph.get_execution_log()
+for entry in log:
+    print(entry)</code></pre>
+
+            <h2>State Management</h2>
+
+            <h3>Supported State Types</h3>
+
+            <h4>1. Pydantic BaseModel (Recommended)</h4>
+            <pre><code>from pydantic import BaseModel
+
+class MyState(BaseModel):
+    value: int = 0
+    message: str = ""
+    items: list = []
+
+graph = MaticGraph(stateful=True, state_schema=MyState)</code></pre>
+
+            <h4>2. Plain Dict</h4>
+            <pre><code>graph = MaticGraph(stateful=True)
+result = graph.run(initial_state={"key": "value"})</code></pre>
+
+            <h4>3. Dataclass</h4>
+            <pre><code>from dataclasses import dataclass
+
+@dataclass
+class MyState:
+    value: int = 0
+    message: str = ""
+
+graph = MaticGraph(stateful=True, state_schema=MyState)</code></pre>
+
+            <h4>4. TypedDict</h4>
+            <pre>odede>from typing import TypedDict
+
+class MyState(TypedDict):
+    value: int
+    message: str
+
+graph = MaticGraph(stateful=True, state_schema=MyState)</code></pre>
+
+            <h3>State Merging Rules</h3>
+
+            <p>When <code>stateful=True</code>, state updates are automatically merged:</p>
+            <ul>
+                <li><strong>Scalars</strong>: Overwritten with new value</li>
+                <li><strong>Lists</strong>: Extended (appended)</li>
+                <li><strong>Dicts</strong>: Updated (merged)</li>
+            </ul>
+
+            <pre><code>def node_a(state):
+    return {"items": [1, 2], "data": {"a": 1}}
+
+def node_b(state):
+    return {"items": [3, 4], "data": {"b": 2}}
+
+# After both nodes: 
+# state.items = [1, 2, 3, 4]
+# state.data = {"a": 1, "b": 2}</code></pre>
+
+            <h2>Conditional Routing</h2>
+
+            <h3>Using add_conditional_edge</h3>
+            <pre><code>from maticlib.graph import MaticGraph
+from pydantic import BaseModel
+
+class State(BaseModel):
+    sentiment: str = ""
+    next: str = ""
+
+def analyze_sentiment(state):
+    # Analyze text and determine sentiment
+    sentiment = "positive"  # Example
+    return {"sentiment": sentiment, "next": sentiment}
+
+def handle_positive(state):
+    return {"message": "Great feedback!"}
+
+def handle_negative(state):
+    return {"message": "We'll improve!"}
+
+graph = MaticGraph(stateful=True, state_schema=State)
+
+graph.add_node("analyze", analyze_sentiment)
+graph.add_node("positive", handle_positive)
+graph.add_node("negative", handle_negative)
+
+# Route based on state.next
+graph.when("analyze", positive="positive", negative="negative")
+
+graph.set_entry("analyze")
+graph.set_exit("positive")
+graph.set_exit("negative")
+
+result = graph.run()
+print(result.message)</code></pre>
+
+            <h2>Parallel Execution</h2>
+
+            <h3>Basic Parallel Group</h3>
+            <pre><code>from maticlib.graph import MaticGraph
+from pydantic import BaseModel
+import time
+
+class State(BaseModel):
+    text: str = ""
+    sentiment: str = ""
+    entities: list = []
+    summary: str = ""
+
+def extract_text(state):
+    return {"text": "Sample document about AI"}
+
+def analyze_sentiment(state):
+    time.sleep(2)  # Simulate API call
+    return {"sentiment": "positive"}
+
+def extract_entities(state):
+    time.sleep(2)  # Simulate API call
+    return {"entities": ["AI", "machine learning"]}
+
+def generate_summary(state):
+    time.sleep(2)  # Simulate API call
+    return {"summary": "Document about AI"}
+
+def create_report(state):
+    return {"report": f"Sentiment: {state.sentiment}"}
+
+graph = MaticGraph(stateful=True, state_schema=State, max_workers=3)
+
+graph.add_node("extract", extract_text)
+graph.add_node("sentiment", analyze_sentiment)
+graph.add_node("entities", extract_entities)
+graph.add_node("summary", generate_summary)
+graph.add_node("report", create_report)
+
+graph.set_entry("extract")
+
+# Execute 3 nodes in parallel
+graph.parallel_group(
+    from_node="extract",
+    parallel_nodes=["sentiment", "entities", "summary"],
+    join_node="report"
+)
+
+graph.set_exit("report")
+
+result = graph.run(verbose=True)
+# Executes in ~2 seconds instead of ~6 seconds!</code></pre>
+
+            <h3>Conditional Parallel Execution</h3>
+            <pre><code>from maticlib.graph import MaticGraph
+from pydantic import BaseModel
+
+class State(BaseModel):
+    data_size: int = 0
+    use_parallel: bool = False
+
+def check_size(state):
+    size = 5000
+    return {"data_size": size, "use_parallel": size > 1000}
+
+def process_a(state):
+    return {"result_a": "Processed A"}
+
+def process_b(state):
+    return {"result_b": "Processed B"}
+
+graph = MaticGraph(stateful=True, state_schema=State)
+
+graph.add_node("check", check_size)
+graph.add_node("process_a", process_a)
+graph.add_node("process_b", process_b)
+graph.add_node("merge", lambda state: {})
+
+graph.set_entry("check")
+
+# Only parallelize if condition is true
+graph.parallel_group(
+    from_node="check",
+    parallel_nodes=["process_a", "process_b"],
+    join_node="merge",
+    condition=lambda state: state.use_parallel  # Conditional!
+)
+
+graph.set_exit("merge")
+
+result = graph.run(verbose=True)</code></pre>
+
+            <h3>Multiple Parallel Groups</h3>
+            <pre><code>from maticlib.graph import MaticGraph
+from pydantic import BaseModel
+
+class State(BaseModel):
+    stage1_a: str = ""
+    stage1_b: str = ""
+    stage2_a: str = ""
+    stage2_b: str = ""
+
+graph = MaticGraph(stateful=True, state_schema=State, max_workers=4)
+
+# Define all nodes
+graph.add_node("start", lambda state: {})
+graph.add_node("clean_a", lambda state: {"stage1_a": "cleaned A"})
+graph.add_node("clean_b", lambda state: {"stage1_b": "cleaned B"})
+graph.add_node("merge1", lambda state: {})
+graph.add_node("analyze_a", lambda state: {"stage2_a": "analyzed A"})
+graph.add_node("analyze_b", lambda state: {"stage2_b": "analyzed B"})
+graph.add_node("final", lambda state: {})
+
+graph.set_entry("start")
+
+# First parallel group: Cleaning
+graph.parallel_group(
+    "start",
+    ["clean_a", "clean_b"],
+    join_node="merge1"
+)
+
+# Second parallel group: Analysis
+graph.parallel_group(
+    "merge1",
+    ["analyze_a", "analyze_b"],
+    join_node="final"
+)
+
+graph.set_exit("final")
+
+result = graph.run(verbose=True)</code></pre>
+
+            <h2>Visualization</h2>
+
+            <pre><code>print(graph.visualize())
+
+# Output:
+# Graph Structure:
+# ==================================================
+# State Pydantic Model: State
+# Max Workers: 3
+#
+# ► extract
+#   🔀 [PARALLEL→3 nodes]
+#   ├─ Parallel nodes:
+#   │  └─ sentiment
+#   │  └─ entities
+#   │  └─ summary
+#   └─ Join at: report
+#
+# • report [EXIT]</code></pre>
+
+            <h2>Execution Logging</h2>
+
+            <pre><code>result = graph.run(verbose=True)
+
+# Get execution log
+log = graph.get_execution_log()
+
+for entry in log:
+    if entry.get("type") == "routing":
+        print(f"Routed from {entry['from']} to {entry['to']}")
+    else:
+        print(f"Node: {entry['node']}")
+        print(f"  Status: {entry['status']}")
+        print(f"  Time: {entry['execution_time']:.2f}s")
+        print(f"  State keys: {entry['state_keys']}")</code></pre>
+
+            <h2>Loop Prevention</h2>
+
+            <p>MaticGraph automatically prevents infinite loops with <code>max_iterations</code>:</p>
+
+            <pre><code>try:
+    result = graph.run(max_iterations=100)
+except RuntimeError as e:
+    print(f"Loop detected: {e}")</code></pre>
+
+            <h2>Best Practices</h2>
+
+            <ul>
+                <li>Use Pydantic BaseModel for type safety and validation</li>
+                <li>Keep node functions pure (minimize side effects)</li>
+                <li>Use <code>when()</code> for simple routing, <code>add_conditional_edge()</code> for complex logic</li>
+                <li>Enable <code>verbose=True</code> during development</li>
+                <li>Use parallel execution for independent I/O-bound tasks</li>
+                <li>Set appropriate <code>max_iterations</code> based on graph complexity</li>
+                <li>Use <code>visualize()</code> to debug graph structure</li>
+                <li>Check execution logs for performance optimization</li>
+            </ul>
+
+            <h2>Advanced Example: AI Agent Workflow</h2>
+
+            <pre><code>from maticlib.graph import MaticGraph
+from maticlib.llm.google_genai import GoogleGenAIClient
+from pydantic import BaseModel
+
+class AgentState(BaseModel):
+    user_query: str = ""
+    intent: str = ""
+    response: str = ""
+    next: str = ""
+
+client = GoogleGenAIClient(api_key="YOUR_KEY")
+
+def classify_intent(state: AgentState):
+    prompt = f"Classify this query intent: {state.user_query}"
+    response = client.complete(prompt)
+    intent = response.content.lower()
+    
+    if "question" in intent:
+        return {"intent": "question", "next": "question"}
+    elif "command" in intent:
+        return {"intent": "command", "next": "command"}
+    else:
+        return {"intent": "other", "next": "other"}
+
+def handle_question(state: AgentState):
+    response = client.complete(state.user_query)
+    return {"response": response.content}
+
+def handle_command(state: AgentState):
+    return {"response": "Command executed"}
+
+def handle_other(state: AgentState):
+    return {"response": "I don't understand"}
+
+# Build graph
+graph = MaticGraph(stateful=True, state_schema=AgentState)
+
+graph.add_node("classify", classify_intent)
+graph.add_node("question", handle_question)
+graph.add_node("command", handle_command)
+graph.add_node("other", handle_other)
+
+graph.set_entry("classify")
+
+# Route based on intent
+graph.when(
+    "classify",
+    question="question",
+    command="command",
+    other="other"
+)
+
+graph.set_exit("question")
+graph.set_exit("command")
+graph.set_exit("other")
+
+# Run
+result = graph.run(
+    initial_state={"user_query": "What is Python?"},
+    verbose=True
+)
+
+print(result.response)</code></pre>
+
+            <h2>See Also</h2>
+
+            <ul>
+                <li><a href="../../getstarted/sample.html">Getting Started Guide</a></li>
+                <li><a href="../llm/clients/google-genai.html">Google GenAI Client</a></li>
+                <li><a href="../messages.html">Message Types</a></li>
+                <li><a href="https://github.com/arvohsoft/maticlib/tree/main/examples" target="_blank">Example Projects</a></li>
+            </ul>
+        </main>
+
+        <aside class="toc-sidebar">
+            <div class="toc-title">On This Page</div>
+            <ul class="toc-list"></ul>
+        </aside>
+    </div>
+
+    <footer class="footer">
+        <p>Built with ❤️ by <a href="https://github.com/arvohsoft" target="_blank">Arvoh Software</a></p>
+        <p>Licensed under MIT</p>
+    </footer>
+
+    <script src="../../../js/main.js"></script>
+    <script src="../../../js/search.js"></script>
+</body>
+</html>
