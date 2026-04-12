@@ -38,6 +38,9 @@ class MaticGraph:
             max_workers (int): Maximum number of parallel threads for `parallel_group` 
                 execution. Default is 4.
         """
+        self.stateful = stateful
+        self.state_schema = state_schema
+        self.max_workers = max_workers
         self.nodes: Dict[str, Node] = {}
         self.entry_node: Optional[str] = None
         self.exit_nodes: List[str] = []
@@ -361,7 +364,7 @@ class MaticGraph:
         Execute a group of nodes in parallel and merge their results.
         """
         if verbose:
-            print(f"\n  🔀 Executing {len(parallel_nodes)} nodes in parallel: {parallel_nodes}")
+            print(f"\n  [PARALLEL] Executing {len(parallel_nodes)} nodes in parallel: {parallel_nodes}")
         
         with ThreadPoolExecutor(max_workers=min(self.max_workers, len(parallel_nodes))) as executor:
             # Submit all parallel nodes
@@ -378,7 +381,7 @@ class MaticGraph:
                     node_result = future.result()
                     results[node_name] = node_result
                     if verbose:
-                        print(f"    ✓ {node_name} completed")
+                        print(f"    [OK] {node_name} completed")
                 except Exception as e:
                     raise RuntimeError(f"Parallel node '{node_name}' failed: {e}") from e
             
@@ -522,7 +525,7 @@ class MaticGraph:
                 if join_node:
                     current_node = join_node
                     if verbose:
-                        print(f"  ⚡ Parallel execution complete, continuing to: {join_node}\n")
+                        print(f"  [JOIN] Parallel execution complete, continuing to: {join_node}\n")
                 else:
                     # No join node, end execution
                     current_node = None
@@ -560,23 +563,23 @@ class MaticGraph:
         lines.append("")
         
         for node_name, node in self.nodes.items():
-            marker = "►" if node_name == self.entry_node else "•"
+            marker = ">" if node_name == self.entry_node else "•"
             exit_marker = " [EXIT]" if node_name in self.exit_nodes else ""
             
             # Check if node has parallel group
             parallel_marker = ""
             if hasattr(node, 'parallel_group') and node.parallel_group:
-                parallel_marker = f" 🔀 [PARALLEL→{len(node.parallel_group)} nodes]"
+                parallel_marker = f" [PARALLEL->{len(node.parallel_group)} nodes]"
             
             lines.append(f"{marker} {node_name}{exit_marker}{parallel_marker}")
             
             # Show parallel group details
             if hasattr(node, 'parallel_group') and node.parallel_group:
-                lines.append(f"  ├─ Parallel nodes:")
+                lines.append(f"  |- Parallel nodes:")
                 for pnode in node.parallel_group:
-                    lines.append(f"  │  └─ {pnode}")
+                    lines.append(f"  |  L- {pnode}")
                 if hasattr(node, 'parallel_join') and node.parallel_join:
-                    lines.append(f"  └─ Join at: {node.parallel_join}")
+                    lines.append(f"  L- Join at: {node.parallel_join}")
             
             # Show conditional routing
             if node.condition_func:

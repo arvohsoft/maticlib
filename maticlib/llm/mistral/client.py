@@ -30,6 +30,12 @@ class MistralClient(BaseLLMClient):
         verbose: bool = True,
         return_raw: bool = False
     ):
+        api_key = (api_key or "").strip()
+        if not api_key:
+            raise ValueError(
+                "Mistral API key is missing. Please provide it via the 'api_key' "
+                "argument or set the MISTRAL_API_KEY environment variable."
+            )
         self.api_key = api_key
         self.model = model
         self.system_instruct = system_instruct
