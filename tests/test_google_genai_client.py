@@ -6,7 +6,7 @@ from maticlib.messages import HumanMessage
 @pytest.fixture
 def gemini_client():
     return GoogleGenAIClient(
-        model="gemini-1.5-flash",
+        model="gemini-2.5-flash-lite",
         api_key="test-key",
         verbose=False
     )

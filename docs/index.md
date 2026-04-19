@@ -21,6 +21,9 @@ A single, consistent interface for **OpenAI** (Responses API), **Google Gemini**
 ### :material-chart-timeline-variant: Advanced Telemetry
 Track token usage across all modalities, including reasoning tokens for newer models, to optimize cost and performance.
 
+### :material-code-json: Structured Response Parsing
+Automatically parse and validate LLM outputs into **Pydantic models**, JSON, or XML. Maticlib handles the prompt engineering and extraction for you.
+
 ### :material-layers-outline: Type-Safe Orchestration
 Deep integration with Pydantic ensures your workflow states and model responses are always valid and well-defined.
 

@@ -73,9 +73,11 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting Started: getting_started.md
+  - Modules: response_parsers.md
   - API Reference:
       - Introduction: api/index.md
       - LLM Clients: api/clients.md
+      - Response Parsers: api/parsers.md
       - Graph Engine: api/graph.md
       - Message Types: api/messages.md
   - Examples: examples.md
