@@ -1,4 +1,4 @@
-# <img src="assets/logo.svg" alt="Arvoh Software Logo" width="180">
+# <img src="https://raw.githubusercontent.com/arvohsoft/maticlib/main/docs/assets/logo.svg" alt="Maticlib Logo" width="180">
 
 **A high-performance Python Automation Library for creating intelligent AI agents.**
 

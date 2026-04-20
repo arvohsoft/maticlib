@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated default Google Gemini model to `gemini-2.5-lite`.
   - Refactored API key detection to run at instantiation rather than import, improving compatibility with `.env` files.
 - **Documentation Overhaul**
-  - Reorganized site navigation: introduced "Modules" section and expanded API Reference.
+  - Reorganized site navigation: introduced a comprehensive, code-first "Modules" guide and expanded API Reference.
   - Modernized visual style: replaced standard emojis with professional Material Design icons library-wide.
  
 ### Fixed
