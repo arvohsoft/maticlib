@@ -5,6 +5,28 @@ All notable changes to maticlib will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2026-04-17
+ 
+### Added
+- **Response Parser System**
+  - Standardized interface for extracting structured data from LLM responses.
+  - Implemented `PydanticResponseParser` for automatic validation against Pydantic models.
+  - Implemented `JSONResponseParser` and `XMLResponseParser` for specialized data extraction.
+  - Integrated `response_model` parameter directly into all LLM client `complete()` methods.
+ 
+### Changed
+- **LLM Clients**
+  - Updated default Google Gemini model to `gemini-2.5-lite`.
+  - Refactored API key detection to run at instantiation rather than import, improving compatibility with `.env` files.
+- **Documentation Overhaul**
+  - Reorganized site navigation: introduced "Modules" section and expanded API Reference.
+  - Modernized visual style: replaced standard emojis with professional Material Design icons library-wide.
+ 
+### Fixed
+- **Core Stability**
+  - Resolved a naming collision and Method Resolution Order (MRO) bug in the Pydantic parser hierarchy.
+  - Fixed a race condition in environment variable loading within the `maticlib.llm` modules.
+ 
 ## [0.1.5] - 2026-04-12
 
 ### Added
@@ -56,7 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Better error handling in `get_text_response()` with graceful fallbacks
 - **MaticGraph visualization enhancements**
   - Graph visualization now displays parallel execution groups
-  - Added visual markers (🔀) for parallel node groups
+  - Added visual markers (:material-shuffle-variant:) for parallel node groups
   - Shows join nodes and conditional parallelization information
   - Improved readability of complex workflow structures
 

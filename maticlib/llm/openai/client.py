@@ -19,7 +19,8 @@ Supported models (not exhaustive):
 """
 
 import os
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Type, Union
+from pydantic import BaseModel
 
 import httpx
 
@@ -53,10 +54,11 @@ class OpenAIClient(BaseLLMClient):
         self,
         model: str = "gpt-4o-mini",
         system_instruct: Union[str, SystemMessage, None] = None,
-        api_key: str = os.getenv("OPENAI_API_KEY", ""),
+        api_key: Optional[str] = None,
         verbose: bool = True,
         return_raw: bool = False,
     ) -> None:
+        api_key = api_key or os.getenv("OPENAI_API_KEY", "")
         api_key = (api_key or "").strip()
         if not api_key:
             raise ValueError(
@@ -206,6 +208,7 @@ class OpenAIClient(BaseLLMClient):
     def complete(
         self,
         input: Union[str, List],
+        response_model: Optional[Type[BaseModel]] = None,
     ) -> Union[OpenAIResponse, Dict[str, Any]]:
         """
         Sends a synchronous generation request to the OpenAI Responses API.
@@ -213,17 +216,13 @@ class OpenAIClient(BaseLLMClient):
         Args:
             input (str | list): The user prompt as a plain string, or a
                 conversation history as a list of message objects / dicts.
-
-        Returns:
-            OpenAIResponse | dict: The model's structured response, or a
-            raw dict if ``return_raw=True``.
-
-        Raises:
-            httpx.HTTPStatusError: On 4xx / 5xx responses from the API.
+            response_model (Type[BaseModel], optional): A Pydantic model to 
+                parse the output into.
         """
         url = f"{self.base_url}/responses"
 
         try:
+            input = self._inject_runtime_instructions(input, response_model)
             payload = self._build_payload(input)
             response = httpx.post(
                 url, headers=self.headers, json=payload, timeout=60.0
@@ -233,7 +232,9 @@ class OpenAIClient(BaseLLMClient):
             if self.verbose:
                 print(f"Status: {response.status_code}")
 
-            return self._parse_response(response)
+            result = self._parse_response(response)
+            self._apply_response_model(result, response_model)
+            return result
 
         except httpx.HTTPStatusError as e:
             if self.verbose:
@@ -249,6 +250,7 @@ class OpenAIClient(BaseLLMClient):
     async def async_complete(
         self,
         input: Union[str, List],
+        response_model: Optional[Type[BaseModel]] = None,
     ) -> Union[OpenAIResponse, Dict[str, Any]]:
         """
         Sends an asynchronous generation request to the OpenAI Responses API.
@@ -256,17 +258,13 @@ class OpenAIClient(BaseLLMClient):
         Args:
             input (str | list): The user prompt as a plain string, or a
                 conversation history as a list of message objects / dicts.
-
-        Returns:
-            OpenAIResponse | dict: The model's structured response, or a
-            raw dict if ``return_raw=True``.
-
-        Raises:
-            httpx.HTTPStatusError: On 4xx / 5xx responses from the API.
+            response_model (Type[BaseModel], optional): A Pydantic model to 
+                parse the output into.
         """
         url = f"{self.base_url}/responses"
 
         try:
+            input = self._inject_runtime_instructions(input, response_model)
             payload = self._build_payload(input)
             async with httpx.AsyncClient() as client:
                 response = await client.post(
@@ -277,7 +275,9 @@ class OpenAIClient(BaseLLMClient):
                 if self.verbose:
                     print(f"Status: {response.status_code}")
 
-                return self._parse_response(response)
+                result = self._parse_response(response)
+                self._apply_response_model(result, response_model)
+                return result
 
         except httpx.HTTPStatusError as e:
             if self.verbose:

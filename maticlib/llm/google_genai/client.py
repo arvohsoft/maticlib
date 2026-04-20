@@ -1,4 +1,5 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Type, Union
+from pydantic import BaseModel
 
 from maticlib.client.classes.base_client import BaseLLMClient
 from maticlib.llm.google_genai.gemini_classes import GeminiResponse
@@ -25,13 +26,14 @@ class GoogleGenAIClient(BaseLLMClient):
     """
     def __init__(
         self,
-        model: str = "gemini-1.5-flash",
+        model: str = "gemini-2.5-lite",
         system_instruct: str|SystemMessage|None = None,
-        api_key: str = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY") or "",
+        api_key: Optional[str] = None,
         thinking_budget: int = 0,
         verbose: bool = True,
         return_raw: bool = False
     ):
+        api_key = api_key or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY") or ""
         api_key = (api_key or "").strip()
         if not api_key:
             raise ValueError(
@@ -159,19 +161,25 @@ class GoogleGenAIClient(BaseLLMClient):
                 print("Returning raw response instead")
             return response_data
     
-    def complete(self, input: Union[str, List]) -> Union[GeminiResponse, Dict[str, Any]]:
+    def complete(
+        self, 
+        input: Union[str, List],
+        response_model: Optional[Type[BaseModel]] = None
+    ) -> Union[GeminiResponse, Dict[str, Any]]:
         """
         Sends a synchronous generation request to Gemini.
         
         Args:
             input (str | list): The user prompt or conversation history.
-            
-        Returns:
-            GeminiResponse | dict: The model's response.
+            response_model (Type[BaseModel], optional): A Pydantic model to 
+                parse the output into.
         """
         url = f"{self.base_url}/models/{self.model}:generateContent"
         
         try:
+            # Inject structure instructions if requested
+            input = self._inject_runtime_instructions(input, response_model)
+            
             # Format messages
             formatted_messages = self._format_messages(input)
             
@@ -203,7 +211,9 @@ class GoogleGenAIClient(BaseLLMClient):
             if self.verbose:
                 print(f"Status: {response.status_code}")  
                               
-            return self._parse_response(response)
+            result = self._parse_response(response)
+            self._apply_response_model(result, response_model)
+            return result
             
         except httpx.HTTPStatusError as e:
             if self.verbose:
@@ -216,17 +226,23 @@ class GoogleGenAIClient(BaseLLMClient):
                 traceback.print_exc()
             raise
             
-    async def async_complete(self, input: str) -> Union[GeminiResponse, Dict[str, Any]]:
+    async def async_complete(
+        self, 
+        input: str,
+        response_model: Optional[Type[BaseModel]] = None
+    ) -> Union[GeminiResponse, Dict[str, Any]]:
         """
         Sends an asynchronous generation request to Gemini.
         
         Args:
             input (str): The text input to send to the model.
-            
-        Returns:
-            GeminiResponse | dict: The model's response.
+            response_model (Type[BaseModel], optional): A Pydantic model to 
+                parse the output into.
         """
         url = f"{self.base_url}/models/{self.model}:generateContent"
+        
+        # Inject structure instructions if requested
+        input = self._inject_runtime_instructions(input, response_model)
         
         formatted_messages = self._format_messages(input=input)
         
@@ -257,7 +273,9 @@ class GoogleGenAIClient(BaseLLMClient):
             if self.verbose:
                 print(f"Status: {response.status_code}")
                 
-            return self._parse_response(response=response)
+            result = self._parse_response(response=response)
+            self._apply_response_model(result, response_model)
+            return result
         except Exception as e:
             import traceback
             traceback.print_exc()

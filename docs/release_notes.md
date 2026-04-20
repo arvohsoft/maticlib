@@ -4,6 +4,23 @@ Stay up to date with the latest features, improvements, and bug fixes in Maticli
 
 ---
 
+## :material-tag-outline: [v0.1.6] - 2026-04-17
+ 
+### :material-sparkles: Major Additions
+ 
+#### **Response Parser System**
+A new, LangChain-inspired structured output system. Developers can now pass a Pydantic `BaseModel` directly to any LLM client to receive validated, type-safe Python objects.
+- `PydanticResponseParser`: Auto-generates structural instructions and validates output.
+- `JSONResponseParser`: Robust regex-based dictionary extraction.
+- `XMLResponseParser`: Flat dictionary extraction from XML tags.
+
+### :material-wrench-outline: Fixes & Improvements
+- **LLM Clients**: Updated default Gemini model to `gemini-2.5-lite`.
+- **API Key Detection**: Fixed a race condition where environment variables were not picked up correctly at import time.
+- **MRO Fixes**: Resolved method resolution order conflicts in the parser inheritance hierarchy.
+
+---
+
 ## :material-tag-outline: [v0.1.5] - 2026-04-12
 
 ### :material-sparkles: Major Additions

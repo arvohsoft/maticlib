@@ -9,7 +9,6 @@ myenv/
 myvenv/
 env/
 commands.txt
-examples/
 .env*
 coverage.xml
 htmlcov/
@@ -17,3 +16,4 @@ htmlcov/
 .vscode/
 .pytest_cache/
 site/
+build/

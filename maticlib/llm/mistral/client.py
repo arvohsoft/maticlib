@@ -1,4 +1,5 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Type, Union
+from pydantic import BaseModel
 import httpx
 import os
 from maticlib.client.classes.base_client import BaseLLMClient
@@ -26,10 +27,11 @@ class MistralClient(BaseLLMClient):
         self,
         model: str = "mistral-medium-latest",
         system_instruct: str|SystemMessage|None = None,
-        api_key: str = os.getenv("MISTRAL_API_KEY", ""),
+        api_key: Optional[str] = None,
         verbose: bool = True,
         return_raw: bool = False
     ):
+        api_key = api_key or os.getenv("MISTRAL_API_KEY", "")
         api_key = (api_key or "").strip()
         if not api_key:
             raise ValueError(
@@ -160,19 +162,25 @@ class MistralClient(BaseLLMClient):
                 print("Returning raw response instead")
             return response_data
     
-    def complete(self, input: Union[str, List]) -> Union[MistralResponse, Dict[str, Any]]:
+    def complete(
+        self, 
+        input: Union[str, List],
+        response_model: Optional[Type[BaseModel]] = None
+    ) -> Union[MistralResponse, Dict[str, Any]]:
         """
         Sends a synchronous chat completion request to Mistral.
         
         Args:
             input (str | list): The user prompt or conversation history.
-            
-        Returns:
-            MistralResponse | dict: The model's response.
+            response_model (Type[BaseModel], optional): A Pydantic model to 
+                parse the output into.
         """
         url = f"{self.base_url}/chat/completions"
         
         try:
+            # Inject structure instructions if requested
+            input = self._inject_runtime_instructions(input, response_model)
+            
             # Format messages
             formatted_messages = self._format_messages(input)
             
@@ -189,7 +197,9 @@ class MistralClient(BaseLLMClient):
                 print(f"Status: {response.status_code}")
             
             # Parse and return response
-            return self._parse_response(response)
+            result = self._parse_response(response)
+            self._apply_response_model(result, response_model)
+            return result
             
         except httpx.HTTPStatusError as e:
             if self.verbose:
@@ -202,19 +212,25 @@ class MistralClient(BaseLLMClient):
                 traceback.print_exc()
             raise
             
-    async def async_complete(self, input: Union[str, List]) -> Union[MistralResponse, Dict[str, Any]]:
+    async def async_complete(
+        self, 
+        input: Union[str, List],
+        response_model: Optional[Type[BaseModel]] = None
+    ) -> Union[MistralResponse, Dict[str, Any]]:
         """
         Sends an asynchronous chat completion request to Mistral.
         
         Args:
             input (str | list): The user prompt or conversation history.
-            
-        Returns:
-            MistralResponse | dict: The model's response.
+            response_model (Type[BaseModel], optional): A Pydantic model to 
+                parse the output into.
         """
         url = f"{self.base_url}/chat/completions"
         
         try:
+            # Inject structure instructions if requested
+            input = self._inject_runtime_instructions(input, response_model)
+            
             # Format messages
             formatted_messages = self._format_messages(input)
             
@@ -232,7 +248,9 @@ class MistralClient(BaseLLMClient):
                     print(f"Status: {response.status_code}")
                 
                 # Parse and return response
-                return self._parse_response(response)
+                result = self._parse_response(response)
+                self._apply_response_model(result, response_model)
+                return result
                 
         except httpx.HTTPStatusError as e:
             if self.verbose:

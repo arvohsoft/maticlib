@@ -1,6 +1,6 @@
 # Contributing to Maticlib
 
-First off, thank you for considering contributing to Maticlib! ❤️
+First off, thank you for considering contributing to Maticlib! :material-heart:
 
 All types of contributions are encouraged and valued. Whether you're fixing bugs, adding new features, improving documentation, or spreading the word about Maticlib, your help is appreciated.
 
