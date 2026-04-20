@@ -6,7 +6,7 @@ Stay up to date with the latest features, improvements, and bug fixes in Maticli
 
 ## :material-tag-outline: [v0.1.6] - 2026-04-17
  
-### :material-sparkles: Major Additions
+### :material-creation: Major Additions
  
 #### **Response Parser System**
 A new, LangChain-inspired structured output system. Developers can now pass a Pydantic `BaseModel` directly to any LLM client to receive validated, type-safe Python objects.
@@ -23,7 +23,7 @@ A new, LangChain-inspired structured output system. Developers can now pass a Py
 
 ## :material-tag-outline: [v0.1.5] - 2026-04-12
 
-### :material-sparkles: Major Additions
+### :material-creation: Major Additions
 
 #### **OpenAI Integration**
 We've added a robust `OpenAIClient` that leverages the modern **Responses API**. This ensures compatibility with the latest reasoning models (o-series) and provides detailed metadata like cached tokens.

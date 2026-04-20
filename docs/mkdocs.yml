@@ -20,7 +20,7 @@ theme:
       primary: indigo
       accent: indigo
       toggle:
-        icon: material/brightness-7
+        icon: material/weather-sunny
         name: Switch to dark mode
 
     # Palette toggle for dark mode
@@ -68,12 +68,12 @@ markdown_extensions:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - toc:
-      permalink: true
+      permalink: false
 
 nav:
   - Home: index.md
   - Getting Started: getting_started.md
-  - Modules: response_parsers.md
+  - Modules: modules.md
   - API Reference:
       - Introduction: api/index.md
       - LLM Clients: api/clients.md

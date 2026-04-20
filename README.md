@@ -1,4 +1,11 @@
-# <img src="docs/assets/logo.svg" alt="Maticlib Logo" width="220">
+<p align="center">
+  <img src="https://raw.githubusercontent.com/arvohsoft/maticlib/main/docs/assets/logo.svg" alt="Maticlib Logo" width="220">
+  <br>
+  <!-- Fallback Logo if Image Fails to Load -->
+  <svg width="120" height="32" xmlns="http://www.w3.org/2000/svg" style="display:none;">
+    <text x="0" y="24" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#10b981">Maticlib</text>
+  </svg>
+</p>
 
 **A high-performance Python Automation Library for creating intelligent AI agents.**
 
