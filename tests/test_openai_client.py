@@ -12,6 +12,7 @@ import pytest
 from maticlib.llm.openai.client import OpenAIClient
 from maticlib.llm.openai.openai_classes import OpenAIResponse
 from maticlib.messages import HumanMessage, SystemMessage, AIMessage
+from maticlib.tools import tool
 
 
 # ---------------------------------------------------------------------------
@@ -57,6 +58,32 @@ MOCK_RESPONSE = {
         "output_tokens_details": {"reasoning_tokens": 0},
         "input_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
     },
+}
+
+
+# Realistic response containing a tool call
+MOCK_TOOL_RESPONSE = {
+    "id": "resp_tool123",
+    "object": "response",
+    "created_at": 1714000000,
+    "status": "completed",
+    "model": "gpt-4o-mini",
+    "output": [
+        {
+            "id": "call_abc",
+            "type": "call_tool",
+            "status": "completed",
+            "call_tool": {
+                "name": "get_weather",
+                "arguments": {"location": "Paris"}
+            }
+        }
+    ],
+    "usage": {
+        "input_tokens": 15,
+        "output_tokens": 5,
+        "total_tokens": 20
+    }
 }
 
 
@@ -150,6 +177,14 @@ class TestOpenAIResponse:
         assert isinstance(resp.raw_response, dict)
         assert "id" in resp.raw_response
 
+    def test_tool_call_extraction(self):
+        """tool_calls should be extracted from 'call_tool' output items."""
+        resp = OpenAIResponse(**MOCK_TOOL_RESPONSE)
+        assert resp.tool_calls is not None
+        assert len(resp.tool_calls) == 1
+        assert resp.tool_calls[0]["function"]["name"] == "get_weather"
+        assert resp.tool_calls[0]["function"]["arguments"] == {"location": "Paris"}
+
 
 # ---------------------------------------------------------------------------
 # Unit tests — synchronous complete (mocked HTTP)
@@ -202,6 +237,25 @@ class TestComplete:
         httpx_mock.add_response(json=MOCK_RESPONSE, status_code=200)
         response = openai_client.complete([HumanMessage(content="Hello")])
         assert isinstance(response, OpenAIResponse)
+
+    def test_complete_with_tools_payload(self, openai_client, httpx_mock):
+        """When tools are provided, they should be in the request payload."""
+        @tool
+        def my_test_tool(x: int):
+            """Test tool."""
+            return x
+
+        httpx_mock.add_response(json=MOCK_TOOL_RESPONSE, status_code=200)
+        response = openai_client.complete("Use the tool", tools=[my_test_tool])
+        
+        request = httpx_mock.get_requests()[0]
+        import json
+        payload = json.loads(request.content)
+        
+        assert "tools" in payload
+        assert payload["tools"][0]["type"] == "function"
+        assert payload["tools"][0]["function"]["name"] == "my_test_tool"
+        assert response.tool_calls[0]["function"]["name"] == "get_weather"
 
 
 # ---------------------------------------------------------------------------

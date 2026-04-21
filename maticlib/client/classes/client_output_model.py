@@ -39,6 +39,7 @@ class LLMResponseBase(BaseModel):
     response_id: Optional[str] = Field(None, description="Unique identifier for the response")
     raw_response: Optional[Dict[str, Any]] = Field(None, description="Original raw response")
     parsed_output: Optional[Any] = Field(None, description="The result of structured parsing (e.g. Pydantic model)")
+    tool_calls: Optional[List[Dict[str, Any]]] = Field(None, description="List of tool calls requested by the model")
     
     class Config:
         extra = "allow"

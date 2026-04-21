@@ -19,7 +19,7 @@ Supported models (not exhaustive):
 """
 
 import os
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union, Callable
 from pydantic import BaseModel
 
 import httpx
@@ -145,12 +145,14 @@ class OpenAIClient(BaseLLMClient):
     def _build_payload(
         self,
         input: Union[str, List[Union[Dict, HumanMessage, SystemMessage, AIMessage]]],
+        tools: Optional[List[Callable]] = None,
     ) -> Dict[str, Any]:
         """
         Builds the full JSON payload for the /v1/responses endpoint.
 
         Args:
             input (str | list): Raw caller input (string or message list).
+            tools (list, optional): A list of tool functions.
 
         Returns:
             dict: A payload dict ready to be sent as JSON.
@@ -161,6 +163,10 @@ class OpenAIClient(BaseLLMClient):
             "model": self.model,
             "input": formatted_input,
         }
+
+        # Handle tools
+        if tools:
+            payload["tools"] = self._format_tools(tools)
 
         # Prepend system/developer instruction when provided
         if self.system_instruct:
@@ -209,6 +215,7 @@ class OpenAIClient(BaseLLMClient):
         self,
         input: Union[str, List],
         response_model: Optional[Type[BaseModel]] = None,
+        tools: Optional[List[Callable]] = None,
     ) -> Union[OpenAIResponse, Dict[str, Any]]:
         """
         Sends a synchronous generation request to the OpenAI Responses API.
@@ -218,12 +225,13 @@ class OpenAIClient(BaseLLMClient):
                 conversation history as a list of message objects / dicts.
             response_model (Type[BaseModel], optional): A Pydantic model to 
                 parse the output into.
+            tools (list, optional): A list of tool functions decorated with @tool.
         """
         url = f"{self.base_url}/responses"
 
         try:
             input = self._inject_runtime_instructions(input, response_model)
-            payload = self._build_payload(input)
+            payload = self._build_payload(input, tools=tools)
             response = httpx.post(
                 url, headers=self.headers, json=payload, timeout=60.0
             )
@@ -251,6 +259,7 @@ class OpenAIClient(BaseLLMClient):
         self,
         input: Union[str, List],
         response_model: Optional[Type[BaseModel]] = None,
+        tools: Optional[List[Callable]] = None,
     ) -> Union[OpenAIResponse, Dict[str, Any]]:
         """
         Sends an asynchronous generation request to the OpenAI Responses API.
@@ -260,12 +269,13 @@ class OpenAIClient(BaseLLMClient):
                 conversation history as a list of message objects / dicts.
             response_model (Type[BaseModel], optional): A Pydantic model to 
                 parse the output into.
+            tools (list, optional): A list of tool functions decorated with @tool.
         """
         url = f"{self.base_url}/responses"
 
         try:
             input = self._inject_runtime_instructions(input, response_model)
-            payload = self._build_payload(input)
+            payload = self._build_payload(input, tools=tools)
             async with httpx.AsyncClient() as client:
                 response = await client.post(
                     url, headers=self.headers, json=payload, timeout=60.0
@@ -289,6 +299,22 @@ class OpenAIClient(BaseLLMClient):
                 import traceback
                 traceback.print_exc()
             raise
+
+    def _format_tools(self, tools: List[Callable]) -> List[Dict[str, Any]]:
+        """Formats the list of tool functions for OpenAI."""
+        formatted = []
+        for tool_func in tools:
+            if hasattr(tool_func, "matic_tool_metadata"):
+                metadata = tool_func.matic_tool_metadata
+                formatted.append({
+                    "type": "function",
+                    "function": {
+                        "name": metadata["name"],
+                        "description": metadata["description"],
+                        "parameters": metadata["parameters"]
+                    }
+                })
+        return formatted
 
     def get_text_response(
         self, response: Union[OpenAIResponse, Dict[str, Any]]

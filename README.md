@@ -1,13 +1,8 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/arvohsoft/maticlib/main/docs/assets/logo.svg" alt="Maticlib Logo" width="220">
-  <br>
-  <!-- Fallback Logo if Image Fails to Load -->
-  <svg width="120" height="32" xmlns="http://www.w3.org/2000/svg" style="display:none;">
-    <text x="0" y="24" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#10b981">Maticlib</text>
-  </svg>
 </p>
 
-**A high-performance Python Automation Library for creating intelligent AI agents.**
+**A high-performance Python Automation Library for Creating Agents.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Downloads](https://static.pepy.tech/badge/maticlib)](https://pepy.tech/project/maticlib)

@@ -4,12 +4,31 @@ Stay up to date with the latest features, improvements, and bug fixes in Maticli
 
 ---
 
+## :material-tag-outline: [v0.1.7] - 2026-04-21
+
+### :material-creation: Major Additions
+
+#### **Native Tool Calling (Function Calling)**
+A robust system for enabling LLMs to interact with external Python functions. Developers can now define tools using a simple decorator and pass them directly to any LLM client.
+
+- **`@tool` Decorator**: Automatically generates JSON Schemas from Python function signatures, docstrings, and type hints.
+- **Multi-Provider Support**: Standardized implementation across OpenAI, Google Gemini, and Mistral AI.
+- **Unified Response Interface**: Tool requests are automatically extracted into a common `tool_calls` field in the standardized response model.
+
+### :material-wrench-outline: Fixes & Improvements
+- **Google GenAI**: Updated default model to `gemini-2.5-flash-lite` for better stability and lower latency.
+- **OpenAI**: Restored missing `response_id` and `model_version` mappings in the Responses API.
+- **Imports**: Fixed a missing `Callable` import in several LLM client modules to prevent runtime errors during test collection.
+
+---
+
 ## :material-tag-outline: [v0.1.6] - 2026-04-17
  
 ### :material-creation: Major Additions
  
 #### **Response Parser System**
 A new, LangChain-inspired structured output system. Developers can now pass a Pydantic `BaseModel` directly to any LLM client to receive validated, type-safe Python objects.
+
 - `PydanticResponseParser`: Auto-generates structural instructions and validates output.
 - `JSONResponseParser`: Robust regex-based dictionary extraction.
 - `XMLResponseParser`: Flat dictionary extraction from XML tags.

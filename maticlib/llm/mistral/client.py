@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union, Callable
 from pydantic import BaseModel
 import httpx
 import os
@@ -165,7 +165,8 @@ class MistralClient(BaseLLMClient):
     def complete(
         self, 
         input: Union[str, List],
-        response_model: Optional[Type[BaseModel]] = None
+        response_model: Optional[Type[BaseModel]] = None,
+        tools: Optional[List[Callable]] = None
     ) -> Union[MistralResponse, Dict[str, Any]]:
         """
         Sends a synchronous chat completion request to Mistral.
@@ -174,6 +175,7 @@ class MistralClient(BaseLLMClient):
             input (str | list): The user prompt or conversation history.
             response_model (Type[BaseModel], optional): A Pydantic model to 
                 parse the output into.
+            tools (list, optional): A list of tool functions decorated with @tool.
         """
         url = f"{self.base_url}/chat/completions"
         
@@ -188,6 +190,10 @@ class MistralClient(BaseLLMClient):
                 "model": self.model,
                 "messages": formatted_messages
             }
+
+            # Handle tools
+            if tools:
+                payload["tools"] = self._format_tools(tools)
             
             # Make request
             response = httpx.post(url, headers=self.headers, json=payload, timeout=30.0)
@@ -215,7 +221,8 @@ class MistralClient(BaseLLMClient):
     async def async_complete(
         self, 
         input: Union[str, List],
-        response_model: Optional[Type[BaseModel]] = None
+        response_model: Optional[Type[BaseModel]] = None,
+        tools: Optional[List[Callable]] = None
     ) -> Union[MistralResponse, Dict[str, Any]]:
         """
         Sends an asynchronous chat completion request to Mistral.
@@ -224,6 +231,7 @@ class MistralClient(BaseLLMClient):
             input (str | list): The user prompt or conversation history.
             response_model (Type[BaseModel], optional): A Pydantic model to 
                 parse the output into.
+            tools (list, optional): A list of tool functions decorated with @tool.
         """
         url = f"{self.base_url}/chat/completions"
         
@@ -238,6 +246,10 @@ class MistralClient(BaseLLMClient):
                 "model": self.model,
                 "messages": formatted_messages
             }
+
+            # Handle tools
+            if tools:
+                payload["tools"] = self._format_tools(tools)
             
             # Make async request
             async with httpx.AsyncClient() as client:
@@ -263,6 +275,22 @@ class MistralClient(BaseLLMClient):
                 traceback.print_exc()
             raise
     
+    def _format_tools(self, tools: List[Callable]) -> List[Dict[str, Any]]:
+        """Formats the list of tool functions for Mistral."""
+        formatted = []
+        for tool_func in tools:
+            if hasattr(tool_func, "matic_tool_metadata"):
+                metadata = tool_func.matic_tool_metadata
+                formatted.append({
+                    "type": "function",
+                    "function": {
+                        "name": metadata["name"],
+                        "description": metadata["description"],
+                        "parameters": metadata["parameters"]
+                    }
+                })
+        return formatted
+
     def get_text_response(self, response: Union[MistralResponse, Dict[str, Any]]) -> str:
         """
         Extracts the primary text content from a Mistral response.
