@@ -1,6 +1,6 @@
 from __future__ import annotations
 import httpx
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union, Callable
 from pydantic import BaseModel
 from maticlib.core.parsers.pydantic import PydanticResponseParser
 
@@ -87,7 +87,8 @@ class BaseLLMClient:
     def complete(
         self, 
         input: str | list,
-        response_model: Optional[Type[BaseModel]] = None
+        response_model: Optional[Type[BaseModel]] = None,
+        tools: Optional[List[Callable]] = None
     ):
         """
         Send a synchronous completion request to the LLM.
@@ -113,7 +114,8 @@ class BaseLLMClient:
     async def async_complete(
         self, 
         input: str | list,
-        response_model: Optional[Type[BaseModel]] = None
+        response_model: Optional[Type[BaseModel]] = None,
+        tools: Optional[List[Callable]] = None
     ):
         """
         Send an asynchronous completion request to the LLM.
@@ -136,6 +138,10 @@ class BaseLLMClient:
         except Exception as e:
             import traceback
             traceback.print_exc()
+
+    def _format_tools(self, tools: List[Callable]) -> Any:
+        """To be implemented by subclasses to map tools to provider-specific schemas."""
+        return None
 
     def get_text_response(self, response: Any) -> str:
         """To be implemented by subclasses."""

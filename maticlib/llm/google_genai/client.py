@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union, Callable
 from pydantic import BaseModel
 
 from maticlib.client.classes.base_client import BaseLLMClient
@@ -26,7 +26,7 @@ class GoogleGenAIClient(BaseLLMClient):
     """
     def __init__(
         self,
-        model: str = "gemini-2.5-lite",
+        model: str = "gemini-2.5-flash-lite",
         system_instruct: str|SystemMessage|None = None,
         api_key: Optional[str] = None,
         thinking_budget: int = 0,
@@ -164,7 +164,8 @@ class GoogleGenAIClient(BaseLLMClient):
     def complete(
         self, 
         input: Union[str, List],
-        response_model: Optional[Type[BaseModel]] = None
+        response_model: Optional[Type[BaseModel]] = None,
+        tools: Optional[List[Callable]] = None
     ) -> Union[GeminiResponse, Dict[str, Any]]:
         """
         Sends a synchronous generation request to Gemini.
@@ -173,6 +174,7 @@ class GoogleGenAIClient(BaseLLMClient):
             input (str | list): The user prompt or conversation history.
             response_model (Type[BaseModel], optional): A Pydantic model to 
                 parse the output into.
+            tools (list, optional): A list of tool functions decorated with @tool.
         """
         url = f"{self.base_url}/models/{self.model}:generateContent"
         
@@ -184,6 +186,10 @@ class GoogleGenAIClient(BaseLLMClient):
             formatted_messages = self._format_messages(input)
             
             payload = {}
+            
+            # Handle tools
+            if tools:
+                payload["tools"] = self._format_tools(tools)
             
             if self.system_instruct:
                 self.system_instruct = self._format__system_instruction()
@@ -229,7 +235,8 @@ class GoogleGenAIClient(BaseLLMClient):
     async def async_complete(
         self, 
         input: str,
-        response_model: Optional[Type[BaseModel]] = None
+        response_model: Optional[Type[BaseModel]] = None,
+        tools: Optional[List[Callable]] = None
     ) -> Union[GeminiResponse, Dict[str, Any]]:
         """
         Sends an asynchronous generation request to Gemini.
@@ -238,6 +245,7 @@ class GoogleGenAIClient(BaseLLMClient):
             input (str): The text input to send to the model.
             response_model (Type[BaseModel], optional): A Pydantic model to 
                 parse the output into.
+            tools (list, optional): A list of tool functions decorated with @tool.
         """
         url = f"{self.base_url}/models/{self.model}:generateContent"
         
@@ -247,6 +255,10 @@ class GoogleGenAIClient(BaseLLMClient):
         formatted_messages = self._format_messages(input=input)
         
         payload = {}
+        
+        # Handle tools
+        if tools:
+            payload["tools"] = self._format_tools(tools)
             
         if self.system_instruct:
             self.system_instruct = self._format__system_instruction()
@@ -283,6 +295,19 @@ class GoogleGenAIClient(BaseLLMClient):
         finally:
             await client.aclose()
     
+    def _format_tools(self, tools: List[Callable]) -> List[Dict[str, Any]]:
+        """Formats the list of tool functions for Gemini."""
+        declarations = []
+        for tool_func in tools:
+            if hasattr(tool_func, "matic_tool_metadata"):
+                metadata = tool_func.matic_tool_metadata
+                declarations.append({
+                    "name": metadata["name"],
+                    "description": metadata["description"],
+                    "parameters": metadata["parameters"]
+                })
+        return [{"function_declarations": declarations}]
+
     def get_text_response(self, response: Union[GeminiResponse, Dict[str, Any]]) -> str:
         """
         Extracts the primary text content from a Gemini response.

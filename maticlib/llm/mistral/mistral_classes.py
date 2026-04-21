@@ -88,6 +88,11 @@ class MistralResponse(LLMResponseBase):
                     data['content_parts'] = [ContentPart(type=ModalityType.TEXT, text=content)]
             
             data['finish_reason'] = first_choice.get('finish_reason')
+
+            # Extract tool calls
+            tool_calls = message.get('tool_calls')
+            if tool_calls:
+                data['tool_calls'] = tool_calls
         
         # Extract token usage
         if 'usage' in data:

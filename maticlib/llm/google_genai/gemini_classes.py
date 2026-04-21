@@ -113,6 +113,20 @@ class GeminiResponse(LLMResponseBase):
                                 modality = ModalityType.VIDEO
                                 content_part.video_url = file_data.get('file_uri')
                         
+                        # Extract function calls (tools)
+                        if part.get('functionCall'):
+                            call = part['functionCall']
+                            if 'tool_calls' not in data:
+                                data['tool_calls'] = []
+                            data['tool_calls'].append({
+                                "id": None, # Gemini doesn't always provide a call ID in the same way
+                                "type": "function",
+                                "function": {
+                                    "name": call.get("name"),
+                                    "arguments": call.get("args") # Gemini returns args as dict, not JSON string
+                                }
+                            })
+
                         content_part.type = modality
                         content_parts.append(content_part)
                 

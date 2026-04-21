@@ -22,8 +22,14 @@ Learn how to build intelligent agents using the `MaticGraph` engine.
 
 ---
 
-## :material-cog-outline: Advanced State Management
-- **[Typed Pydantic State](https://github.com/arvohsoft/maticlib/blob/main/examples/06_typed_state.py)**: Using Pydantic models to enforce strict state schemas throughout your graph workflows.
+## :material-cog-outline: Structured Output & Parsing
+- **[Pydantic Response Parsing](https://github.com/arvohsoft/maticlib/blob/main/examples/08_pydantic_parsing.py)**: Force models to generate validated JSON that maps directly to your Pydantic schemas.
+- **[Typed Graph State](https://github.com/arvohsoft/maticlib/blob/main/examples/06_typed_state.py)**: Using Pydantic models to enforce strict state schemas throughout your graph workflows.
+
+---
+
+## :material-hammer-wrench: Native Tool Calling
+- **[Tool Definition & Usage](https://github.com/arvohsoft/maticlib/blob/main/examples/09_tool_calling.py)**: Use the `@tool` decorator to let LLMs call your Python functions directly.
 
 ---
 

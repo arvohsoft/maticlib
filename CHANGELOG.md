@@ -5,6 +5,17 @@ All notable changes to maticlib will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.7] - 2026-04-21
+
+### Added
+- **Native Tool Calling (Function Calling)**
+  - Implemented `@tool` decorator that automatically generates JSON schemas from Python function signatures and docstrings.
+  - Added native tool calling support to `OpenAIClient` (v1/responses API).
+  - Added native tool calling support to `GoogleGenAIClient` (Gemini API).
+  - Added native tool calling support to `MistralClient` (Chat Completions API).
+  - Standardized `tool_calls` extraction across all providers into the `LLMResponseBase`.
+  - New `examples/09_tool_calling.py` demonstrating multi-provider tool usage.
+
 ## [0.1.6] - 2026-04-17
  
 ### Added

@@ -211,10 +211,26 @@ class OpenAIResponse(LLMResponseBase):
             data["finish_reason"] = output_list[0].get("status")
 
         # ------------------------------------------------------------------
-        # 4. Align shared identifier / metadata fields
+        # 5. Extract tool calls from output items
         # ------------------------------------------------------------------
+        tool_calls: List[Dict[str, Any]] = []
+        for item in data.get("output", []):
+            if not isinstance(item, dict):
+                continue
+            if item.get("type") == "call_tool":
+                tool_calls.append({
+                    "id": item.get("id"),
+                    "type": "function",
+                    "function": {
+                        "name": item.get("call_tool", {}).get("name"),
+                        "arguments": item.get("call_tool", {}).get("arguments")
+                    }
+                })
+        if tool_calls:
+            data["tool_calls"] = tool_calls
+
+        # Standardise response identifiers
         data["response_id"] = data.get("id")
-        # 'model' is the field in LLMResponseBase; copy to model_version too
         data["model_version"] = data.get("model")
 
         # Preserve raw JSON before super().__init__ may alter data
