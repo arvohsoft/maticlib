@@ -12,16 +12,6 @@ Maticlib is a developer-centric library designed to build complex, stateful AI w
 
 ---
 
-## Key Features
-
-- **Core Agent Framework**: Pure-Python graph workflow engine (`MaticGraph`) supporting both stateful and stateless execution.
-- **Unified LLM Integration**: Single interface for **OpenAI** (modern Responses API), **Google Gemini**, and **Mistral AI**.
-- **Complex Orchestration**: Built-in support for conditional routing, parallel node execution, and loop prevention.
-- **Data Integrity**: Deep Pydantic integration for standardized response models and type-safe workflow states.
-- **Advanced Telemetry**: Detailed token usage tracking, including modalities and reasoning tokens for newer models.
-
----
-
 ## Documentation
 
 For complete documentation, visit: **[https://arvohsoft.github.io/maticlib/](https://arvohsoft.github.io/maticlib/)**
@@ -32,10 +22,25 @@ For complete documentation, visit: **[https://arvohsoft.github.io/maticlib/](htt
 
 ---
 
-## Installation
+### Installation
 
+#### From PyPI
 ```bash
 pip install maticlib
+```
+
+#### From Source (Local Development)
+```bash
+# Clone the repository
+git clone https://github.com/arvohsoft/maticlib.git
+cd maticlib
+
+# Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install in editable mode with dev dependencies
+pip install -e ".[dev]"
 ```
 
 ---
@@ -52,26 +57,6 @@ client = OpenAIClient()
 response = client.complete("Explain quantum computing in one sentence.")
 print(client.get_text_response(response))
 ```
-
----
-
-## Roadmap
-
-### Core Library
-- [x] Google Gemini integration
-- [x] Mistral AI integration
-- [x] OpenAI Responses API integration
-- [x] Graph-based workflow engine
-- [x] Parallel node execution
-- [x] Automated documentation system
-- [ ] Anthropic Claude integration
-- [ ] Streaming support for all providers
-
-### Advanced Features
-- [ ] Unified tool/function calling interface
-- [ ] Multi-agent collaboration protocols
-- [ ] MCP (Model Context Protocol) support
-- [ ] Workflow persistence & checkpointing
 
 ---
 
