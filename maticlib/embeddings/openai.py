@@ -2,6 +2,7 @@ import os
 from typing import List, Optional, Union
 import httpx
 from maticlib.embeddings.base import BaseEmbeddings
+from maticlib.embeddings.models import EmbedQueryResponse, EmbedDocumentsResponse
 
 class OpenAIEmbeddings(BaseEmbeddings):
     """
@@ -22,6 +23,7 @@ class OpenAIEmbeddings(BaseEmbeddings):
         dimensions: Optional[int] = None,
         verbose: bool = True,
     ):
+        super().__init__()
         api_key = api_key or os.getenv("OPENAI_API_KEY", "")
         api_key = (api_key or "").strip()
         if not api_key:
@@ -39,11 +41,18 @@ class OpenAIEmbeddings(BaseEmbeddings):
             "Content-Type": "application/json",
         }
 
-    def embed_query(self, text: str) -> List[float]:
+    def embed_query(self, text: str) -> EmbedQueryResponse:
         """Embed a single query string."""
-        return self.embed_documents([text])[0]
+        docs_res = self.embed_documents([text])
+        return EmbedQueryResponse(
+            vector=docs_res.vectors[0],
+            prompt_tokens=docs_res.prompt_tokens,
+            total_tokens=docs_res.total_tokens,
+            model=docs_res.model,
+            raw_response=docs_res.raw_response,
+        )
 
-    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+    def embed_documents(self, texts: List[str]) -> EmbedDocumentsResponse:
         """Embed a list of document strings."""
         payload = {
             "model": self.model,
@@ -65,9 +74,20 @@ class OpenAIEmbeddings(BaseEmbeddings):
                 print(f"OpenAI Embeddings Status: {response.status_code}")
 
             data = response.json()
+            usage = data.get("usage", {})
+            prompt_tokens = usage.get("prompt_tokens", 0)
+            total_tokens = usage.get("total_tokens", prompt_tokens)
+
             # OpenAI returns data sorted by index in the 'data' list
             embeddings = [item["embedding"] for item in sorted(data["data"], key=lambda x: x["index"])]
-            return embeddings
+            
+            return EmbedDocumentsResponse(
+                vectors=embeddings,
+                prompt_tokens=prompt_tokens,
+                total_tokens=total_tokens,
+                model=data.get("model", self.model),
+                raw_response=data
+            )
 
         except httpx.HTTPStatusError as e:
             if self.verbose:

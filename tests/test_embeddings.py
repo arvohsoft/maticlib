@@ -30,12 +30,14 @@ def test_openai_embed_documents(httpx_mock, mock_env_keys):
         "data": [
             {"embedding": [0.1, 0.2], "index": 0},
             {"embedding": [0.3, 0.4], "index": 1}
-        ]
+        ],
+        "usage": {"prompt_tokens": 5}
     }
     httpx_mock.add_response(json=mock_response)
     
-    embeddings = client.embed_documents(["hello", "world"])
-    assert embeddings == [[0.1, 0.2], [0.3, 0.4]]
+    res = client.embed_documents(["hello", "world"])
+    assert res.vectors == [[0.1, 0.2], [0.3, 0.4]]
+    assert res.prompt_tokens == 5
 
 def test_google_embed_documents(httpx_mock, mock_env_keys):
     client = GoogleGenAIEmbeddings(verbose=False)
@@ -44,12 +46,14 @@ def test_google_embed_documents(httpx_mock, mock_env_keys):
         "embeddings": [
             {"values": [0.1, 0.2]},
             {"values": [0.3, 0.4]}
-        ]
+        ],
+        "usageMetadata": {"promptTokenCount": 7}
     }
     httpx_mock.add_response(json=mock_response)
     
-    embeddings = client.embed_documents(["hello", "world"])
-    assert embeddings == [[0.1, 0.2], [0.3, 0.4]]
+    res = client.embed_documents(["hello", "world"])
+    assert res.vectors == [[0.1, 0.2], [0.3, 0.4]]
+    assert res.prompt_tokens == 7
 
 def test_mistral_embed_documents(httpx_mock, mock_env_keys):
     client = MistralEmbeddings(verbose=False)
@@ -58,9 +62,11 @@ def test_mistral_embed_documents(httpx_mock, mock_env_keys):
         "data": [
             {"embedding": [0.1, 0.2], "index": 0},
             {"embedding": [0.3, 0.4], "index": 1}
-        ]
+        ],
+        "usage": {"prompt_tokens": 10}
     }
     httpx_mock.add_response(json=mock_response)
     
-    embeddings = client.embed_documents(["hello", "world"])
-    assert embeddings == [[0.1, 0.2], [0.3, 0.4]]
+    res = client.embed_documents(["hello", "world"])
+    assert res.vectors == [[0.1, 0.2], [0.3, 0.4]]
+    assert res.prompt_tokens == 10
