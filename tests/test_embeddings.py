@@ -3,10 +3,10 @@ import os
 from maticlib.embeddings import OpenAIEmbeddings, GoogleGenAIEmbeddings, MistralEmbeddings
 
 @pytest.fixture
-def mock_env_keys():
-    os.environ["OPENAI_API_KEY"] = "sk-test-key"
-    os.environ["GOOGLE_API_KEY"] = "google-test-key"
-    os.environ["MISTRAL_API_KEY"] = "mistral-test-key"
+def mock_env_keys(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test-key")
+    monkeypatch.setenv("GOOGLE_API_KEY", "google-test-key")
+    monkeypatch.setenv("MISTRAL_API_KEY", "mistral-test-key")
 
 def test_openai_embeddings_init(mock_env_keys):
     client = OpenAIEmbeddings()
@@ -15,7 +15,7 @@ def test_openai_embeddings_init(mock_env_keys):
 
 def test_google_embeddings_init(mock_env_keys):
     client = GoogleGenAIEmbeddings()
-    assert client.model == "models/text-embedding-004"
+    assert client.model == "models/gemini-embedding-001"
     assert client.headers["x-goog-api-key"] == "google-test-key"
 
 def test_mistral_embeddings_init(mock_env_keys):

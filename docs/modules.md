@@ -215,7 +215,7 @@ print(f"Vector Dimensions: {len(query_vector)}")
 | Provider | Client Class | Default Model |
 | :--- | :--- | :--- |
 | **OpenAI** | `OpenAIEmbeddings` | `text-embedding-3-small` |
-| **Google Gemini** | `GoogleGenAIEmbeddings` | `text-embedding-004` |
+| **Google Gemini** | `GoogleGenAIEmbeddings` | `gemini-embedding-001` |
 | **Mistral AI** | `MistralEmbeddings` | `mistral-embed` |
 
 ---

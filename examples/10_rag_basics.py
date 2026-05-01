@@ -5,7 +5,11 @@ This example demonstrates how to use Maticlib's unified Embeddings interface
 to generate vector representations of text using different providers.
 """
 
-from maticlib.embeddings import OpenAIEmbeddings, GoogleGenAIEmbeddings
+from maticlib.embeddings import OpenAIEmbeddings, GoogleGenAIEmbeddings, MistralEmbeddings
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 def main():
     # 1. Initialize OpenAI Embeddings
@@ -25,7 +29,7 @@ def main():
     # 2. Initialize Google Gemini Embeddings
     # Make sure GOOGLE_API_KEY is set in your environment
     try:
-        google_embed = GoogleGenAIEmbeddings(model="text-embedding-004", verbose=True)
+        google_embed = GoogleGenAIEmbeddings(model="gemini-embedding-001", verbose=True)
         
         # Embed multiple documents in a batch
         docs = [
@@ -41,6 +45,21 @@ def main():
 
     except Exception as e:
         print(f"Skipping Google example: {e}")
+
+    # 3. Initialize Mistral Embeddings
+    # Make sure MISTRAL_API_KEY is set in your environment
+    try:
+        mistral_embed = MistralEmbeddings(model="mistral-embed", verbose=True)
+        
+        # Embed a single query
+        query = "How to integrate API keys?"
+        vector = mistral_embed.embed_query(query)
+        
+        print(f"\n[Mistral] Query Vector (first 5 dims): {vector[:5]}...")
+        print(f"[Mistral] Total Dimensions: {len(vector)}")
+
+    except Exception as e:
+        print(f"Skipping Mistral example: {e}")
 
 if __name__ == "__main__":
     main()

@@ -8,7 +8,7 @@ class GoogleGenAIEmbeddings(BaseEmbeddings):
     Client for interacting with Google's Generative AI (Gemini) Embedding models.
     
     Args:
-        model: The Gemini embedding model to use. Defaults to "text-embedding-004".
+        model: The Gemini embedding model to use. Defaults to "gemini-embedding-001".
         api_key: Your Google AI API key. Falls back to GOOGLE_API_KEY or GEMINI_API_KEY.
         task_type: The type of task the embedding will be used for. 
             Common values: "RETRIEVAL_QUERY", "RETRIEVAL_DOCUMENT", "SEMANTIC_SIMILARITY".
@@ -17,7 +17,7 @@ class GoogleGenAIEmbeddings(BaseEmbeddings):
 
     def __init__(
         self,
-        model: str = "text-embedding-004",
+        model: str = "gemini-embedding-001",
         api_key: Optional[str] = None,
         task_type: str = "RETRIEVAL_DOCUMENT",
         verbose: bool = True,

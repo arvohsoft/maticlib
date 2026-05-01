@@ -5,9 +5,19 @@ All notable changes to maticlib will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.7] - 2026-04-21
+## [0.1.8] - 2026-04-29
 
 ### Added
+- **RAG & Context Engineering (Phase 1)**
+  - Implemented a unified `BaseEmbeddings` interface for generating high-dimensional vector representations.
+  - Added `OpenAIEmbeddings` supporting `text-embedding-3` models with dimensionality controls.
+  - Added `GoogleGenAIEmbeddings` supporting `gemini-embedding-001` with task-type optimization.
+  - Added `MistralEmbeddings` supporting `mistral-embed`.
+  - Added synchronous `embed_query()` and `embed_documents()` methods to all clients.
+  - Created `examples/10_rag_basics.py` to demonstrate unified usage.
+
+## [0.1.7] - 2026-04-21
+
 - **Native Tool Calling (Function Calling)**
   - Implemented `@tool` decorator that automatically generates JSON schemas from Python function signatures and docstrings.
   - Added native tool calling support to `OpenAIClient` (v1/responses API).

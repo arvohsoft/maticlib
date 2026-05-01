@@ -72,4 +72,4 @@ print(client.get_text_response(response))
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/arvohsoft/maticlib/blob/main/LICENSE) file for details.
