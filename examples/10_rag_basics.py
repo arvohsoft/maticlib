@@ -13,21 +13,21 @@ load_dotenv()
 
 def main():
     # 1. Initialize OpenAI Embeddings
-    # Make sure OPENAI_API_KEY is set in your environment
     try:
         openai_embed = OpenAIEmbeddings(model="text-embedding-3-small", verbose=True)
         
         # Embed a single query
         query = "What are the core features of Maticlib?"
-        vector = openai_embed.embed_query(query)
-        print(f"\n[OpenAI] Query Vector (first 5 dims): {vector[:5]}...")
-        print(f"[OpenAI] Total Dimensions: {len(vector)}")
+        res = openai_embed.embed_query(query)
+        print(f"\n[OpenAI] Response Model: {res.model}")
+        print(f"[OpenAI] Query Vector (first 5 dims): {res.vector[:5]}...")
+        print(f"[OpenAI] Total Dimensions: {len(res.vector)}")
+        print(f"[OpenAI] Tokens Used: {res.prompt_tokens}")
 
     except Exception as e:
         print(f"Skipping OpenAI example: {e}")
 
     # 2. Initialize Google Gemini Embeddings
-    # Make sure GOOGLE_API_KEY is set in your environment
     try:
         google_embed = GoogleGenAIEmbeddings(model="gemini-embedding-001", verbose=True)
         
@@ -37,26 +37,29 @@ def main():
             "It supports multiple providers including OpenAI, Gemini, and Mistral.",
             "The library focuses on type safety and graph-based orchestration."
         ]
-        doc_vectors = google_embed.embed_documents(docs)
+        res = google_embed.embed_documents(docs)
         
-        print(f"\n[Google] Embedded {len(doc_vectors)} documents.")
-        print(f"[Google] First Doc Vector (first 5 dims): {doc_vectors[0][:5]}...")
-        print(f"[Google] Total Dimensions: {len(doc_vectors[0])}")
+        print(f"\n[Google] Response Model: {res.model}")
+        print(f"[Google] Embedded {len(res.vectors)} documents.")
+        print(f"[Google] First Doc Vector (first 5 dims): {res.vectors[0][:5]}...")
+        print(f"[Google] Total Dimensions: {len(res.vectors[0])}")
+        print(f"[Google] Tokens Used: {res.prompt_tokens}")
 
     except Exception as e:
         print(f"Skipping Google example: {e}")
 
     # 3. Initialize Mistral Embeddings
-    # Make sure MISTRAL_API_KEY is set in your environment
     try:
         mistral_embed = MistralEmbeddings(model="mistral-embed", verbose=True)
         
         # Embed a single query
         query = "How to integrate API keys?"
-        vector = mistral_embed.embed_query(query)
+        res = mistral_embed.embed_query(query)
         
-        print(f"\n[Mistral] Query Vector (first 5 dims): {vector[:5]}...")
-        print(f"[Mistral] Total Dimensions: {len(vector)}")
+        print(f"\n[Mistral] Response Model: {res.model}")
+        print(f"[Mistral] Query Vector (first 5 dims): {res.vector[:5]}...")
+        print(f"[Mistral] Total Dimensions: {len(res.vector)}")
+        print(f"[Mistral] Tokens Used: {res.prompt_tokens}")
 
     except Exception as e:
         print(f"Skipping Mistral example: {e}")

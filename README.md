@@ -58,6 +58,20 @@ response = client.complete("Explain quantum computing in one sentence.")
 print(client.get_text_response(response))
 ```
 
+#### Quick Start: Embeddings
+
+```python
+from maticlib import OpenAIEmbeddings
+
+# Initialize the client
+embed_client = OpenAIEmbeddings()
+
+# Embed single query
+res = embed_client.embed_query("Core features of Maticlib")
+print(res.vector[:5])      # List[float]
+print(res.prompt_tokens)   # Total prompt tokens used
+```
+
 ---
 
 ## Project Leadership

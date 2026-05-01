@@ -4,6 +4,16 @@ Stay up to date with the latest features, improvements, and bug fixes in Maticli
 
 ---
 
+## :material-tag-outline: [v0.1.9] - 2026-05-01
+
+### :material-creation: Major Additions
+
+#### **Embeddings Token Tracking & Metadata**
+- Changed `embed_query()` and `embed_documents()` return types to return Pydantic objects (`EmbedQueryResponse` and `EmbedDocumentsResponse`).
+- Includes token usage (`prompt_tokens`, `total_tokens`), precise model IDs, and the raw provider response dictionary directly inside the returned model.
+
+---
+
 ## :material-tag-outline: [v0.1.8] - 2026-04-29
 
 ### :material-creation: Major Additions
