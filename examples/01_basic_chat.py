@@ -45,7 +45,7 @@ def run_basic_chat():
     # Initialize clients only if their keys are present to avoid protocol errors
     openai = OpenAIClient(verbose=True) if "OPENAI_API_KEY" not in missing else None
     mistral = MistralClient(model="mistral-large-latest") if "MISTRAL_API_KEY" not in missing else None
-    gemini = GoogleGenAIClient(model="gemini-1.5-flash") if "GOOGLE_API_KEY" not in missing else None
+    gemini = GoogleGenAIClient(model="gemini-2.5-flash-lite") if "GOOGLE_API_KEY" not in missing else None
     
     prompt = "Explain quantum computing in one sentence."
     

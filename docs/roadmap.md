@@ -16,7 +16,8 @@ Maticlib is actively developed. Below is the current progress and planned featur
 
 ## Advanced Features
 - [ ] **Agent Tooling**: Built-in tools for Playwright, Selenium, Code Execution, and Bash/CLI scripting.
-- [ ] **RAG & Context**: Add Embeddings support and Chunker functions for Context Engineering.
+- [x] Embeddings support (OpenAI, Google, Mistral)
+- [ ] Chunker functions for Context Engineering
 - [ ] **MCP Support**: Tools to both host MCP servers and consume MCP clients.
 - [ ] **Agent Integration**: Higher-level Agent abstractions for complex task decomposition.
 - [ ] Multi-agent collaboration protocols

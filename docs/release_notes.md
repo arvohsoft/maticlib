@@ -4,6 +4,20 @@ Stay up to date with the latest features, improvements, and bug fixes in Maticli
 
 ---
 
+## :material-tag-outline: [v0.1.8] - 2026-04-29
+
+### :material-creation: Major Additions
+
+#### **RAG & Context Engineering (Phase 1)**
+Introduced a unified interface for generating high-dimensional vector representations of text.
+
+- **Unified Interface**: New `BaseEmbeddings` abstract class ensuring a consistent `embed_query` and `embed_documents` API across providers.
+- **OpenAI Embeddings**: `OpenAIEmbeddings` client supporting `text-embedding-3` models with dimensionality controls.
+- **Google GenAI Embeddings**: `GoogleGenAIEmbeddings` client supporting `gemini-embedding-001` with task-type optimization.
+- **Mistral Embeddings**: `MistralEmbeddings` client supporting the `mistral-embed` model.
+
+---
+
 ## :material-tag-outline: [v0.1.7] - 2026-04-21
 
 ### :material-creation: Major Additions

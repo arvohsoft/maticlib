@@ -78,6 +78,7 @@ nav:
       - Introduction: api/index.md
       - LLM Clients: api/clients.md
       - Native Tools: api/tools.md
+      - Embeddings: api/embeddings.md
       - Response Parsers: api/parsers.md
       - Graph Engine: api/graph.md
       - Message Types: api/messages.md
