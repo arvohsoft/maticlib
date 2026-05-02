@@ -19,11 +19,13 @@ Maticlib is actively developed. Below is the current progress and planned featur
 - [x] Embeddings support (OpenAI, Google, Mistral)
 - [x] **Context Engineering**: Advanced Chunkers & Document Loaders
 - [x] **Text2SQL Engine**: Schema Reflection, Transpilation, and Validation Guards
-- [ ] **Vector Stores**: Native integrations (Chroma, Milvus, Qdrant, Pinecone)
+- [x] **Vector Stores**: Native integrations (Chroma, Milvus, Qdrant, Pinecone)
 - [ ] **MCP Support**: Tools to both host MCP servers and consume MCP clients.
 - [ ] **Agent Integration**: Higher-level Agent abstractions for complex task decomposition.
 - [ ] Multi-agent collaboration protocols
-- [ ] Full Telemetry & Observability (OpenTelemetry, Logging)
+- [x] **Full Telemetry & Observability**: Pipeline Traces and Logging Callbacks
+- [x] **Resilience**: Exponential Backoff and Retry Policies
+- [x] **Memory Management**: Rolling Window and Conversation Buffers
 - [ ] Workflow persistence & checkpointing
 - [x] Detailed Token Usage Tracking
 

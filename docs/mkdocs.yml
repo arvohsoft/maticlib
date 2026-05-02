@@ -82,6 +82,14 @@ nav:
       - Response Parsers: api/parsers.md
       - Graph Engine: api/graph.md
       - Message Types: api/messages.md
+      - Document Loaders: api/io.md
+      - Chunkers: api/chunkers.md
+      - Vector Stores: api/vectorstores.md
+      - Prompts: api/prompts.md
+      - Memory: api/memory.md
+      - Observability: api/observability.md
+      - Text2SQL: api/text2sql.md
+      - Pipelines: api/pipelines.md
   - Examples: examples.md
   - Release Notes: release_notes.md
   - Team: team.md

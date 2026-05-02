@@ -5,6 +5,18 @@ All notable changes to maticlib will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-05-03
+
+### Added
+- **Prompts, Observability & Resilience**
+  - Implemented Prompts module: `BasePromptTemplate` and `PromptRegistry`.
+  - Implemented Observability Tracing: `PipelineTrace` and `StepTrace` capturing cross-provider token analytics and execution timings with a `LoggingCallbackHandler`.
+  - Implemented Resilience module: Built `RetryPolicy` and `@with_retry` decorators for handling external API failures.
+  - Implemented Memory components: `ConversationBufferMemory` and `WindowBufferMemory` for context tracking.
+  - Implemented advanced Vector Stores: `InMemoryVectorIndex`, `ChromaVectorIndex`, `MilvusVectorIndex`, `PineconeVectorIndex`, `QdrantVectorIndex`, and `SchemaVectorIndex`.
+  - Implemented advanced Retrieval tools: `HybridRetriever`, `ReciprocalRankFusion` (RRF), and `QueryTransformer`.
+  - Implemented high-level orchestration Pipelines: `RAGPipeline` and `Text2SQLPipeline`.
+
 ## [0.2.0] - 2026-05-03
 
 ### Added

@@ -4,6 +4,21 @@ Stay up to date with the latest features, improvements, and bug fixes in Maticli
 
 ---
 
+## :material-tag-outline: [v0.2.1] - 2026-05-03
+
+### :material-creation: Major Additions
+
+#### **Prompts, Observability & Resilience**
+- **Prompts & Memory**: Established `BasePromptTemplate` and dynamic `PromptRegistry` coupled with rolling window `ConversationBufferMemory`.
+- **Observability & Resilience**: Built high-resolution tracing (`PipelineTrace`, `StepTrace`) natively capturing token budgets and a robust exponential backoff `@with_retry` decorator.
+
+#### **Vector Stores & Pipelines**
+- **Vector Stores**: Built integrations for `ChromaVectorIndex`, `MilvusVectorIndex`, `PineconeVectorIndex`, `QdrantVectorIndex`, and `InMemoryVectorIndex`.
+- **Advanced Retrieval**: Implemented `HybridRetriever`, `ReciprocalRankFusion` (RRF), and LLM-backed `QueryTransformer`.
+- **Pipelines**: Unified the logic into easy-to-use `RAGPipeline` and `Text2SQLPipeline` orchestrators.
+
+---
+
 ## :material-tag-outline: [v0.2.0] - 2026-05-03
 
 ### :material-creation: Major Additions
