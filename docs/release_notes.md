@@ -4,20 +4,6 @@ Stay up to date with the latest features, improvements, and bug fixes in Maticli
 
 ---
 
-## :material-tag-outline: [v0.2.0] - 2026-05-03
-
-### :material-creation: Major Additions
-
-#### **RAG & Context Engineering (Phase 2)**
-Completed a massive expansion of the Maticlib data pipeline, enabling advanced RAG and Text2SQL workflows.
-
-- **Advanced Chunkers**: Built `SeparatorChunker`, `HierarchicalChunker`, `TokenBudgetChunker`, and `SemanticDifferenceChunker` for precise context engineering.
-- **Document Loaders**: Added robust `TextLoader`, `PDFLoader`, `DOCXLoader`, and `WebPageLoader` to ingest data seamlessly into the chunking system.
-- **Vector Stores Config**: Implemented `VectorIndexConfig` defining Flat, HNSW, IVF, and LSH indexing strategies.
-- **Text2SQL Engine**: Introduced full schema reflection, dialect transpilation, tabular file ingestion (CSV/Excel/Parquet), and the powerful `SQLInjectionGuard` utilizing `sqlglot` to secure LLM-generated queries.
-
----
-
 ## :material-tag-outline: [v0.1.9] - 2026-05-01
 
 ### :material-creation: Major Additions

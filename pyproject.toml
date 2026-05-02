@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "maticlib"
-version = "0.2.0"
+version = "0.1.9"
 description = "A Python Automation Library for Creating Agents"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -32,94 +32,6 @@ docs = [
     "mkdocs-material>=9.0.0",
     "mkdocstrings[python]>=0.22.0",
     "black>=23.0.0",
-]
-
-# RAG pipeline — chunking, document loading, hybrid retrieval
-rag = [
-    "pypdf>=3.0.0",              # PDFLoader
-    "python-docx>=0.8.11",       # DOCXLoader
-    "beautifulsoup4>=4.12.0",    # WebPageLoader HTML parsing
-    "rank-bm25>=0.2.2",          # HybridRetriever BM25 side
-    "numpy>=1.24.0",             # InMemoryVectorIndex cosine similarity
-]
-
-# Semantic / token-aware chunking
-chunking = [
-    "tiktoken>=0.5.0",           # TokenBudgetChunker (OpenAI tokeniser)
-    "numpy>=1.24.0",             # SemanticDifferenceChunker cosine math
-]
-
-# Vector store backends — install only what you use
-chroma = [
-    "chromadb>=0.4.0",
-]
-milvus = [
-    "pymilvus>=2.3.0",
-]
-pinecone = [
-    "pinecone-client>=3.0.0",
-]
-qdrant = [
-    "qdrant-client>=1.7.0",
-]
-
-# SQL / Text2SQL
-sqlite = []                      # no extra package — sqlite3 is built-in
-mysql = [
-    "pymysql>=1.1.0",
-    "sqlalchemy>=2.0.0",
-    "sqlglot>=20.0.0",
-]
-postgresql = [
-    "psycopg2-binary>=2.9.0",
-    "sqlalchemy>=2.0.0",
-    "sqlglot>=20.0.0",
-]
-text2sql = [
-    "sqlalchemy>=2.0.0",         # SQLAlchemySchemaLoader + SQLAlchemyExecutor
-    "sqlglot>=20.0.0",           # DDL parsing, validation, dialect transpilation
-]
-
-# Tabular file ingestion (CSV/Excel/Parquet → SQL)
-tabular = [
-    "pandas>=2.0.0",
-    "openpyxl>=3.1.0",           # Excel (.xlsx) support
-    "pyarrow>=14.0.0",           # Parquet support
-    "sqlalchemy>=2.0.0",
-]
-
-# Cross-encoder reranking
-reranking = [
-    "sentence-transformers>=2.2.0",   # CrossEncoderRanker
-]
-
-# Cost and token tracking in observability
-observability = [
-    "tiktoken>=0.5.0",           # token counting for cost estimation
-]
-
-# Convenience bundle — installs everything needed for a full local RAG stack
-all-rag = [
-    "pypdf>=3.0.0",
-    "python-docx>=0.8.11",
-    "beautifulsoup4>=4.12.0",
-    "rank-bm25>=0.2.2",
-    "numpy>=1.24.0",
-    "tiktoken>=0.5.0",
-    "chromadb>=0.4.0",
-    "sqlalchemy>=2.0.0",
-    "sqlglot>=20.0.0",
-    "pandas>=2.0.0",
-    "openpyxl>=3.1.0",
-    "pyarrow>=14.0.0",
-    "sentence-transformers>=2.2.0",
-]
-
-# Install all optional dependencies
-all = [
-    "maticlib[dev]",
-    "maticlib[docs]",
-    "maticlib[all-rag]",
 ]
 
 [project.urls]
