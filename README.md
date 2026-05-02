@@ -72,6 +72,32 @@ print(res.vector[:5])      # List[float]
 print(res.prompt_tokens)   # Total prompt tokens used
 ```
 
+#### Quick Start: Context Engineering (RAG)
+
+```python
+from maticlib.io.file import TextLoader
+from maticlib.core.text.chunkers import HierarchicalChunker
+
+chunker = HierarchicalChunker(target_size=500)
+loader = TextLoader(chunker=chunker)
+
+segments = list(loader.load("data.txt"))
+print(f"Loaded {len(segments)} segments!")
+```
+
+#### Quick Start: Text2SQL
+
+```python
+from maticlib.core.text2sql.guards import SQLInjectionGuard
+from maticlib.core.text2sql.executors import SQLAlchemyExecutor
+
+guard = SQLInjectionGuard(allowed_dialect="sqlite")
+executor = SQLAlchemyExecutor("sqlite:///my_db.db", read_only=True)
+
+query = guard.validate_and_format("SELECT * FROM users LIMIT 10")
+cols, rows = executor.execute(query)
+```
+
 ---
 
 ## Project Leadership
