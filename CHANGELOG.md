@@ -5,6 +5,16 @@ All notable changes to maticlib will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-05-03
+
+### Added
+- **RAG & Context Engineering (Phase 2)**
+  - Created advanced context Chunkers: `SeparatorChunker`, `HierarchicalChunker`, `TokenBudgetChunker`, and `SemanticDifferenceChunker`.
+  - Added robust Document Loaders (`TextLoader`, `PDFLoader`, `DOCXLoader`, `WebPageLoader`) integrated with the chunking system.
+  - Implemented Vector Store configuration layer (`VectorIndexConfig` and `IndexingStrategy`).
+  - Implemented Text2SQL core components: `SQLAlchemySchemaLoader`, `SQLAlchemyExecutor`, `TabularIngestor` for CSV/Excel/Parquet, and `SQLInjectionGuard` using `sqlglot` for secure dialect transpilation and validation.
+  - Added comprehensive optional dependency groups in `pyproject.toml` (e.g., `[rag]`, `[text2sql]`, `[all]`).
+
 ## [0.1.9] - 2026-05-01
 
 ### Added
