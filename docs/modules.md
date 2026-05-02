@@ -260,3 +260,186 @@ graph.when("classifier",
     complete="END"
 )
 ```
+
+---
+
+## :material-text-box-multiple-outline: Document Loaders (`maticlib.io`)
+
+Load data from files or websites to process in a RAG pipeline.
+
+### **Available Loaders**
+- **`TextLoader`**: Reads standard `.txt` files.
+- **`PDFLoader`**: Extracts text from `.pdf` files.
+- **`DOCXLoader`**: Extracts text from Word documents.
+- **`WebPageLoader`**: Scrapes and cleans text from public URLs.
+
+```python
+from maticlib.io import WebPageLoader
+
+loader = WebPageLoader("https://example.com")
+documents = loader.load()
+```
+
+---
+
+## :material-scissors-cutting: Chunkers (`maticlib.core.text.chunkers`)
+
+Splits large documents into optimal `TextSegment`s for embedding.
+
+### **Available Chunkers**
+- **`SeparatorChunker`**: Splits cleanly by characters (e.g., `\n\n`).
+- **`TokenBudgetChunker`**: Splits strictly by a max LLM token count using `tiktoken`.
+- **`SemanticDifferenceChunker`**: Splits by detecting large shifts in meaning using vector math.
+- **`HierarchicalChunker`**: Groups smaller child chunks into larger parent chunks for broad context retrieval.
+
+```python
+from maticlib.core.text.chunkers.token_budget import TokenBudgetChunker
+
+chunker = TokenBudgetChunker(max_tokens=500, overlap_tokens=50)
+segments = chunker.chunk(documents)
+```
+
+---
+
+## :material-database: Vector Stores (`maticlib.vectorstores`)
+
+Manage and query high-dimensional embeddings across different backend engines.
+
+### **Supported Engines**
+- **`InMemoryVectorIndex`**: Great for quick, lightweight local testing via Numpy.
+- **`ChromaVectorIndex`**: Ephemeral or persistent ChromaDB instances.
+- **`MilvusVectorIndex`**: Scalable PyMilvus (Lite or Server modes).
+- **`PineconeVectorIndex`**: Connects directly to Pinecone Cloud.
+- **`QdrantVectorIndex`**: Uses Qdrant Cloud or local instances.
+- **`SchemaVectorIndex`**: A wrapper explicitly for storing database schemas (DDLs) for Text2SQL workflows.
+
+```python
+from maticlib.vectorstores.chroma import ChromaVectorIndex
+from maticlib.embeddings.openai import OpenAIEmbeddings
+
+vector_index = ChromaVectorIndex(
+    embeddings=OpenAIEmbeddings(),
+    persist_directory="./chroma_db"
+)
+results = vector_index.similarity_search("How do I fix this error?", k=3)
+```
+
+---
+
+## :material-pencil-ruler: Prompts & Memory (`maticlib.prompts` & `maticlib.memory`)
+
+### **Prompts**
+Use `BasePromptTemplate` and `PromptRegistry` to manage string formatting systematically. 
+
+```python
+from maticlib.prompts.registry import PromptRegistry
+
+prompt = PromptRegistry.get("rag_qa")
+formatted = prompt.format(context="Data...", question="What is it?")
+```
+
+### **Memory Buffers**
+Maintain conversational history cleanly without blowing up context windows.
+- **`ConversationBufferMemory`**: Stores all messages sequentially.
+- **`WindowBufferMemory`**: A sliding window of the last `k` messages.
+
+```python
+from maticlib.memory.buffer import WindowBufferMemory
+from maticlib.messages import HumanMessage, AIMessage
+
+memory = WindowBufferMemory(k=10) # Keep last 10 messages
+memory.add_message(HumanMessage(content="Hello!"))
+memory.add_message(AIMessage(content="Hi there!"))
+```
+
+---
+
+## :material-chart-line: Observability & Resilience (`maticlib.observability` & `maticlib.resilience`)
+
+### **Tracing**
+Easily log execution time, token usage, and errors across the entire lifecycle.
+
+```python
+from maticlib.observability.trace import PipelineTrace
+from maticlib.observability.callbacks import LoggingCallbackHandler
+
+trace = PipelineTrace(pipeline_name="My_RAG")
+handler = LoggingCallbackHandler()
+handler.on_pipeline_start(trace)
+# ... run steps ...
+handler.on_pipeline_end(trace)
+```
+
+### **Retry Policies**
+Handle flaky external LLM APIs with robust, exponential backoff.
+- Use `RetryPolicy` manually or the `@with_retry(max_retries=3)` decorator on any function.
+
+```python
+from maticlib.resilience.retry import with_retry
+
+@with_retry(max_retries=3, initial_delay=1.0)
+def call_external_api():
+    # Will automatically retry on exceptions
+    pass
+```
+
+---
+
+## :material-database-search: Text2SQL (`maticlib.core.text2sql`)
+
+Generate, validate, and safely execute SQL queries from natural language.
+
+- **`SQLAlchemySchemaLoader`**: Auto-reflects standard databases into `TableSchema` objects.
+- **`TabularIngestor`**: Easily ingests CSV, Excel, and Parquet directly into a SQL database.
+- **`SQLInjectionGuard`**: Strict, syntax-level validation using `sqlglot` to prevent `DROP`, `DELETE`, and `UPDATE` tampering from rogue LLM queries.
+- **`SQLAlchemyExecutor`**: Secure execution of validated queries, returning sanitized columns and rows.
+
+```python
+from maticlib.core.text2sql.guards import SQLInjectionGuard
+from maticlib.core.text2sql.executors import SQLAlchemyExecutor
+
+# Prevent destructive queries
+guard = SQLInjectionGuard(allowed_dialect="postgres")
+safe_query = guard.validate_and_format("SELECT * FROM users;")
+
+# Safely execute
+executor = SQLAlchemyExecutor("sqlite:///my_db.db")
+cols, rows = executor.execute(safe_query)
+```
+
+---
+
+## :material-pipe: High-Level Pipelines (`maticlib.pipelines`)
+
+The ultimate orchestration layer tying everything together.
+
+### **RAGPipeline**
+A complete wrapper handling Query Transformation, Hybrid Keyword Retrieval, and Generation.
+
+```python
+from maticlib.pipelines.rag_pipeline import RAGPipeline
+
+pipeline = RAGPipeline(
+    llm_client=client,
+    vector_index=vector_index,
+    use_hybrid=True,
+    use_query_transform=True
+)
+answer = pipeline.generate("What is Maticlib?")
+```
+
+### **Text2SQLPipeline**
+A complete wrapper handling Schema loading, LLM SQL Generation, SQL Injection Guarding, and Execution.
+
+```python
+from maticlib.pipelines.text2sql_pipeline import Text2SQLPipeline
+
+pipeline = Text2SQLPipeline(
+    llm_client=client,
+    schema_loader=schema_loader,
+    executor=executor,
+    connection_string="sqlite:///data.db"
+)
+columns, rows = pipeline.execute("Show me the top 5 users by revenue")
+```
+

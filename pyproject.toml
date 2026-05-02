@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "maticlib"
-version = "0.2.0"
+version = "0.2.1"
 description = "A Python Automation Library for Creating Agents"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -54,7 +54,7 @@ chroma = [
     "chromadb>=0.4.0",
 ]
 milvus = [
-    "pymilvus>=2.3.0",
+    "pymilvus[milvus_lite]>=2.3.0",
 ]
 pinecone = [
     "pinecone-client>=3.0.0",

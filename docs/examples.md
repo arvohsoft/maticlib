@@ -31,6 +31,19 @@ Learn how to build intelligent agents using the `MaticGraph` engine.
 ## :material-hammer-wrench: Native Tool Calling
 - **[Tool Definition & Usage](https://github.com/arvohsoft/maticlib/blob/main/examples/09_tool_calling.py)**: Use the `@tool` decorator to let LLMs call your Python functions directly.
 
+## :material-database-search: RAG & Text2SQL
+- **[Context Engineering Basics](https://github.com/arvohsoft/maticlib/blob/main/examples/11_chunkers_and_loaders.py)**: How to extract text from PDFs, Webpages, and TXTs, and chunk them correctly.
+- **[Secure Text2SQL Engine](https://github.com/arvohsoft/maticlib/blob/main/examples/12_text2sql_basics.py)**: Auto-reflecting databases and generating strictly validated, injection-proof SQL queries.
+- **[RAG Pipeline & In-Memory Vector Store](https://github.com/arvohsoft/maticlib/blob/main/examples/14_vectorstores_and_pipelines.py)**: A complete end-to-end RAG pipeline using `InMemoryVectorIndex` and Query Transformers.
+- **[Chroma Vector Store](https://github.com/arvohsoft/maticlib/blob/main/examples/15_chroma_vectorstore.py)**: Using the `ChromaVectorIndex` for persistent local embedding storage.
+- **[Milvus Vector Store](https://github.com/arvohsoft/maticlib/blob/main/examples/16_milvus_vectorstore.py)**: Using the `MilvusVectorIndex` (Lite mode) for scalable vector search.
+- **[Milvus Server Vector Store](https://github.com/arvohsoft/maticlib/blob/main/examples/17_milvus_server_vectorstore.py)**: Connecting to a standalone Milvus Server at `http://localhost:19530`.
+
+---
+
+## :material-eye-outline: Observability & Resilience
+- **[Traces, Retry & Memory](https://github.com/arvohsoft/maticlib/blob/main/examples/13_prompts_and_observability.py)**: Using the Prompt Registry, rolling window memory buffers, handling external API failures with exponential backoff, and tracing exact token usages via Callbacks.
+
 ---
 
 ## Running the Examples
