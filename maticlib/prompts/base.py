@@ -53,3 +53,4 @@ class BasePromptTemplate(BaseModel):
             raise TemplateRenderError(f"Missing expected key during format: {e}")
         except Exception as e:
             raise TemplateRenderError(f"Failed to format template: {e}")
+
