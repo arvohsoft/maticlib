@@ -5,10 +5,13 @@ from maticlib.core.text.models import TextSegment
 from maticlib.io.base import BaseLoader
 from maticlib.exceptions import MissingDependencyError, DocumentLoadError
 
+
 class WebPageLoader(BaseLoader):
     """Fetches a URL and extracts readable text using BeautifulSoup. Requires beautifulsoup4 and httpx."""
 
-    def load(self, source: str, metadata: Optional[Dict[str, Any]] = None) -> Iterable[TextSegment]:
+    def load(
+        self, source: str, metadata: Optional[Dict[str, Any]] = None
+    ) -> Iterable[TextSegment]:
         """
         Fetches a web page and yields TextSegments.
 
@@ -44,7 +47,7 @@ class WebPageLoader(BaseLoader):
             # Remove scripts and styles
             for script in soup(["script", "style"]):
                 script.extract()
-            
+
             # Get text and clean up whitespace
             text = soup.get_text(separator="\n")
             lines = (line.strip() for line in text.splitlines())
@@ -55,10 +58,10 @@ class WebPageLoader(BaseLoader):
 
         if self.chunker:
             parent_id = uuid.uuid4().hex[:12]
-            yield from self.chunker.chunk_text(content, base_metadata=base_meta, parent_id=parent_id)
+            yield from self.chunker.chunk_text(
+                content, base_metadata=base_meta, parent_id=parent_id
+            )
         else:
             yield TextSegment(
-                content=content,
-                metadata=base_meta,
-                segment_id=uuid.uuid4().hex[:12]
+                content=content, metadata=base_meta, segment_id=uuid.uuid4().hex[:12]
             )

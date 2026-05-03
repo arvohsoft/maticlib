@@ -3,29 +3,32 @@ import re
 from typing import Any, Dict
 from maticlib.core.parsers.base import BaseResponseParser
 
+
 class JSONResponseParser(BaseResponseParser[Dict[str, Any]]):
     """
     Parses LLM output into a JSON/dictionary format.
-    
+
     Includes robust extraction logic to find JSON blocks even if the model
     returns conversational text surrounding the JSON.
     """
-    
+
     @staticmethod
     def _extract_json_string(text: str) -> str:
         """
         Extracts a JSON-looking string from text, handling markdown blocks.
         """
         # 1. Try to find regex extraction of JSON blocks (```json ... ```)
-        json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL | re.IGNORECASE)
+        json_match = re.search(
+            r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL | re.IGNORECASE
+        )
         if json_match:
             return json_match.group(1)
-                
+
         # 2. Try finding anything between braces
         brace_match = re.search(r"(\{.*\})", text, re.DOTALL)
         if brace_match:
             return brace_match.group(1)
-            
+
         return text.strip()
 
     def parse(self, text: str) -> Dict[str, Any]:

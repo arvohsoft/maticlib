@@ -10,26 +10,27 @@ from maticlib.messages import SystemMessage, HumanMessage, AIMessage
 class MistralClient(BaseLLMClient):
     """
     Client for interacting with Mistral AI models.
-    
-    Inherits from BaseLLMClient and implements Mistral-specific message 
+
+    Inherits from BaseLLMClient and implements Mistral-specific message
     formatting and response parsing.
-    
+
     Args:
-        model (str): The name of the Mistral model to use. 
+        model (str): The name of the Mistral model to use.
             Defaults to "mistral-medium-latest".
-        system_instruct (str | SystemMessage, optional): Default instructions 
+        system_instruct (str | SystemMessage, optional): Default instructions
             to prepend to all conversations.
         api_key (str): Your Mistral AI API key. Defaults to MISTRAL_API_KEY environment variable.
         verbose (bool): If True, prints status messages to console.
         return_raw (bool): If True, returns the raw dict response instead of a MistralResponse model.
     """
+
     def __init__(
         self,
         model: str = "mistral-medium-latest",
-        system_instruct: str|SystemMessage|None = None,
+        system_instruct: str | SystemMessage | None = None,
         api_key: Optional[str] = None,
         verbose: bool = True,
-        return_raw: bool = False
+        return_raw: bool = False,
     ):
         api_key = api_key or os.getenv("MISTRAL_API_KEY", "")
         api_key = (api_key or "").strip()
@@ -46,49 +47,53 @@ class MistralClient(BaseLLMClient):
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
-            "Accept": "application/json"
+            "Accept": "application/json",
         }
-        self.return_raw = return_raw  # Option to return raw JSON response or Pydantic model
-        
-    def _format_messages(self, input: Union[str, List[Union[Dict, HumanMessage, SystemMessage, AIMessage]]]):
+        self.return_raw = (
+            return_raw  # Option to return raw JSON response or Pydantic model
+        )
+
+    def _format_messages(
+        self,
+        input: Union[str, List[Union[Dict, HumanMessage, SystemMessage, AIMessage]]],
+    ):
         """
         Formats various input types into the standard Mistral API message format.
-        
+
         Args:
-            input (str | list): A simple string, a list of message objects, 
+            input (str | list): A simple string, a list of message objects,
                 or a list of dictionaries with 'role' and 'content'.
-                
+
         Returns:
             list: A list of dictionaries ready for the Mistral API.
-            
+
         Raises:
             ValueError: If a dictionary message is missing a 'role'.
             TypeError: If input types are unsupported.
         """
         if isinstance(input, str):
             # Return a list of messages for Mistral
-            return [
-                {
-                    "role": "user",
-                    "content": input
-                }
-            ]
-        
+            return [{"role": "user", "content": input}]
+
         elif isinstance(input, list):
             formatted_messages = []
-            
+
             for message in input:
                 # Handle dictionary format
                 if isinstance(message, dict):
                     role = message.get("role")
                     content = message.get("content")
-                    
+
                     if role is None:
-                        raise ValueError(f"Message dictionary must have 'role' key: {message}")
-                    
+                        raise ValueError(
+                            f"Message dictionary must have 'role' key: {message}"
+                        )
+
                     if not isinstance(content, str):
-                        raise TypeError(f"Message content must be a string, got {type(content)}")
-                    
+                        raise TypeError(
+                            f"Message content must be a string, got {type(content)}"
+                        )
+
                     # Map roles to Mistral format (system, user, assistant)
                     if role in ["user", "human"]:
                         mistral_role = "user"
@@ -98,62 +103,59 @@ class MistralClient(BaseLLMClient):
                         mistral_role = "system"
                     else:
                         mistral_role = "user"  # Default to user
-                    
-                    formatted_messages.append({
-                        "role": mistral_role,
-                        "content": content
-                    })
-                
+
+                    formatted_messages.append(
+                        {"role": mistral_role, "content": content}
+                    )
+
                 # Handle message objects
                 elif isinstance(message, (HumanMessage, SystemMessage)):
                     role = "system" if isinstance(message, SystemMessage) else "user"
-                    formatted_messages.append({
-                        "role": role,
-                        "content": message.content
-                    })
-                
+                    formatted_messages.append(
+                        {"role": role, "content": message.content}
+                    )
+
                 elif isinstance(message, AIMessage):
                     formatted_messages.append(
-                            {
-                            "role": "assistant",
-                            "content": message.content
-                        }
+                        {"role": "assistant", "content": message.content}
                     )
-                
+
                 else:
                     raise TypeError(f"Unsupported message type: {type(message)}")
-            
+
             return formatted_messages
-        
+
         else:
             raise TypeError(f"Input must be str or list, got {type(input)}")
-    
+
     def __format__system_instruction(self):
         system_instruct = self.system_instruct
         if isinstance(system_instruct, str):
             return system_instruct
         elif isinstance(system_instruct, SystemMessage):
             return system_instruct.content
-    
-    def _parse_response(self, response: httpx.Response) -> Union[MistralResponse, Dict[str, Any]]:
+
+    def _parse_response(
+        self, response: httpx.Response
+    ) -> Union[MistralResponse, Dict[str, Any]]:
         """
         Parses the JSON response from Mistral into a structured model.
-        
+
         Args:
             response (httpx.Response): The raw HTTP response.
-            
+
         Returns:
-            MistralResponse | dict: The parsed response model, or a raw dictionary 
+            MistralResponse | dict: The parsed response model, or a raw dictionary
             if `return_raw` is set to True.
         """
         response_data = response.json()
-        
+
         # Add model version metadata
-        response_data['modelVersion'] = self.model
-        
+        response_data["modelVersion"] = self.model
+
         if self.return_raw:
             return response_data
-        
+
         try:
             return MistralResponse(**response_data)
         except Exception as e:
@@ -161,52 +163,49 @@ class MistralClient(BaseLLMClient):
                 print(f"Warning: Failed to parse response into Pydantic model: {e}")
                 print("Returning raw response instead")
             return response_data
-    
+
     def complete(
-        self, 
+        self,
         input: Union[str, List],
         response_model: Optional[Type[BaseModel]] = None,
-        tools: Optional[List[Callable]] = None
+        tools: Optional[List[Callable]] = None,
     ) -> Union[MistralResponse, Dict[str, Any]]:
         """
         Sends a synchronous chat completion request to Mistral.
-        
+
         Args:
             input (str | list): The user prompt or conversation history.
-            response_model (Type[BaseModel], optional): A Pydantic model to 
+            response_model (Type[BaseModel], optional): A Pydantic model to
                 parse the output into.
             tools (list, optional): A list of tool functions decorated with @tool.
         """
         url = f"{self.base_url}/chat/completions"
-        
+
         try:
             # Inject structure instructions if requested
             input = self._inject_runtime_instructions(input, response_model)
-            
+
             # Format messages
             formatted_messages = self._format_messages(input)
-            
-            payload = {
-                "model": self.model,
-                "messages": formatted_messages
-            }
+
+            payload = {"model": self.model, "messages": formatted_messages}
 
             # Handle tools
             if tools:
                 payload["tools"] = self._format_tools(tools)
-            
+
             # Make request
             response = httpx.post(url, headers=self.headers, json=payload, timeout=30.0)
             response.raise_for_status()
-            
+
             if self.verbose:
                 print(f"Status: {response.status_code}")
-            
+
             # Parse and return response
             result = self._parse_response(response)
             self._apply_response_model(result, response_model)
             return result
-            
+
         except httpx.HTTPStatusError as e:
             if self.verbose:
                 print(f"HTTP Error: {e.response.status_code}")
@@ -215,55 +214,55 @@ class MistralClient(BaseLLMClient):
         except Exception as e:
             if self.verbose:
                 import traceback
+
                 traceback.print_exc()
             raise
-            
+
     async def async_complete(
-        self, 
+        self,
         input: Union[str, List],
         response_model: Optional[Type[BaseModel]] = None,
-        tools: Optional[List[Callable]] = None
+        tools: Optional[List[Callable]] = None,
     ) -> Union[MistralResponse, Dict[str, Any]]:
         """
         Sends an asynchronous chat completion request to Mistral.
-        
+
         Args:
             input (str | list): The user prompt or conversation history.
-            response_model (Type[BaseModel], optional): A Pydantic model to 
+            response_model (Type[BaseModel], optional): A Pydantic model to
                 parse the output into.
             tools (list, optional): A list of tool functions decorated with @tool.
         """
         url = f"{self.base_url}/chat/completions"
-        
+
         try:
             # Inject structure instructions if requested
             input = self._inject_runtime_instructions(input, response_model)
-            
+
             # Format messages
             formatted_messages = self._format_messages(input)
-            
-            payload = {
-                "model": self.model,
-                "messages": formatted_messages
-            }
+
+            payload = {"model": self.model, "messages": formatted_messages}
 
             # Handle tools
             if tools:
                 payload["tools"] = self._format_tools(tools)
-            
+
             # Make async request
             async with httpx.AsyncClient() as client:
-                response = await client.post(url, headers=self.headers, json=payload, timeout=30.0)
+                response = await client.post(
+                    url, headers=self.headers, json=payload, timeout=30.0
+                )
                 response.raise_for_status()
-                
+
                 if self.verbose:
                     print(f"Status: {response.status_code}")
-                
+
                 # Parse and return response
                 result = self._parse_response(response)
                 self._apply_response_model(result, response_model)
                 return result
-                
+
         except httpx.HTTPStatusError as e:
             if self.verbose:
                 print(f"HTTP Error: {e.response.status_code}")
@@ -272,44 +271,49 @@ class MistralClient(BaseLLMClient):
         except Exception as e:
             if self.verbose:
                 import traceback
+
                 traceback.print_exc()
             raise
-    
+
     def _format_tools(self, tools: List[Callable]) -> List[Dict[str, Any]]:
         """Formats the list of tool functions for Mistral."""
         formatted = []
         for tool_func in tools:
             if hasattr(tool_func, "matic_tool_metadata"):
                 metadata = tool_func.matic_tool_metadata
-                formatted.append({
-                    "type": "function",
-                    "function": {
-                        "name": metadata["name"],
-                        "description": metadata["description"],
-                        "parameters": metadata["parameters"]
+                formatted.append(
+                    {
+                        "type": "function",
+                        "function": {
+                            "name": metadata["name"],
+                            "description": metadata["description"],
+                            "parameters": metadata["parameters"],
+                        },
                     }
-                })
+                )
         return formatted
 
-    def get_text_response(self, response: Union[MistralResponse, Dict[str, Any]]) -> str:
+    def get_text_response(
+        self, response: Union[MistralResponse, Dict[str, Any]]
+    ) -> str:
         """
         Extracts the primary text content from a Mistral response.
-        
+
         Args:
             response (MistralResponse | dict): The response to extract from.
-            
+
         Returns:
             str: The extracted text string.
         """
         if isinstance(response, MistralResponse):
             return response.content or ""
-        
+
         # Handle raw dict response
         try:
-            choices = response.get('choices', [])
+            choices = response.get("choices", [])
             if choices:
-                message = choices[0].get('message', {})
-                content = message.get('content', '')
+                message = choices[0].get("message", {})
+                content = message.get("content", "")
                 return content
         except Exception:
             raise

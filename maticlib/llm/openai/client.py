@@ -115,22 +115,16 @@ class OpenAIClient(BaseLLMClient):
                 role = message.get("role")
                 content = message.get("content")
                 if role is None:
-                    raise ValueError(
-                        f"Message dict must have a 'role' key: {message}"
-                    )
+                    raise ValueError(f"Message dict must have a 'role' key: {message}")
                 if not isinstance(content, str):
-                    raise TypeError(
-                        f"Message content must be str, got {type(content)}"
-                    )
+                    raise TypeError(f"Message content must be str, got {type(content)}")
                 # Map maticlib role aliases → OpenAI roles
                 role_map = {
                     "human": "user",
                     "ai": "assistant",
                     "model": "assistant",
                 }
-                formatted.append(
-                    {"role": role_map.get(role, role), "content": content}
-                )
+                formatted.append({"role": role_map.get(role, role), "content": content})
             elif isinstance(message, HumanMessage):
                 formatted.append({"role": "user", "content": message.content})
             elif isinstance(message, SystemMessage):
@@ -223,7 +217,7 @@ class OpenAIClient(BaseLLMClient):
         Args:
             input (str | list): The user prompt as a plain string, or a
                 conversation history as a list of message objects / dicts.
-            response_model (Type[BaseModel], optional): A Pydantic model to 
+            response_model (Type[BaseModel], optional): A Pydantic model to
                 parse the output into.
             tools (list, optional): A list of tool functions decorated with @tool.
         """
@@ -232,9 +226,7 @@ class OpenAIClient(BaseLLMClient):
         try:
             input = self._inject_runtime_instructions(input, response_model)
             payload = self._build_payload(input, tools=tools)
-            response = httpx.post(
-                url, headers=self.headers, json=payload, timeout=60.0
-            )
+            response = httpx.post(url, headers=self.headers, json=payload, timeout=60.0)
             response.raise_for_status()
 
             if self.verbose:
@@ -252,6 +244,7 @@ class OpenAIClient(BaseLLMClient):
         except Exception:
             if self.verbose:
                 import traceback
+
                 traceback.print_exc()
             raise
 
@@ -267,7 +260,7 @@ class OpenAIClient(BaseLLMClient):
         Args:
             input (str | list): The user prompt as a plain string, or a
                 conversation history as a list of message objects / dicts.
-            response_model (Type[BaseModel], optional): A Pydantic model to 
+            response_model (Type[BaseModel], optional): A Pydantic model to
                 parse the output into.
             tools (list, optional): A list of tool functions decorated with @tool.
         """
@@ -297,6 +290,7 @@ class OpenAIClient(BaseLLMClient):
         except Exception:
             if self.verbose:
                 import traceback
+
                 traceback.print_exc()
             raise
 
@@ -306,19 +300,19 @@ class OpenAIClient(BaseLLMClient):
         for tool_func in tools:
             if hasattr(tool_func, "matic_tool_metadata"):
                 metadata = tool_func.matic_tool_metadata
-                formatted.append({
-                    "type": "function",
-                    "function": {
-                        "name": metadata["name"],
-                        "description": metadata["description"],
-                        "parameters": metadata["parameters"]
+                formatted.append(
+                    {
+                        "type": "function",
+                        "function": {
+                            "name": metadata["name"],
+                            "description": metadata["description"],
+                            "parameters": metadata["parameters"],
+                        },
                     }
-                })
+                )
         return formatted
 
-    def get_text_response(
-        self, response: Union[OpenAIResponse, Dict[str, Any]]
-    ) -> str:
+    def get_text_response(self, response: Union[OpenAIResponse, Dict[str, Any]]) -> str:
         """
         Extracts the primary text content from an OpenAI response.
 
@@ -330,8 +324,7 @@ class OpenAIClient(BaseLLMClient):
                 ``complete`` or ``async_complete``.
 
         Returns:
-            str: The extracted text string, or an empty string if no text
-            was found.
+            str: The extracted text string, or an empty string if no text was found.
         """
         if isinstance(response, OpenAIResponse):
             return response.content or ""

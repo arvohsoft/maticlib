@@ -3,6 +3,7 @@ from typing import Iterable, Dict, Any, Optional
 from maticlib.core.text.models import TextSegment
 from maticlib.core.text.chunkers.base import BaseChunker
 
+
 class BaseLoader(ABC):
     def __init__(self, chunker: Optional[BaseChunker] = None):
         """
@@ -15,7 +16,9 @@ class BaseLoader(ABC):
         self.chunker = chunker
 
     @abstractmethod
-    def load(self, source: str, metadata: Optional[Dict[str, Any]] = None) -> Iterable[TextSegment]:
+    def load(
+        self, source: str, metadata: Optional[Dict[str, Any]] = None
+    ) -> Iterable[TextSegment]:
         """
         Load a document from the given source (file path, URL, etc.)
         and yield TextSegments.
@@ -23,10 +26,15 @@ class BaseLoader(ABC):
         pass
 
     # Basic implementation of async load, subclasses can override for true async I/O
-    async def load_async(self, source: str, metadata: Optional[Dict[str, Any]] = None) -> Iterable[TextSegment]:
+    async def load_async(
+        self, source: str, metadata: Optional[Dict[str, Any]] = None
+    ) -> Iterable[TextSegment]:
         """
         Load a document asynchronously.
         """
         import asyncio
+
         loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(None, lambda: list(self.load(source, metadata)))
+        return await loop.run_in_executor(
+            None, lambda: list(self.load(source, metadata))
+        )

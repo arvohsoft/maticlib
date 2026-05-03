@@ -1,12 +1,14 @@
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 
+
 class ColumnSchema(BaseModel):
     name: str
     data_type: str
     primary_key: bool = False
     foreign_key: Optional[str] = None
     description: Optional[str] = None
+
 
 class TableSchema(BaseModel):
     name: str
@@ -27,6 +29,7 @@ class TableSchema(BaseModel):
         lines.append(");")
         return "\n".join(lines)
 
+
 class DatabaseSchema(BaseModel):
     tables: List[TableSchema]
 
@@ -35,7 +38,7 @@ class DatabaseSchema(BaseModel):
 
     def to_prompt_string(self, subset_tables: Optional[List[str]] = None) -> str:
         """
-        Returns the schema formatted for the LLM. 
+        Returns the schema formatted for the LLM.
         subset_tables filters which tables are included (for schema pruning).
         """
         tables_to_include = self.tables

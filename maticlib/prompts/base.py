@@ -3,6 +3,7 @@ from string import Formatter
 from pydantic import BaseModel, Field
 from maticlib.exceptions import TemplateRenderError
 
+
 class BasePromptTemplate(BaseModel):
     """
     A simple, Pydantic-backed prompt template with auto-detected input variables.

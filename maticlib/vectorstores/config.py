@@ -3,11 +3,13 @@ from typing import Literal, Optional
 from pydantic import BaseModel, model_validator
 import logging
 
+
 class IndexingStrategy(str, Enum):
-    FLAT = "flat"    # exact search — perfect recall, slow at scale
-    HNSW = "hnsw"   # approximate, fast, strong recall — recommended default
-    IVF  = "ivf"    # inverted file — large collections
-    LSH  = "lsh"    # locality-sensitive hashing — fastest, lowest recall
+    FLAT = "flat"  # exact search — perfect recall, slow at scale
+    HNSW = "hnsw"  # approximate, fast, strong recall — recommended default
+    IVF = "ivf"  # inverted file — large collections
+    LSH = "lsh"  # locality-sensitive hashing — fastest, lowest recall
+
 
 class VectorIndexConfig(BaseModel):
     # --- Beginner mode ---
@@ -36,10 +38,10 @@ class VectorIndexConfig(BaseModel):
     # General
     distance_metric: Literal["cosine", "l2", "dot"] = "cosine"
     collection_name: str = "maticlib"
-    embedding_dimension: Optional[int] = None   # auto-detected from first embed call
+    embedding_dimension: Optional[int] = None  # auto-detected from first embed call
 
     # Backend-specific
-    chroma_persist_directory: Optional[str] = None   # None = in-memory
+    chroma_persist_directory: Optional[str] = None  # None = in-memory
     milvus_uri: str = "http://localhost:19530"
     pinecone_index_name: Optional[str] = None
     pinecone_environment: Optional[str] = None
@@ -54,7 +56,7 @@ class VectorIndexConfig(BaseModel):
                 "VectorIndexConfig: both strategy and performance_profile provided. "
                 "strategy takes precedence."
             )
-        
+
         if self.strategy is None:
             profile = self.performance_profile or "balanced"
             if profile == "fast":

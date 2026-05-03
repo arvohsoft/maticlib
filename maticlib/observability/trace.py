@@ -3,6 +3,7 @@ from typing import Dict, Any, List, Optional
 import time
 import uuid
 
+
 class StepTrace(BaseModel):
     """
     Captures observability data for a single pipeline step.
@@ -20,6 +21,7 @@ class StepTrace(BaseModel):
         total_tokens: Total tokens used (prompt + completion).
         model_name: LLM or embedding model name used in this step.
     """
+
     step_id: str = Field(default_factory=lambda: uuid.uuid4().hex[:12])
     step_name: str
     start_time: float = Field(default_factory=time.time)
@@ -27,7 +29,7 @@ class StepTrace(BaseModel):
     inputs: Dict[str, Any] = Field(default_factory=dict)
     outputs: Dict[str, Any] = Field(default_factory=dict)
     error: Optional[str] = None
-    
+
     # Token usage specifically extracted from Embeddings and LLMs
     prompt_tokens: int = 0
     completion_tokens: int = 0
@@ -39,6 +41,7 @@ class StepTrace(BaseModel):
         if self.end_time:
             return self.end_time - self.start_time
         return time.time() - self.start_time
+
 
 class PipelineTrace(BaseModel):
     """
@@ -52,6 +55,7 @@ class PipelineTrace(BaseModel):
         steps: Ordered list of StepTrace records.
         metadata: Arbitrary metadata associated with this pipeline run.
     """
+
     trace_id: str = Field(default_factory=lambda: uuid.uuid4().hex)
     pipeline_name: str
     start_time: float = Field(default_factory=time.time)
@@ -73,7 +77,7 @@ class PipelineTrace(BaseModel):
         if self.end_time:
             return self.end_time - self.start_time
         return time.time() - self.start_time
-    
+
     @property
     def total_prompt_tokens(self) -> int:
         return sum(s.prompt_tokens for s in self.steps)

@@ -4,10 +4,11 @@ import httpx
 from maticlib.embeddings.base import BaseEmbeddings
 from maticlib.embeddings.models import EmbedQueryResponse, EmbedDocumentsResponse
 
+
 class OpenAIEmbeddings(BaseEmbeddings):
     """
     Client for interacting with OpenAI Embedding models.
-    
+
     Args:
         model: The OpenAI embedding model to use. Defaults to "text-embedding-3-small".
         api_key: Your OpenAI API key. Falls back to OPENAI_API_KEY environment variable.
@@ -63,13 +64,10 @@ class OpenAIEmbeddings(BaseEmbeddings):
 
         try:
             response = httpx.post(
-                self.base_url,
-                headers=self.headers,
-                json=payload,
-                timeout=60.0
+                self.base_url, headers=self.headers, json=payload, timeout=60.0
             )
             response.raise_for_status()
-            
+
             if self.verbose:
                 print(f"OpenAI Embeddings Status: {response.status_code}")
 
@@ -79,14 +77,17 @@ class OpenAIEmbeddings(BaseEmbeddings):
             total_tokens = usage.get("total_tokens", prompt_tokens)
 
             # OpenAI returns data sorted by index in the 'data' list
-            embeddings = [item["embedding"] for item in sorted(data["data"], key=lambda x: x["index"])]
-            
+            embeddings = [
+                item["embedding"]
+                for item in sorted(data["data"], key=lambda x: x["index"])
+            ]
+
             return EmbedDocumentsResponse(
                 vectors=embeddings,
                 prompt_tokens=prompt_tokens,
                 total_tokens=total_tokens,
                 model=data.get("model", self.model),
-                raw_response=data
+                raw_response=data,
             )
 
         except httpx.HTTPStatusError as e:

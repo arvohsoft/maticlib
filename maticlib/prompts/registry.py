@@ -1,6 +1,7 @@
 from typing import Dict
 from maticlib.prompts.base import BasePromptTemplate
 
+
 class PromptRegistry:
     _templates: Dict[str, BasePromptTemplate] = {}
 
@@ -13,6 +14,7 @@ class PromptRegistry:
         if name not in cls._templates:
             raise KeyError(f"Template '{name}' not found in registry.")
         return cls._templates[name]
+
 
 # Standard RAG Templates
 RAG_QA_PROMPT = BasePromptTemplate(template="""

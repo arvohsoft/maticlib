@@ -7,15 +7,17 @@ from maticlib.core.text2sql.executors import SQLAlchemyExecutor
 from maticlib.core.text2sql.guards import SQLInjectionGuard
 from maticlib.exceptions import SQLInjectionError, SQLValidationError
 
+
 def test_models_to_ddl():
     col1 = ColumnSchema(name="id", data_type="INTEGER", primary_key=True)
     col2 = ColumnSchema(name="name", data_type="VARCHAR")
     table = TableSchema(name="users", columns=[col1, col2])
-    
+
     ddl = table.to_ddl()
     assert "CREATE TABLE users" in ddl
     assert "id INTEGER PRIMARY KEY" in ddl
     assert "name VARCHAR" in ddl
+
 
 def test_schema_loader_sqlite(tmp_path):
     try:
@@ -31,12 +33,13 @@ def test_schema_loader_sqlite(tmp_path):
 
     loader = SQLAlchemySchemaLoader()
     schema = loader.load_schema(f"sqlite:///{db_path}")
-    
+
     assert len(schema.tables) == 1
     assert schema.tables[0].name == "users"
     assert len(schema.tables[0].columns) == 2
     assert schema.tables[0].columns[0].name == "id"
     assert schema.tables[0].columns[0].primary_key is True
+
 
 def test_executor_sqlite(tmp_path):
     try:
@@ -53,10 +56,11 @@ def test_executor_sqlite(tmp_path):
 
     executor = SQLAlchemyExecutor(f"sqlite:///{db_path}")
     columns, rows = executor.execute("SELECT * FROM users")
-    
+
     assert columns == ["id", "name"]
     assert len(rows) == 1
     assert rows[0] == (1, "Alice")
+
 
 def test_sql_injection_guard():
     try:
@@ -65,7 +69,7 @@ def test_sql_injection_guard():
         pytest.skip("sqlglot is required for SQLInjectionGuard tests")
 
     guard = SQLInjectionGuard(allowed_dialect="sqlite")
-    
+
     # Valid SELECT
     safe_query = guard.validate_and_format("SELECT id FROM users")
     assert "SELECT" in safe_query.upper()

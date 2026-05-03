@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional, Tuple
 from maticlib.exceptions import MissingDependencyError, QueryExecutionError
 
+
 class BaseExecutor(ABC):
     """Abstract base class for SQL query executors."""
 
@@ -19,6 +20,7 @@ class BaseExecutor(ABC):
         """
         pass
 
+
 class SQLAlchemyExecutor(BaseExecutor):
     """Executes validated SQL queries against any SQLAlchemy-supported database."""
 
@@ -34,13 +36,19 @@ class SQLAlchemyExecutor(BaseExecutor):
         self.read_only = read_only
         try:
             from sqlalchemy import create_engine
+
             # If using sqlite, we can use read-only uri
             if connection_string.startswith("sqlite:///") and read_only:
                 if "?" in connection_string:
                     uri = connection_string + "&mode=ro"
                 else:
                     uri = connection_string + "?mode=ro"
-                self.engine = create_engine(uri, creator=lambda: __import__('sqlite3').connect(uri.replace('sqlite:///', 'file:'), uri=True))
+                self.engine = create_engine(
+                    uri,
+                    creator=lambda: __import__("sqlite3").connect(
+                        uri.replace("sqlite:///", "file:"), uri=True
+                    ),
+                )
             else:
                 self.engine = create_engine(connection_string)
         except ImportError as e:
@@ -51,6 +59,7 @@ class SQLAlchemyExecutor(BaseExecutor):
     def execute(self, query: str) -> Tuple[List[str], List[tuple]]:
         try:
             from sqlalchemy import text
+
             with self.engine.connect() as conn:
                 result = conn.execute(text(query))
                 columns = list(result.keys())

@@ -3,6 +3,7 @@ from typing import List, Optional, Any, Dict
 from maticlib.core.text.models import TextSegment
 from maticlib.embeddings.base import BaseEmbeddings
 
+
 class BaseVectorIndex(ABC):
     """Abstract base class for all vector store index backends."""
 

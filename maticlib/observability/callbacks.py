@@ -3,6 +3,7 @@ import logging
 from typing import Any
 from maticlib.observability.trace import StepTrace, PipelineTrace
 
+
 class BaseCallbackHandler(ABC):
     """Abstract base class for pipeline event callbacks."""
 
@@ -46,6 +47,7 @@ class BaseCallbackHandler(ABC):
         """
         pass
 
+
 class LoggingCallbackHandler(BaseCallbackHandler):
     """A callback handler that logs pipeline and step events via Python's logging module."""
 
@@ -63,16 +65,20 @@ class LoggingCallbackHandler(BaseCallbackHandler):
 
     def on_step_end(self, step: StepTrace) -> None:
         status = "Failed" if step.error else "Completed"
-        msg = (f"Step {step.step_name} {status} in {step.duration:.3f}s. "
-               f"Tokens: {step.prompt_tokens} prompt + {step.completion_tokens} completion "
-               f"= {step.total_tokens} total. Model: {step.model_name}")
+        msg = (
+            f"Step {step.step_name} {status} in {step.duration:.3f}s. "
+            f"Tokens: {step.prompt_tokens} prompt + {step.completion_tokens} completion "
+            f"= {step.total_tokens} total. Model: {step.model_name}"
+        )
         if step.error:
             self.logger.error(f"{msg}\nError: {step.error}")
         else:
             self.logger.info(msg)
 
     def on_pipeline_start(self, trace: PipelineTrace) -> None:
-        self.logger.info(f"=== Starting Pipeline: {trace.pipeline_name} [{trace.trace_id}] ===")
+        self.logger.info(
+            f"=== Starting Pipeline: {trace.pipeline_name} [{trace.trace_id}] ==="
+        )
 
     def on_pipeline_end(self, trace: PipelineTrace) -> None:
         self.logger.info(

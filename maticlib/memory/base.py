@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
 from maticlib.messages import BaseMessage
 
+
 class BaseMemory(ABC):
     @abstractmethod
     def add_message(self, message: BaseMessage) -> None:

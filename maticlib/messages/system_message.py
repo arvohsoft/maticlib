@@ -1,6 +1,7 @@
 from .types import MessageType
 from .message import BaseMessage
 
+
 class SystemMessage(BaseMessage):
     def __init__(self, content):
         if isinstance(content, str):
