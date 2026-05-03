@@ -7,17 +7,19 @@ from maticlib.observability.trace import PipelineTrace, StepTrace
 from maticlib.exceptions import SQLValidationError, SQLInjectionError
 import time
 
+
 class Text2SQLPipeline:
     """
     End-to-end Text2SQL pipeline.
     """
+
     def __init__(
         self,
         llm_client: Any,
         schema_loader: BaseSchemaLoader,
         executor: BaseExecutor,
         connection_string: str,
-        dialect: str = "sqlite"
+        dialect: str = "sqlite",
     ):
         """
         Initializes the Text2SQLPipeline.
@@ -34,14 +36,12 @@ class Text2SQLPipeline:
         self.executor = executor
         self.connection_string = connection_string
         self.dialect = dialect
-        
+
         self.guard = SQLInjectionGuard(allowed_dialect=dialect)
         self.prompt_template = PromptRegistry.get("text2sql_generation")
 
     def execute(
-        self, 
-        question: str, 
-        trace: Optional[PipelineTrace] = None
+        self, question: str, trace: Optional[PipelineTrace] = None
     ) -> Tuple[List[str], List[Tuple]]:
         """
         Translates a question to SQL, validates it, and executes it.
@@ -68,24 +68,22 @@ class Text2SQLPipeline:
         gen_step = StepTrace(step_name="SQL_Generation") if trace else None
         try:
             prompt = self.prompt_template.format(
-                schema=schema_str,
-                dialect=self.dialect,
-                question=question
+                schema=schema_str, dialect=self.dialect, question=question
             )
             res = self.llm_client.complete(prompt)
-            
-            if hasattr(res, 'prompt_tokens') and trace and gen_step:
-                gen_step.prompt_tokens = getattr(res, 'prompt_tokens', 0)
-                gen_step.completion_tokens = getattr(res, 'completion_tokens', 0)
-                gen_step.total_tokens = getattr(res, 'total_tokens', 0)
-                
+
+            if hasattr(res, "prompt_tokens") and trace and gen_step:
+                gen_step.prompt_tokens = getattr(res, "prompt_tokens", 0)
+                gen_step.completion_tokens = getattr(res, "completion_tokens", 0)
+                gen_step.total_tokens = getattr(res, "total_tokens", 0)
+
             raw_sql = self.llm_client.get_text_response(res)
-            
+
             # Clean up markdown if LLM wrapped it
             raw_sql = raw_sql.strip("` \n")
             if raw_sql.startswith("sql"):
                 raw_sql = raw_sql[3:].strip()
-                
+
         finally:
             if trace and gen_step:
                 gen_step.end_time = time.time()
@@ -98,10 +96,12 @@ class Text2SQLPipeline:
             columns, rows = self.executor.execute(safe_query)
             return columns, rows
         except (SQLValidationError, SQLInjectionError) as e:
-            if exec_step: exec_step.error = str(e)
+            if exec_step:
+                exec_step.error = str(e)
             raise
         except Exception as e:
-            if exec_step: exec_step.error = f"Execution failed: {e}"
+            if exec_step:
+                exec_step.error = f"Execution failed: {e}"
             raise
         finally:
             if trace and exec_step:

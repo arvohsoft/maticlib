@@ -2,6 +2,7 @@ from __future__ import annotations
 from .types import MessageType
 from .message import BaseMessage
 
+
 class AIMessage(BaseMessage):
     def __init__(self, content: str):
         if isinstance(content, str):

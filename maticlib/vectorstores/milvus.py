@@ -5,6 +5,7 @@ from maticlib.vectorstores.base_index import BaseVectorIndex
 from maticlib.exceptions import MissingDependencyError
 from maticlib.vectorstores.config import VectorIndexConfig
 
+
 class MilvusVectorIndex(BaseVectorIndex):
     """Vector index backed by Milvus (Lite file mode or standalone server)."""
 
@@ -14,7 +15,7 @@ class MilvusVectorIndex(BaseVectorIndex):
         collection_name: str = "maticlib_collection",
         uri: str = "./milvus_demo.db",
         dim: Optional[int] = None,
-        config: Optional[VectorIndexConfig] = None
+        config: Optional[VectorIndexConfig] = None,
     ):
         """
         Initializes the MilvusVectorIndex.
@@ -30,7 +31,7 @@ class MilvusVectorIndex(BaseVectorIndex):
         super().__init__(embeddings)
         self.collection_name = collection_name
         self.config = config or VectorIndexConfig()
-        
+
         try:
             from pymilvus import MilvusClient
         except ImportError as e:
@@ -39,7 +40,7 @@ class MilvusVectorIndex(BaseVectorIndex):
             ) from e
 
         self.client = MilvusClient(uri=uri)
-        
+
         # If dimension is not provided, we embed a dummy text to figure it out
         if not dim:
             dummy_res = self.embeddings.embed_query("test")
@@ -49,7 +50,11 @@ class MilvusVectorIndex(BaseVectorIndex):
             self.client.create_collection(
                 collection_name=self.collection_name,
                 dimension=dim,
-                metric_type=self.config.distance_metric.upper() if self.config.distance_metric in ["cosine", "l2", "ip"] else "L2"
+                metric_type=(
+                    self.config.distance_metric.upper()
+                    if self.config.distance_metric in ["cosine", "l2", "ip"]
+                    else "L2"
+                ),
             )
 
     def add_segments(self, segments: List[TextSegment]) -> None:
@@ -58,15 +63,18 @@ class MilvusVectorIndex(BaseVectorIndex):
 
         texts = [s.content for s in segments]
         response = self.embeddings.embed_documents(texts)
-        
+
         data = []
         for i, seg in enumerate(segments):
             # We must pass the id, vector, and any metadata/content
             row = {
-                "id": hash(seg.segment_id) % ((2**63)-1), # Milvus needs integer IDs by default or specified schema
+                "id": hash(seg.segment_id)
+                % (
+                    (2**63) - 1
+                ),  # Milvus needs integer IDs by default or specified schema
                 "vector": response.vectors[i],
                 "text": seg.content,
-                "segment_id": seg.segment_id
+                "segment_id": seg.segment_id,
             }
             # Merge safe metadata
             for k, v in seg.metadata.items():
@@ -80,7 +88,7 @@ class MilvusVectorIndex(BaseVectorIndex):
         self, query: str, k: int = 4, filter_dict: Optional[Dict[str, Any]] = None
     ) -> List[TextSegment]:
         query_res = self.embeddings.embed_query(query)
-        
+
         # Simple translation of dict to Milvus boolean expression
         filter_expr = ""
         if filter_dict:
@@ -97,7 +105,7 @@ class MilvusVectorIndex(BaseVectorIndex):
             data=[query_res.vector],
             limit=k,
             filter=filter_expr if filter_expr else None,
-            output_fields=["text", "segment_id"]
+            output_fields=["text", "segment_id"],
         )
 
         segments = []
@@ -107,11 +115,17 @@ class MilvusVectorIndex(BaseVectorIndex):
         for hits in search_res:
             for hit in hits:
                 entity = hit.get("entity", {})
-                segments.append(TextSegment(
-                    segment_id=entity.get("segment_id", str(hit.get("id"))),
-                    content=entity.get("text", ""),
-                    metadata={k:v for k,v in entity.items() if k not in ["text", "segment_id"]}
-                ))
+                segments.append(
+                    TextSegment(
+                        segment_id=entity.get("segment_id", str(hit.get("id"))),
+                        content=entity.get("text", ""),
+                        metadata={
+                            k: v
+                            for k, v in entity.items()
+                            if k not in ["text", "segment_id"]
+                        },
+                    )
+                )
 
         return segments
 

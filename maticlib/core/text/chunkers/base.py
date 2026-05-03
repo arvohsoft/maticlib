@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
 from maticlib.core.text.models import TextSegment
 
+
 class BaseChunker(ABC):
     """Abstract base class for all text chunkers."""
 

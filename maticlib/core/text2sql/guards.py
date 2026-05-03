@@ -1,5 +1,10 @@
 from typing import Optional
-from maticlib.exceptions import MissingDependencyError, SQLValidationError, SQLInjectionError
+from maticlib.exceptions import (
+    MissingDependencyError,
+    SQLValidationError,
+    SQLInjectionError,
+)
+
 
 class SQLInjectionGuard:
     """Parses, validates, and transpiles SQL queries to prevent injection attacks."""
@@ -35,17 +40,17 @@ class SQLInjectionGuard:
             # Parse the query. sqlglot will raise if syntax is invalid
             # We parse loosely, then transpile.
             expression = sqlglot.parse_one(query, read=None)
-            
+
             # Check if it's a select query
             if not isinstance(expression, sqlglot.exp.Select):
                 raise SQLInjectionError("Only SELECT queries are allowed.")
-            
+
             # Additional checks could be added here (e.g., preventing access to system tables)
 
             # Transpile and format
             safe_query = expression.sql(dialect=self.allowed_dialect, pretty=True)
             return safe_query
-            
+
         except ParseError as e:
             raise SQLValidationError(f"Invalid SQL syntax: {e}")
         except SQLInjectionError:

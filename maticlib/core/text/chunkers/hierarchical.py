@@ -3,6 +3,7 @@ from typing import List, Dict, Any, Optional
 from maticlib.core.text.models import TextSegment
 from maticlib.core.text.chunkers.base import BaseChunker
 
+
 class HierarchicalChunker(BaseChunker):
     DEFAULT_SEPARATORS = ["\n\n", "\n", ". ", " ", ""]
 
@@ -30,46 +31,50 @@ class HierarchicalChunker(BaseChunker):
             return []
 
         chunks_with_seps = self._split_recursive(text, self.separators)
-        
+
         segments = []
         total_chunks = len(chunks_with_seps)
         for i, (chunk, sep_used) in enumerate(chunks_with_seps):
             meta = base_metadata.copy()
-            meta.update({
-                "chunk_index": i,
-                "total_chunks": total_chunks,
-                "separator_used": sep_used
-            })
+            meta.update(
+                {
+                    "chunk_index": i,
+                    "total_chunks": total_chunks,
+                    "separator_used": sep_used,
+                }
+            )
             if parent_id:
                 meta["parent_id"] = parent_id
 
-            segments.append(TextSegment(
-                content=chunk,
-                metadata=meta,
-                segment_id=uuid.uuid4().hex[:12]
-            ))
+            segments.append(
+                TextSegment(
+                    content=chunk, metadata=meta, segment_id=uuid.uuid4().hex[:12]
+                )
+            )
 
         return segments
 
-    def _split_recursive(self, text: str, separators: List[str]) -> List[tuple[str, str]]:
+    def _split_recursive(
+        self, text: str, separators: List[str]
+    ) -> List[tuple[str, str]]:
         if len(text) <= self.target_size:
             return [(text, "")]
-            
+
         if not separators:
             # Fallback: slice directly if out of separators
             chunks = []
             for i in range(0, len(text), self.target_size - self.overlap_size):
-                chunks.append((text[i:i + self.target_size], ""))
+                chunks.append((text[i : i + self.target_size], ""))
             return chunks
 
         separator = separators[0]
-        
+
         if not separator:
             # Empty string separator: split character by character
             splits = list(text)
         else:
             splits = text.split(separator)
-        
+
         if len(splits) == 1:
             # Separator not found, try the next one
             return self._split_recursive(text, separators[1:])
@@ -82,13 +87,13 @@ class HierarchicalChunker(BaseChunker):
             part = split if i == 0 or not separator else separator + split
             if not part:
                 continue
-            
+
             if len(part) > self.target_size:
                 if current_chunk:
                     chunks.append(("".join(current_chunk), separator))
                     current_chunk = []
                     current_length = 0
-                
+
                 sub_chunks = self._split_recursive(part, separators[1:])
                 chunks.extend(sub_chunks)
             else:

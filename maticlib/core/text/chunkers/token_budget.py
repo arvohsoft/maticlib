@@ -4,6 +4,7 @@ from maticlib.core.text.models import TextSegment
 from maticlib.core.text.chunkers.base import BaseChunker
 from maticlib.exceptions import MissingDependencyError
 
+
 class TokenBudgetChunker(BaseChunker):
     def __init__(
         self,
@@ -13,9 +14,11 @@ class TokenBudgetChunker(BaseChunker):
     ):
         super().__init__(target_size=target_tokens, overlap_size=overlap_tokens)
         self.tokeniser = tokeniser
-        
+
         # Check if they are trying to use tiktoken explicitly
-        if self.tokeniser and getattr(self.tokeniser, '__module__', '').startswith('tiktoken'):
+        if self.tokeniser and getattr(self.tokeniser, "__module__", "").startswith(
+            "tiktoken"
+        ):
             try:
                 import tiktoken
             except ImportError as e:
@@ -43,10 +46,10 @@ class TokenBudgetChunker(BaseChunker):
         for word in words:
             word_with_space = word + " "
             word_tokens = self._count_tokens(word_with_space)
-            
+
             if current_tokens + word_tokens > self.target_size and current_chunk:
                 chunks.append("".join(current_chunk).strip())
-                
+
                 # Overlap logic
                 overlap_chunk = []
                 overlap_tokens = 0
@@ -57,7 +60,7 @@ class TokenBudgetChunker(BaseChunker):
                         overlap_tokens += item_tokens
                     else:
                         break
-                
+
                 current_chunk = overlap_chunk
                 current_tokens = overlap_tokens
 
@@ -71,19 +74,21 @@ class TokenBudgetChunker(BaseChunker):
         total_chunks = len(chunks)
         for i, chunk in enumerate(chunks):
             meta = base_metadata.copy()
-            meta.update({
-                "chunk_index": i,
-                "total_chunks": total_chunks,
-                "estimated_tokens": self._count_tokens(chunk)
-            })
+            meta.update(
+                {
+                    "chunk_index": i,
+                    "total_chunks": total_chunks,
+                    "estimated_tokens": self._count_tokens(chunk),
+                }
+            )
             if parent_id:
                 meta["parent_id"] = parent_id
 
-            segments.append(TextSegment(
-                content=chunk,
-                metadata=meta,
-                segment_id=uuid.uuid4().hex[:12]
-            ))
+            segments.append(
+                TextSegment(
+                    content=chunk, metadata=meta, segment_id=uuid.uuid4().hex[:12]
+                )
+            )
 
         return segments
 

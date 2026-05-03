@@ -3,6 +3,7 @@ from string import Formatter
 from pydantic import BaseModel, Field
 from maticlib.exceptions import TemplateRenderError
 
+
 class BasePromptTemplate(BaseModel):
     """
     A simple, Pydantic-backed prompt template with auto-detected input variables.
@@ -52,4 +53,3 @@ class BasePromptTemplate(BaseModel):
             raise TemplateRenderError(f"Missing expected key during format: {e}")
         except Exception as e:
             raise TemplateRenderError(f"Failed to format template: {e}")
-

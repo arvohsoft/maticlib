@@ -3,6 +3,7 @@ from typing import List, Dict, Any, Optional
 from maticlib.core.text2sql.models import DatabaseSchema, TableSchema, ColumnSchema
 from maticlib.exceptions import MissingDependencyError, SchemaLoadError
 
+
 class BaseSchemaLoader(ABC):
     """Abstract base class for database schema loaders."""
 
@@ -18,6 +19,7 @@ class BaseSchemaLoader(ABC):
             A fully populated DatabaseSchema object.
         """
         pass
+
 
 class SQLAlchemySchemaLoader(BaseSchemaLoader):
     """Reflects a live database schema using SQLAlchemy's inspect API."""
@@ -46,7 +48,7 @@ class SQLAlchemySchemaLoader(BaseSchemaLoader):
         try:
             engine = create_engine(connection_string)
             inspector = inspect(engine)
-            
+
             tables = []
             for table_name in inspector.get_table_names():
                 columns = []
@@ -54,23 +56,25 @@ class SQLAlchemySchemaLoader(BaseSchemaLoader):
                     pk = col.get("primary_key", False)
                     # Rough translation of SQLAlchemy type to string
                     data_type = str(col["type"])
-                    
-                    columns.append(ColumnSchema(
-                        name=col["name"],
-                        data_type=data_type,
-                        primary_key=pk > 0 if isinstance(pk, int) else pk
-                    ))
-                
+
+                    columns.append(
+                        ColumnSchema(
+                            name=col["name"],
+                            data_type=data_type,
+                            primary_key=pk > 0 if isinstance(pk, int) else pk,
+                        )
+                    )
+
                 # Fetch foreign keys
                 for fk in inspector.get_foreign_keys(table_name):
                     constrained_columns = fk["constrained_columns"]
                     referred_table = fk["referred_table"]
                     referred_columns = fk["referred_columns"]
-                    
+
                     if constrained_columns and referred_columns:
                         col_name = constrained_columns[0]
                         ref_str = f"{referred_table}.{referred_columns[0]}"
-                        
+
                         # Find column and add FK
                         for c in columns:
                             if c.name == col_name:
@@ -81,4 +85,6 @@ class SQLAlchemySchemaLoader(BaseSchemaLoader):
 
             return DatabaseSchema(tables=tables)
         except Exception as e:
-            raise SchemaLoadError(f"Failed to load schema from {connection_string}: {e}")
+            raise SchemaLoadError(
+                f"Failed to load schema from {connection_string}: {e}"
+            )

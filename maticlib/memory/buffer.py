@@ -2,6 +2,7 @@ from typing import List, Dict, Any, Optional
 from maticlib.messages import BaseMessage
 from maticlib.memory.base import BaseMemory
 
+
 class ConversationBufferMemory(BaseMemory):
     """Stores all conversation messages in a sequential buffer."""
 
@@ -34,6 +35,7 @@ class ConversationBufferMemory(BaseMemory):
         total_chars = sum(len(str(m.content)) for m in self.messages if m.content)
         return total_chars // 4
 
+
 class WindowBufferMemory(ConversationBufferMemory):
     """Keeps only the most recent `k` messages (sliding window)."""
 
@@ -49,7 +51,7 @@ class WindowBufferMemory(ConversationBufferMemory):
         self.k = k
 
     def get_messages(self) -> List[BaseMessage]:
-        return self.messages[-self.k:] if self.k > 0 else []
+        return self.messages[-self.k :] if self.k > 0 else []
 
     @property
     def token_count(self) -> int:

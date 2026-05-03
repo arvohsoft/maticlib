@@ -5,10 +5,13 @@ from maticlib.core.text.models import TextSegment
 from maticlib.io.base import BaseLoader
 from maticlib.exceptions import MissingDependencyError, DocumentLoadError
 
+
 class TextLoader(BaseLoader):
     """Loads plain text (.txt) files as TextSegments."""
 
-    def load(self, source: str, metadata: Optional[Dict[str, Any]] = None) -> Iterable[TextSegment]:
+    def load(
+        self, source: str, metadata: Optional[Dict[str, Any]] = None
+    ) -> Iterable[TextSegment]:
         """
         Reads a plain text file and yields TextSegments.
 
@@ -21,7 +24,7 @@ class TextLoader(BaseLoader):
         """
         if not os.path.exists(source):
             raise DocumentLoadError(f"File not found: {source}")
-            
+
         base_meta = metadata or {}
         base_meta["source"] = source
         base_meta["loader"] = "TextLoader"
@@ -34,18 +37,21 @@ class TextLoader(BaseLoader):
 
         if self.chunker:
             parent_id = uuid.uuid4().hex[:12]
-            yield from self.chunker.chunk_text(content, base_metadata=base_meta, parent_id=parent_id)
+            yield from self.chunker.chunk_text(
+                content, base_metadata=base_meta, parent_id=parent_id
+            )
         else:
             yield TextSegment(
-                content=content,
-                metadata=base_meta,
-                segment_id=uuid.uuid4().hex[:12]
+                content=content, metadata=base_meta, segment_id=uuid.uuid4().hex[:12]
             )
+
 
 class PDFLoader(BaseLoader):
     """Loads PDF files page-by-page as TextSegments. Requires pypdf."""
 
-    def load(self, source: str, metadata: Optional[Dict[str, Any]] = None) -> Iterable[TextSegment]:
+    def load(
+        self, source: str, metadata: Optional[Dict[str, Any]] = None
+    ) -> Iterable[TextSegment]:
         """
         Reads a PDF and yields one TextSegment per page.
 
@@ -81,18 +87,21 @@ class PDFLoader(BaseLoader):
 
         if self.chunker:
             parent_id = uuid.uuid4().hex[:12]
-            yield from self.chunker.chunk_text(content, base_metadata=base_meta, parent_id=parent_id)
+            yield from self.chunker.chunk_text(
+                content, base_metadata=base_meta, parent_id=parent_id
+            )
         else:
             yield TextSegment(
-                content=content,
-                metadata=base_meta,
-                segment_id=uuid.uuid4().hex[:12]
+                content=content, metadata=base_meta, segment_id=uuid.uuid4().hex[:12]
             )
+
 
 class DOCXLoader(BaseLoader):
     """Loads Microsoft Word (.docx) files as TextSegments. Requires python-docx."""
 
-    def load(self, source: str, metadata: Optional[Dict[str, Any]] = None) -> Iterable[TextSegment]:
+    def load(
+        self, source: str, metadata: Optional[Dict[str, Any]] = None
+    ) -> Iterable[TextSegment]:
         """
         Reads a .docx file and yields TextSegments.
 
@@ -125,10 +134,10 @@ class DOCXLoader(BaseLoader):
 
         if self.chunker:
             parent_id = uuid.uuid4().hex[:12]
-            yield from self.chunker.chunk_text(content, base_metadata=base_meta, parent_id=parent_id)
+            yield from self.chunker.chunk_text(
+                content, base_metadata=base_meta, parent_id=parent_id
+            )
         else:
             yield TextSegment(
-                content=content,
-                metadata=base_meta,
-                segment_id=uuid.uuid4().hex[:12]
+                content=content, metadata=base_meta, segment_id=uuid.uuid4().hex[:12]
             )

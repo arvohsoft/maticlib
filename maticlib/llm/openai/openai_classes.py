@@ -24,10 +24,10 @@ from maticlib.client.classes.client_output_model import LLMResponseBase
 from maticlib.client.classes.enums.modality_type import ModalityType
 from maticlib.client.classes.model_classes.content_part import ContentPart
 
-
 # ---------------------------------------------------------------------------
 # Token-usage sub-models
 # ---------------------------------------------------------------------------
+
 
 class OpenAIOutputTokenDetails(BaseModel):
     """
@@ -37,7 +37,10 @@ class OpenAIOutputTokenDetails(BaseModel):
         reasoning_tokens (int): Tokens consumed by internal chain-of-thought
             reasoning. Non-zero only on o-series models (o1, o3, o4, ...).
     """
-    reasoning_tokens: int = Field(0, description="Tokens used for internal model reasoning")
+
+    reasoning_tokens: int = Field(
+        0, description="Tokens used for internal model reasoning"
+    )
 
     model_config = ConfigDict(extra="allow")
 
@@ -51,6 +54,7 @@ class OpenAIInputTokenDetails(BaseModel):
             they were already in the KV-cache and cost less.
         audio_tokens (int): Tokens attributed to audio input content.
     """
+
     cached_tokens: int = Field(0, description="Tokens served from the prompt cache")
     audio_tokens: int = Field(0, description="Tokens attributed to audio input")
 
@@ -68,6 +72,7 @@ class OpenAIUsage(BaseModel):
         output_tokens_details (OpenAIOutputTokenDetails): Per-type output breakdown.
         input_tokens_details (OpenAIInputTokenDetails): Per-type input breakdown.
     """
+
     input_tokens: int = Field(..., description="Total input (prompt) tokens")
     output_tokens: int = Field(..., description="Total output (completion) tokens")
     total_tokens: int = Field(..., description="Total tokens used")
@@ -85,6 +90,7 @@ class OpenAIUsage(BaseModel):
 # Output item sub-models
 # ---------------------------------------------------------------------------
 
+
 class OpenAIOutputContentItem(BaseModel):
     """
     A single piece of content inside an output message.
@@ -94,6 +100,7 @@ class OpenAIOutputContentItem(BaseModel):
         text (str, optional): The actual text when type is ``output_text``.
         annotations (list): Any inline annotations on the text.
     """
+
     type: str = Field(..., description="Content part type (output_text, refusal, ...)")
     text: Optional[str] = Field(None, description="Text payload for output_text parts")
     annotations: Optional[List[Any]] = Field(
@@ -114,8 +121,11 @@ class OpenAIOutputMessage(BaseModel):
         role (str): Speaker role for message items, typically ``assistant``.
         content (List[OpenAIOutputContentItem]): Structured content parts.
     """
+
     id: str = Field(..., description="Unique output-item ID")
-    type: str = Field(..., description="Output item type (message, reasoning, tool_use, ...)")
+    type: str = Field(
+        ..., description="Output item type (message, reasoning, tool_use, ...)"
+    )
     status: Optional[str] = Field(None, description="Per-item completion status")
     role: Optional[str] = Field(None, description="Speaker role (assistant, tool, ...)")
     content: Optional[List[OpenAIOutputContentItem]] = Field(
@@ -129,6 +139,7 @@ class OpenAIOutputMessage(BaseModel):
 # Top-level response model
 # ---------------------------------------------------------------------------
 
+
 class OpenAIResponse(LLMResponseBase):
     """
     OpenAI Responses API response (/v1/responses).
@@ -137,17 +148,15 @@ class OpenAIResponse(LLMResponseBase):
     so callers can use ``response.content`` and ``response.content_parts``
     the same way they would with ``MistralResponse`` or ``GeminiResponse``.
 
-    Common (inherited) fields populated automatically:
-        content          -- concatenated text from all output_text parts
-        content_parts    -- one ContentPart per output_text chunk
-        prompt_tokens    -- mapped from usage.input_tokens
-        completion_tokens-- mapped from usage.output_tokens
-        total_tokens     -- mapped from usage.total_tokens
-        finish_reason    -- mapped from first output item's status
-        response_id      -- mapped from top-level id
-        raw_response     -- original JSON dict
-
-    OpenAI-specific fields:
+    Attributes:
+        content (str): Concatenated text from all output_text parts.
+        content_parts (List[ContentPart]): One ContentPart per output_text chunk.
+        prompt_tokens (int): Mapped from usage.input_tokens.
+        completion_tokens (int): Mapped from usage.output_tokens.
+        total_tokens (int): Mapped from usage.total_tokens.
+        finish_reason (str): Mapped from first output item's status.
+        response_id (str): Mapped from top-level id.
+        raw_response (Dict[str, Any]): Original JSON dict.
         id (str): Response ID (resp_...).
         object (str): Always "response".
         created_at (int): Unix timestamp of creation.
@@ -155,6 +164,9 @@ class OpenAIResponse(LLMResponseBase):
         output (List[OpenAIOutputMessage]): Ordered list of output items.
         usage (OpenAIUsage): Detailed token-usage breakdown.
         model_version (str): Model string echoed back by OpenAI.
+        cached_tokens (Optional[int]): Input tokens served from the prompt cache.
+        reasoning_tokens (Optional[int]): Tokens used for internal model reasoning (o-series models only).
+        timestamp (datetime): Converts the created_at Unix timestamp into a datetime object.
     """
 
     # ---- OpenAI-specific top-level fields ----
@@ -218,14 +230,16 @@ class OpenAIResponse(LLMResponseBase):
             if not isinstance(item, dict):
                 continue
             if item.get("type") == "call_tool":
-                tool_calls.append({
-                    "id": item.get("id"),
-                    "type": "function",
-                    "function": {
-                        "name": item.get("call_tool", {}).get("name"),
-                        "arguments": item.get("call_tool", {}).get("arguments")
+                tool_calls.append(
+                    {
+                        "id": item.get("id"),
+                        "type": "function",
+                        "function": {
+                            "name": item.get("call_tool", {}).get("name"),
+                            "arguments": item.get("call_tool", {}).get("arguments"),
+                        },
                     }
-                })
+                )
         if tool_calls:
             data["tool_calls"] = tool_calls
 

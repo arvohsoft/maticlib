@@ -14,10 +14,10 @@ from maticlib.llm.openai.openai_classes import OpenAIResponse
 from maticlib.messages import HumanMessage, SystemMessage, AIMessage
 from maticlib.tools import tool
 
-
 # ---------------------------------------------------------------------------
 # Shared fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def openai_client():
@@ -73,23 +73,17 @@ MOCK_TOOL_RESPONSE = {
             "id": "call_abc",
             "type": "call_tool",
             "status": "completed",
-            "call_tool": {
-                "name": "get_weather",
-                "arguments": {"location": "Paris"}
-            }
+            "call_tool": {"name": "get_weather", "arguments": {"location": "Paris"}},
         }
     ],
-    "usage": {
-        "input_tokens": 15,
-        "output_tokens": 5,
-        "total_tokens": 20
-    }
+    "usage": {"input_tokens": 15, "output_tokens": 5, "total_tokens": 20},
 }
 
 
 # ---------------------------------------------------------------------------
 # Unit tests — message formatting
 # ---------------------------------------------------------------------------
+
 
 class TestFormatInput:
     """Tests for OpenAIClient._format_input."""
@@ -128,6 +122,7 @@ class TestFormatInput:
 # Unit tests — response model
 # ---------------------------------------------------------------------------
 
+
 class TestOpenAIResponse:
     """Tests for the OpenAIResponse Pydantic model."""
 
@@ -158,6 +153,7 @@ class TestOpenAIResponse:
     def test_timestamp(self):
         """timestamp computed field should be a datetime."""
         from datetime import datetime
+
         resp = OpenAIResponse(**MOCK_RESPONSE)
         assert isinstance(resp.timestamp, datetime)
 
@@ -189,6 +185,7 @@ class TestOpenAIResponse:
 # ---------------------------------------------------------------------------
 # Unit tests — synchronous complete (mocked HTTP)
 # ---------------------------------------------------------------------------
+
 
 class TestComplete:
     """Tests for OpenAIClient.complete using httpx_mock."""
@@ -228,6 +225,7 @@ class TestComplete:
         openai_client.complete("Hello")
         request = httpx_mock.get_requests()[0]
         import json
+
         payload = json.loads(request.content)
         assert payload.get("instructions") == "You are a helpful assistant."
         openai_client.system_instruct = None  # reset
@@ -240,6 +238,7 @@ class TestComplete:
 
     def test_complete_with_tools_payload(self, openai_client, httpx_mock):
         """When tools are provided, they should be in the request payload."""
+
         @tool
         def my_test_tool(x: int):
             """Test tool."""
@@ -247,11 +246,12 @@ class TestComplete:
 
         httpx_mock.add_response(json=MOCK_TOOL_RESPONSE, status_code=200)
         response = openai_client.complete("Use the tool", tools=[my_test_tool])
-        
+
         request = httpx_mock.get_requests()[0]
         import json
+
         payload = json.loads(request.content)
-        
+
         assert "tools" in payload
         assert payload["tools"][0]["type"] == "function"
         assert payload["tools"][0]["function"]["name"] == "my_test_tool"
@@ -262,6 +262,7 @@ class TestComplete:
 # Unit tests — async complete (mocked HTTP)
 # ---------------------------------------------------------------------------
 
+
 class TestAsyncComplete:
     """Tests for OpenAIClient.async_complete using httpx_mock."""
 
@@ -270,12 +271,16 @@ class TestAsyncComplete:
         httpx_mock.add_response(json=MOCK_RESPONSE, status_code=200)
         response = await openai_client.async_complete("Hello async")
         assert isinstance(response, OpenAIResponse)
-        assert openai_client.get_text_response(response) == "Hello! How can I help you today?"
+        assert (
+            openai_client.get_text_response(response)
+            == "Hello! How can I help you today?"
+        )
 
 
 # ---------------------------------------------------------------------------
 # Real API tests (skipped unless OPENAI_API_KEY is set)
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.real_api
 def test_openai_real_api_sync():

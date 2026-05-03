@@ -11,6 +11,7 @@ try:
 except ImportError as e:
     np = None
 
+
 class SemanticDifferenceChunker(BaseChunker):
     def __init__(
         self,
@@ -50,10 +51,10 @@ class SemanticDifferenceChunker(BaseChunker):
 
         chunks = []
         current_chunk_sentences = [sentences[0]]
-        
+
         for i in range(1, len(sentences)):
-            similarity = self._cosine_similarity(embeddings[i-1], embeddings[i])
-            
+            similarity = self._cosine_similarity(embeddings[i - 1], embeddings[i])
+
             # If similarity drops below threshold, we split
             if similarity < self.similarity_threshold:
                 # But only if the current chunk is large enough
@@ -68,33 +69,35 @@ class SemanticDifferenceChunker(BaseChunker):
             chunks.append(" ".join(current_chunk_sentences))
 
         # We apply buffer sentences (overlap) if needed
-        # In a real rigorous semantic chunker, this requires sliding window logic, 
+        # In a real rigorous semantic chunker, this requires sliding window logic,
         # but for simple implementation, we can just grab adjacent sentences from original list.
         # This is a basic simplified representation of the logic requested.
-        
+
         segments = []
         total_chunks = len(chunks)
         for i, chunk in enumerate(chunks):
             meta = base_metadata.copy()
-            meta.update({
-                "chunk_index": i,
-                "total_chunks": total_chunks,
-                "split_reason": "semantic_difference"
-            })
+            meta.update(
+                {
+                    "chunk_index": i,
+                    "total_chunks": total_chunks,
+                    "split_reason": "semantic_difference",
+                }
+            )
             if parent_id:
                 meta["parent_id"] = parent_id
 
-            segments.append(TextSegment(
-                content=chunk,
-                metadata=meta,
-                segment_id=uuid.uuid4().hex[:12]
-            ))
+            segments.append(
+                TextSegment(
+                    content=chunk, metadata=meta, segment_id=uuid.uuid4().hex[:12]
+                )
+            )
 
         return segments
 
     def _split_into_sentences(self, text: str) -> List[str]:
         # Split by punctuation followed by space
-        parts = re.split(r'(?<=[.!?])\s+', text)
+        parts = re.split(r"(?<=[.!?])\s+", text)
         return [p.strip() for p in parts if p.strip()]
 
     def _cosine_similarity(self, a: List[float], b: List[float]) -> float:

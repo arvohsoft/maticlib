@@ -7,6 +7,7 @@ from maticlib.tools import tool
 # Load API keys from .env
 load_dotenv()
 
+
 # 1. Define a tool with @tool
 @tool
 def get_weather(location: str):
@@ -16,13 +17,16 @@ def get_weather(location: str):
     # In a real app, this would call a weather API
     return f"The weather in {location} is sunny and 25°C."
 
+
 @tool
 def calculate_area(radius: int):
     """
     Calculate the area of a circle.
     """
     import math
-    return math.pi * (radius ** 2)
+
+    return math.pi * (radius**2)
+
 
 # 2. Initialize the client
 client = OpenAIClient(model="gpt-4o-mini")
@@ -34,10 +38,7 @@ prompt = "What is the weather in Paris and what is the area of a circle with rad
 print(f"Prompt: {prompt}")
 print("-" * 30)
 
-response = client.complete(
-    input=prompt,
-    tools=[get_weather, calculate_area]
-)
+response = client.complete(input=prompt, tools=[get_weather, calculate_area])
 
 # 4. Check for tool calls
 if response.tool_calls:
@@ -47,7 +48,7 @@ if response.tool_calls:
         args = call["function"]["arguments"]
         print(f" - Tool: {name}")
         print(f" - Args: {args}")
-        
+
         # In a real agent loop, we would execute these and send results back
 else:
     print("No tool calls requested.")
