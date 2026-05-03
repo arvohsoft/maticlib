@@ -1,0 +1,119 @@
+site_name: Maticlib
+site_description: A Python Automation Library for creating agents
+site_url: https://arvohsoft.github.io/maticlib/
+repo_url: https://github.com/arvohsoft/maticlib
+repo_name: arvohsoft/maticlib
+edit_uri: edit/main/docs/
+
+# The configuration file is now inside the docs folder
+docs_dir: .
+site_dir: ../site
+
+theme:
+  name: material
+  logo: assets/arvohsoft-logo.png
+  favicon: assets/arvohsoft-logo.png
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          # Source code is one level up from this config file
+          paths: [..]
+          options:
+            show_root_heading: true
+            show_source: true
+            members_order: alphabetical
+            separate_signature: true
+            merge_init_into_class: true
+            docstring_section_style: table
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      permalink: false
+
+nav:
+  - Home: index.md
+  - Getting Started: getting_started.md
+  - Modules:
+      - Overview: modules/index.md
+      - Message Types: modules/messages.md
+      - LLM Clients: modules/clients.md
+      - Response Parsers: modules/parsers.md
+      - Tools: modules/tools.md
+      - Embeddings: modules/embeddings.md
+      - Graph Engine: modules/graph.md
+      - Document Loaders: modules/io.md
+      - Chunkers: modules/chunkers.md
+      - Vector Stores: modules/vectorstores.md
+      - Prompts & Memory: modules/prompts_memory.md
+      - Observability & Resilience: modules/observability_resilience.md
+      - Text2SQL: modules/text2sql.md
+      - Pipelines: modules/pipelines.md
+      - Formatting: modules/formatting.md
+      - Evaluation: modules/evaluation.md
+  - API Reference:
+      - Introduction: api/index.md
+      - LLM Clients: api/clients.md
+      - Native Tools: api/tools.md
+      - Embeddings: api/embeddings.md
+      - Response Parsers: api/parsers.md
+      - Graph Engine: api/graph.md
+      - Message Types: api/messages.md
+      - Document Loaders: api/io.md
+      - Chunkers: api/chunkers.md
+      - Vector Stores: api/vectorstores.md
+      - Prompts: api/prompts.md
+      - Memory: api/memory.md
+      - Observability: api/observability.md
+      - Text2SQL: api/text2sql.md
+      - Pipelines: api/pipelines.md
+      - Formatting: api/formatting.md
+      - Evaluation: api/evaluation.md
+  - Examples: examples.md
+  - Release Notes: release_notes.md
+  - Team: team.md
+  - Roadmap: roadmap.md
+  - Resources: resources.md
+
+copyright: Copyright &copy; 2026 Arvoh Software
