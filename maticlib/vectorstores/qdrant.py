@@ -6,6 +6,8 @@ from maticlib.exceptions import MissingDependencyError
 from maticlib.vectorstores.config import VectorIndexConfig
 
 class QdrantVectorIndex(BaseVectorIndex):
+    """Vector index backed by Qdrant (in-memory, local, or cloud)."""
+
     def __init__(
         self,
         embeddings: BaseEmbeddings,
@@ -16,6 +18,19 @@ class QdrantVectorIndex(BaseVectorIndex):
         dim: Optional[int] = None,
         config: Optional[VectorIndexConfig] = None
     ):
+        """
+        Initializes the QdrantVectorIndex.
+
+        Args:
+            embeddings: An embeddings provider matching BaseEmbeddings.
+            collection_name: Name of the Qdrant collection. Default is ``maticlib_collection``.
+            location: Qdrant storage location. Use ``':memory:'`` for in-process,
+                or a file path for local persistence.
+            url: Optional URL to a remote Qdrant instance (e.g. ``http://localhost:6333``).
+            api_key: Optional API key for Qdrant Cloud.
+            dim: Embedding dimension. Auto-detected if not provided.
+            config: Optional VectorIndexConfig for distance metric and strategy.
+        """
         super().__init__(embeddings)
         self.collection_name = collection_name
         self.config = config or VectorIndexConfig()

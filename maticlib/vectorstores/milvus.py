@@ -6,14 +6,27 @@ from maticlib.exceptions import MissingDependencyError
 from maticlib.vectorstores.config import VectorIndexConfig
 
 class MilvusVectorIndex(BaseVectorIndex):
+    """Vector index backed by Milvus (Lite file mode or standalone server)."""
+
     def __init__(
         self,
         embeddings: BaseEmbeddings,
         collection_name: str = "maticlib_collection",
-        uri: str = "./milvus_demo.db", # Lite mode by default
+        uri: str = "./milvus_demo.db",
         dim: Optional[int] = None,
         config: Optional[VectorIndexConfig] = None
     ):
+        """
+        Initializes the MilvusVectorIndex.
+
+        Args:
+            embeddings: An embeddings provider matching BaseEmbeddings.
+            collection_name: Name of the Milvus collection. Default is ``maticlib_collection``.
+            uri: Milvus URI. Use a ``.db`` file path for Lite mode, or
+                ``http://localhost:19530`` for a standalone server.
+            dim: Embedding dimension. Auto-detected if not provided.
+            config: Optional VectorIndexConfig for distance metric and strategy.
+        """
         super().__init__(embeddings)
         self.collection_name = collection_name
         self.config = config or VectorIndexConfig()

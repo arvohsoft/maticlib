@@ -8,9 +8,12 @@ Find everything you need to dive deeper into Maticlib, from architectural resour
 
 Access key information about the library's design and usage patterns:
 
-- **[Source Code Hierarchy](https://github.com/arvohsoft/maticlib/tree/main/maticlib)**: Understand the internal module structure.
-- **[Example Suite](https://arvohsoft.github.io/maticlib/examples/)**: The best place to see real-world usage patterns.
-- **[Pydantic Documentation](https://docs.pydantic.dev/)**: Since Maticlib relies heavily on Pydantic for data integrity.
+- **[Modules Overview](https://arvohsoft.github.io/maticlib/modules/)**: A structured, deep-dive into each individual Maticlib component.
+- **[API Reference](https://arvohsoft.github.io/maticlib/api/)**: Fully documented technical specifications, parameters, and return types.
+- **[Example Suite](https://arvohsoft.github.io/maticlib/examples/)**: A rich gallery of interactive scripts and real-world usage patterns.
+- **[SQL & Data Validation](https://arvohsoft.github.io/maticlib/modules/text2sql/)**: Details on transpilation, SQL injection guards with `sqlglot`, and secure execution.
+- **[RAG Evaluation](https://arvohsoft.github.io/maticlib/modules/evaluation/)**: Reference guide for testing token overlap relevance and using LLM-as-a-judge evaluators.
+- **[Pydantic Documentation](https://docs.pydantic.dev/)**: Essential reading for understanding our schema validation and state management.
 
 ---
 

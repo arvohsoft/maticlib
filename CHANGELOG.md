@@ -5,6 +5,14 @@ All notable changes to maticlib will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2026-05-03
+
+### Added
+- **Formatting & Evaluation**
+  - Implemented SQL Results formatting with beautiful Markdown table generation.
+  - Implemented evaluation modules for testing Context Relevance and Answer Accuracy.
+  - Implemented fallback evaluation routines without requiring any external dependencies.
+
 ## [0.2.1] - 2026-05-03
 
 ### Added

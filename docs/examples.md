@@ -43,6 +43,7 @@ Learn how to build intelligent agents using the `MaticGraph` engine.
 
 ## :material-eye-outline: Observability & Resilience
 - **[Traces, Retry & Memory](https://github.com/arvohsoft/maticlib/blob/main/examples/13_prompts_and_observability.py)**: Using the Prompt Registry, rolling window memory buffers, handling external API failures with exponential backoff, and tracing exact token usages via Callbacks.
+- **[Formatting & Evaluation](https://github.com/arvohsoft/maticlib/blob/main/examples/18_evaluation_and_formatting.py)**: Converting raw SQL results into Markdown tables and computing context relevance and answer accuracy scores without external dependencies.
 
 ---
 

@@ -52,6 +52,8 @@ plugins:
             show_source: true
             members_order: alphabetical
             separate_signature: true
+            merge_init_into_class: true
+            docstring_section_style: table
 
 markdown_extensions:
   - admonition
@@ -73,7 +75,23 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting Started: getting_started.md
-  - Modules: modules.md
+  - Modules:
+      - Overview: modules/index.md
+      - Message Types: modules/messages.md
+      - LLM Clients: modules/clients.md
+      - Response Parsers: modules/parsers.md
+      - Tools: modules/tools.md
+      - Embeddings: modules/embeddings.md
+      - Graph Engine: modules/graph.md
+      - Document Loaders: modules/io.md
+      - Chunkers: modules/chunkers.md
+      - Vector Stores: modules/vectorstores.md
+      - Prompts & Memory: modules/prompts_memory.md
+      - Observability & Resilience: modules/observability_resilience.md
+      - Text2SQL: modules/text2sql.md
+      - Pipelines: modules/pipelines.md
+      - Formatting: modules/formatting.md
+      - Evaluation: modules/evaluation.md
   - API Reference:
       - Introduction: api/index.md
       - LLM Clients: api/clients.md
@@ -90,6 +108,8 @@ nav:
       - Observability: api/observability.md
       - Text2SQL: api/text2sql.md
       - Pipelines: api/pipelines.md
+      - Formatting: api/formatting.md
+      - Evaluation: api/evaluation.md
   - Examples: examples.md
   - Release Notes: release_notes.md
   - Team: team.md

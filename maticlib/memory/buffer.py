@@ -3,7 +3,15 @@ from maticlib.messages import BaseMessage
 from maticlib.memory.base import BaseMemory
 
 class ConversationBufferMemory(BaseMemory):
+    """Stores all conversation messages in a sequential buffer."""
+
     def __init__(self, return_messages: bool = True):
+        """
+        Initializes ConversationBufferMemory.
+
+        Args:
+            return_messages: If True, returns the full list of BaseMessage objects.
+        """
         self.messages: List[BaseMessage] = []
         self.return_messages = return_messages
 
@@ -27,10 +35,15 @@ class ConversationBufferMemory(BaseMemory):
         return total_chars // 4
 
 class WindowBufferMemory(ConversationBufferMemory):
+    """Keeps only the most recent `k` messages (sliding window)."""
+
     def __init__(self, k: int = 10, return_messages: bool = True):
         """
-        Keeps only the last `k` messages.
-        If k=10, the memory retains the 10 most recent messages.
+        Initializes WindowBufferMemory.
+
+        Args:
+            k: Maximum number of recent messages to retain. Default is 10.
+            return_messages: If True, returns BaseMessage objects.
         """
         super().__init__(return_messages)
         self.k = k

@@ -7,6 +7,8 @@ from maticlib.exceptions import MissingDependencyError
 from maticlib.vectorstores.config import VectorIndexConfig
 
 class PineconeVectorIndex(BaseVectorIndex):
+    """Vector index backed by Pinecone Cloud."""
+
     def __init__(
         self,
         embeddings: BaseEmbeddings,
@@ -14,6 +16,15 @@ class PineconeVectorIndex(BaseVectorIndex):
         api_key: Optional[str] = None,
         config: Optional[VectorIndexConfig] = None
     ):
+        """
+        Initializes the PineconeVectorIndex.
+
+        Args:
+            embeddings: An embeddings provider matching BaseEmbeddings.
+            index_name: Name of an existing Pinecone index.
+            api_key: Pinecone API key. Falls back to ``PINECONE_API_KEY`` env var.
+            config: Optional VectorIndexConfig for distance metric and strategy.
+        """
         super().__init__(embeddings)
         self.index_name = index_name
         self.config = config or VectorIndexConfig()

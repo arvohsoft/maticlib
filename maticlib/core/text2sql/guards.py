@@ -2,7 +2,18 @@ from typing import Optional
 from maticlib.exceptions import MissingDependencyError, SQLValidationError, SQLInjectionError
 
 class SQLInjectionGuard:
+    """Parses, validates, and transpiles SQL queries to prevent injection attacks."""
+
     def __init__(self, allowed_dialect: str = "sqlite"):
+        """
+        Initializes the SQLInjectionGuard.
+
+        Args:
+            allowed_dialect: Target SQL dialect for transpilation (e.g. ``sqlite``, ``postgres``).
+
+        Raises:
+            MissingDependencyError: If sqlglot is not installed.
+        """
         self.allowed_dialect = allowed_dialect
         try:
             import sqlglot

@@ -4,6 +4,16 @@ Stay up to date with the latest features, improvements, and bug fixes in Maticli
 
 ---
 
+## :material-tag-outline: [v0.2.2] - 2026-05-03
+
+### :material-creation: Major Additions
+
+#### **Formatting & Evaluation**
+- **Markdown Results**: Convert SQL tuples and columns into a clean Markdown table format.
+- **Evaluation System**: Flexible test modules (`ContextRelevanceEvaluator`, `AnswerAccuracyEvaluator`) to grade outputs with fallback heuristics and LLM options.
+
+---
+
 ## :material-tag-outline: [v0.2.1] - 2026-05-03
 
 ### :material-creation: Major Additions

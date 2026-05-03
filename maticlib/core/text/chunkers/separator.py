@@ -10,6 +10,14 @@ class SeparatorChunker(BaseChunker):
         target_size: int = 1000,
         overlap_size: int = 200,
     ):
+        """
+        Initializes the SeparatorChunker.
+
+        Args:
+            separator: The string used to split the text (default ``\\n\\n``).
+            target_size: Maximum character length of a single chunk.
+            overlap_size: Number of characters from the previous chunk to overlap.
+        """
         super().__init__(target_size, overlap_size)
         self.separator = separator
 
@@ -19,6 +27,17 @@ class SeparatorChunker(BaseChunker):
         base_metadata: Optional[Dict[str, Any]] = None,
         parent_id: Optional[str] = None,
     ) -> List[TextSegment]:
+        """
+        Splits text by the separator and groups splits into chunks.
+
+        Args:
+            text: The raw text content to split.
+            base_metadata: Optional metadata to attach to each segment.
+            parent_id: Optional parent segment ID.
+
+        Returns:
+            A list of TextSegment objects.
+        """
         base_metadata = base_metadata or {}
         if not text:
             return []

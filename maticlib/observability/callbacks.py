@@ -4,24 +4,58 @@ from typing import Any
 from maticlib.observability.trace import StepTrace, PipelineTrace
 
 class BaseCallbackHandler(ABC):
+    """Abstract base class for pipeline event callbacks."""
+
     @abstractmethod
     def on_step_start(self, step: StepTrace) -> None:
+        """
+        Called when a pipeline step begins.
+
+        Args:
+            step: The StepTrace for the starting step.
+        """
         pass
 
     @abstractmethod
     def on_step_end(self, step: StepTrace) -> None:
+        """
+        Called when a pipeline step ends.
+
+        Args:
+            step: The completed StepTrace.
+        """
         pass
 
     @abstractmethod
     def on_pipeline_start(self, trace: PipelineTrace) -> None:
+        """
+        Called when a pipeline starts.
+
+        Args:
+            trace: The PipelineTrace for the starting pipeline.
+        """
         pass
 
     @abstractmethod
     def on_pipeline_end(self, trace: PipelineTrace) -> None:
+        """
+        Called when a pipeline completes.
+
+        Args:
+            trace: The finished PipelineTrace.
+        """
         pass
 
 class LoggingCallbackHandler(BaseCallbackHandler):
+    """A callback handler that logs pipeline and step events via Python's logging module."""
+
     def __init__(self, logger: logging.Logger = None):
+        """
+        Initializes the LoggingCallbackHandler.
+
+        Args:
+            logger: An optional Python Logger. Defaults to the module logger.
+        """
         self.logger = logger or logging.getLogger(__name__)
 
     def on_step_start(self, step: StepTrace) -> None:
