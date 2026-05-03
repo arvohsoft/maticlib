@@ -3,13 +3,33 @@ from typing import List, Dict, Any, Optional, Tuple
 from maticlib.exceptions import MissingDependencyError, QueryExecutionError
 
 class BaseExecutor(ABC):
+    """Abstract base class for SQL query executors."""
+
     @abstractmethod
     def execute(self, query: str) -> Tuple[List[str], List[tuple]]:
-        """Executes a SQL query and returns (columns, rows)."""
+        """
+        Executes a SQL query and returns columns and rows.
+
+        Args:
+            query: A validated SELECT SQL query string.
+
+        Returns:
+            A tuple of ``(columns, rows)`` where columns is a list of column name strings
+            and rows is a list of row tuples.
+        """
         pass
 
 class SQLAlchemyExecutor(BaseExecutor):
+    """Executes validated SQL queries against any SQLAlchemy-supported database."""
+
     def __init__(self, connection_string: str, read_only: bool = True):
+        """
+        Initializes the SQLAlchemyExecutor.
+
+        Args:
+            connection_string: A SQLAlchemy database URI.
+            read_only: If True (default), opens SQLite connections in read-only mode.
+        """
         self.connection_string = connection_string
         self.read_only = read_only
         try:

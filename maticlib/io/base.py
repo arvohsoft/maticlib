@@ -7,8 +7,10 @@ class BaseLoader(ABC):
     def __init__(self, chunker: Optional[BaseChunker] = None):
         """
         Initialize the loader.
-        :param chunker: An optional chunker to split the loaded documents into segments.
-                        If not provided, the entire document is yielded as a single segment.
+
+        Args:
+            chunker: An optional chunker to split the loaded documents into segments.
+                     If not provided, the entire document is yielded as a single segment.
         """
         self.chunker = chunker
 

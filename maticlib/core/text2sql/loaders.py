@@ -4,13 +4,38 @@ from maticlib.core.text2sql.models import DatabaseSchema, TableSchema, ColumnSch
 from maticlib.exceptions import MissingDependencyError, SchemaLoadError
 
 class BaseSchemaLoader(ABC):
+    """Abstract base class for database schema loaders."""
+
     @abstractmethod
     def load_schema(self, connection_string: str) -> DatabaseSchema:
-        """Loads and parses the schema from the given connection string."""
+        """
+        Loads and parses the schema from the given connection string.
+
+        Args:
+            connection_string: A database URI (e.g. ``sqlite:///my.db``).
+
+        Returns:
+            A fully populated DatabaseSchema object.
+        """
         pass
 
 class SQLAlchemySchemaLoader(BaseSchemaLoader):
+    """Reflects a live database schema using SQLAlchemy's inspect API."""
+
     def load_schema(self, connection_string: str) -> DatabaseSchema:
+        """
+        Reflects all tables and columns from the connected database.
+
+        Args:
+            connection_string: A SQLAlchemy-compatible database URI.
+
+        Returns:
+            A DatabaseSchema containing all tables and columns.
+
+        Raises:
+            MissingDependencyError: If sqlalchemy is not installed.
+            SchemaLoadError: If the schema cannot be reflected.
+        """
         try:
             from sqlalchemy import create_engine, inspect
         except ImportError as e:

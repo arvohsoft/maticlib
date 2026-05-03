@@ -6,7 +6,20 @@ from maticlib.io.base import BaseLoader
 from maticlib.exceptions import MissingDependencyError, DocumentLoadError
 
 class WebPageLoader(BaseLoader):
+    """Fetches a URL and extracts readable text using BeautifulSoup. Requires beautifulsoup4 and httpx."""
+
     def load(self, source: str, metadata: Optional[Dict[str, Any]] = None) -> Iterable[TextSegment]:
+        """
+        Fetches a web page and yields TextSegments.
+
+        Args:
+            source: The URL of the page to fetch.
+            metadata: Optional metadata dict to attach to each segment.
+
+        Returns:
+            An iterable of TextSegment objects with the page's cleaned text.
+        """
+
         try:
             from bs4 import BeautifulSoup
         except ImportError as e:

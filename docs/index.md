@@ -49,4 +49,4 @@ print(client.get_text_response(response))
 Maticlib is maintained and developed by **Arvoh Software**.
 
 - **Website**: [arvohsoft.github.io/arvohsoft/](https://arvohsoft.github.io/arvohsoft/)
-- **Project Lead**: [Anubroto Ghose](https://github.com/anubrotoGhose)
+- **Project Lead**: [Anubroto Ghose](https://anubrotoghose.github.io/anubrotoGhose/)

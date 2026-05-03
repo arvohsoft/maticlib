@@ -6,7 +6,19 @@ from maticlib.io.base import BaseLoader
 from maticlib.exceptions import MissingDependencyError, DocumentLoadError
 
 class TextLoader(BaseLoader):
+    """Loads plain text (.txt) files as TextSegments."""
+
     def load(self, source: str, metadata: Optional[Dict[str, Any]] = None) -> Iterable[TextSegment]:
+        """
+        Reads a plain text file and yields TextSegments.
+
+        Args:
+            source: Absolute or relative path to the .txt file.
+            metadata: Optional metadata dict to attach to each segment.
+
+        Returns:
+            An iterable of TextSegment objects.
+        """
         if not os.path.exists(source):
             raise DocumentLoadError(f"File not found: {source}")
             
@@ -31,7 +43,19 @@ class TextLoader(BaseLoader):
             )
 
 class PDFLoader(BaseLoader):
+    """Loads PDF files page-by-page as TextSegments. Requires pypdf."""
+
     def load(self, source: str, metadata: Optional[Dict[str, Any]] = None) -> Iterable[TextSegment]:
+        """
+        Reads a PDF and yields one TextSegment per page.
+
+        Args:
+            source: Absolute or relative path to the .pdf file.
+            metadata: Optional metadata dict to attach to each segment.
+
+        Returns:
+            An iterable of TextSegment objects, one per page.
+        """
         try:
             import pypdf
         except ImportError as e:
@@ -66,7 +90,19 @@ class PDFLoader(BaseLoader):
             )
 
 class DOCXLoader(BaseLoader):
+    """Loads Microsoft Word (.docx) files as TextSegments. Requires python-docx."""
+
     def load(self, source: str, metadata: Optional[Dict[str, Any]] = None) -> Iterable[TextSegment]:
+        """
+        Reads a .docx file and yields TextSegments.
+
+        Args:
+            source: Absolute or relative path to the .docx file.
+            metadata: Optional metadata dict to attach to each segment.
+
+        Returns:
+            An iterable of TextSegment objects.
+        """
         try:
             import docx
         except ImportError as e:

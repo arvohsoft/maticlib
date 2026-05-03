@@ -19,6 +19,16 @@ class RAGPipeline:
         use_hybrid: bool = False,
         use_query_transform: bool = False
     ):
+        """
+        Initializes the RAGPipeline.
+
+        Args:
+            llm_client: Any LLM Client from maticlib.
+            vector_index: A vector store index matching BaseVectorIndex.
+            prompt_name: Name of prompt in the PromptRegistry. Default is 'rag_qa'.
+            use_hybrid: Whether to perform hybrid retrieval.
+            use_query_transform: Whether to expand the input question using the LLM.
+        """
         self.llm_client = llm_client
         self.vector_index = vector_index
         self.prompt_template = PromptRegistry.get(prompt_name)
@@ -37,6 +47,15 @@ class RAGPipeline:
     ) -> str:
         """
         Executes the RAG pipeline.
+
+        Args:
+            question: The natural language question to answer.
+            k: Number of contexts to retrieve.
+            keywords: Optional list of keywords for filtering.
+            trace: An optional trace container for observability.
+
+        Returns:
+            The generated text answer string.
         """
         # Step 1: Query Transformation (Optional)
         search_queries = [question]

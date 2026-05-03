@@ -6,7 +6,22 @@ from maticlib.vectorstores.base_index import BaseVectorIndex
 from maticlib.exceptions import MissingDependencyError
 
 class InMemoryVectorIndex(BaseVectorIndex):
+    """
+    Pure in-memory vector index using Numpy cosine similarity.
+
+    Suitable for rapid prototyping and small-scale workloads. Requires ``numpy``.
+    """
+
     def __init__(self, embeddings: BaseEmbeddings):
+        """
+        Initializes the InMemoryVectorIndex.
+
+        Args:
+            embeddings: An embeddings provider matching BaseEmbeddings.
+
+        Raises:
+            MissingDependencyError: If numpy is not installed.
+        """
         super().__init__(embeddings)
         self.segments: List[TextSegment] = []
         self.vectors: List[List[float]] = []

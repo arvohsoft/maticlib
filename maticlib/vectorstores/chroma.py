@@ -6,6 +6,8 @@ from maticlib.exceptions import MissingDependencyError
 from maticlib.vectorstores.config import VectorIndexConfig
 
 class ChromaVectorIndex(BaseVectorIndex):
+    """Vector index backed by ChromaDB (ephemeral or persistent)."""
+
     def __init__(
         self, 
         embeddings: BaseEmbeddings, 
@@ -13,6 +15,15 @@ class ChromaVectorIndex(BaseVectorIndex):
         persist_directory: Optional[str] = None,
         config: Optional[VectorIndexConfig] = None
     ):
+        """
+        Initializes the ChromaVectorIndex.
+
+        Args:
+            embeddings: An embeddings provider matching BaseEmbeddings.
+            collection_name: Name of the Chroma collection. Default is ``maticlib_collection``.
+            persist_directory: If set, uses a PersistentClient saving to this directory.
+            config: Optional VectorIndexConfig for distance metric settings.
+        """
         super().__init__(embeddings)
         self.collection_name = collection_name
         self.persist_directory = persist_directory

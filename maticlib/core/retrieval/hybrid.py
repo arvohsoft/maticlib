@@ -7,13 +7,26 @@ class HybridRetriever:
     Combines vector search with exact keyword matching.
     """
     def __init__(self, vector_index: BaseVectorIndex):
+        """
+        Initializes the HybridRetriever.
+
+        Args:
+            vector_index: A vector store index matching BaseVectorIndex.
+        """
         self.vector_index = vector_index
 
     def retrieve(self, query: str, k: int = 4, keywords: Optional[List[str]] = None, filter_dict: Optional[Dict[str, Any]] = None) -> List[TextSegment]:
         """
         Retrieves top k segments from the vector index.
-        If keywords are provided, it boosts or filters results that contain the keywords.
-        For simplicity in this phase, we'll fetch 2*k from vector store, then sort/filter by keyword presence, returning top k.
+
+        Args:
+            query: The natural language search query.
+            k: Number of segments to return.
+            keywords: Optional list of keywords for boosting/filtering.
+            filter_dict: Optional metadata filters.
+
+        Returns:
+            A list of retrieved TextSegments.
         """
         # Over-fetch from vector store
         fetch_k = k * 2 if keywords else k

@@ -19,6 +19,16 @@ class Text2SQLPipeline:
         connection_string: str,
         dialect: str = "sqlite"
     ):
+        """
+        Initializes the Text2SQLPipeline.
+
+        Args:
+            llm_client: Any LLM client from maticlib.
+            schema_loader: A schema loader matching BaseSchemaLoader.
+            executor: A DB executor matching BaseExecutor.
+            connection_string: String URI for DB connection.
+            dialect: The SQL dialect (e.g. 'sqlite', 'postgresql').
+        """
         self.llm_client = llm_client
         self.schema_loader = schema_loader
         self.executor = executor
@@ -36,6 +46,13 @@ class Text2SQLPipeline:
         """
         Translates a question to SQL, validates it, and executes it.
         Returns columns and rows.
+
+        Args:
+            question: The natural language question to translate to SQL.
+            trace: Optional trace container for observability.
+
+        Returns:
+            A tuple of column names (List[str]) and row tuples (List[Tuple]).
         """
         # Step 1: Schema Loading
         schema_step = StepTrace(step_name="Schema_Load") if trace else None
